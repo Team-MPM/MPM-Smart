@@ -1,0 +1,12 @@
+﻿services:
+  mpm-smart-web:
+    image: mpm-smart-web
+    build:
+      context: .
+      dockerfile: Mpm-Smart-Web/Mpm-Smart-Web/Dockerfile
+
+  mpm-smart-web.client:
+    image: mpm-smart-web.client
+    build:
+      context: .
+      dockerfile: Mpm-Smart-Web/Mpm-Smart-Web.Client/Dockerfile
