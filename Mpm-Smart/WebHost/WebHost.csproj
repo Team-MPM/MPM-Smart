@@ -15,6 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Web.Api\Web.Api.csproj" />
       <ProjectReference Include="..\Web\Web.Server\Web.Server.csproj" />
     </ItemGroup>
 

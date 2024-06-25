@@ -10,3 +10,9 @@
     build:
       context: .
       dockerfile: Mpm-Smart-Web/Mpm-Smart-Web.Client/Dockerfile
+
+  web.api:
+    image: web.api
+    build:
+      context: .
+      dockerfile: Web.Api/Dockerfile
