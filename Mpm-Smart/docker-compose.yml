@@ -16,3 +16,9 @@
     build:
       context: .
       dockerfile: Web.Api/Dockerfile
+
+  dbmanager:
+    image: dbmanager
+    build:
+      context: .
+      dockerfile: DbManager/Dockerfile
