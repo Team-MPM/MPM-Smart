@@ -1,0 +1,172 @@
+{
+  "resources": {
+    "username": {
+      "type": "parameter.v0",
+      "value": "{username.inputs.value}",
+      "inputs": {
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "redis": {
+      "type": "azure.bicep.v0",
+      "connectionString": "{redis.secretOutputs.connectionString}",
+      "path": "redis.module.bicep",
+      "params": {
+        "keyVaultName": ""
+      }
+    },
+    "sql": {
+      "type": "azure.bicep.v0",
+      "connectionString": "Server=tcp:{sql.outputs.sqlServerFqdn},1433;Encrypt=True;Authentication=\u0022Active Directory Default\u0022",
+      "path": "sql.module.bicep",
+      "params": {
+        "principalId": "",
+        "principalName": ""
+      }
+    },
+    "MPM-Smart": {
+      "type": "value.v0",
+      "connectionString": "{sql.connectionString};Database=MPM-Smart"
+    },
+    "rabbitmq": {
+      "type": "container.v0",
+      "connectionString": "amqp://{username.value}:{rabbitMqPassword.value}@{rabbitmq.bindings.tcp.host}:{rabbitmq.bindings.tcp.port}",
+      "image": "docker.io/library/rabbitmq:3.13-management",
+      "volumes": [
+        {
+          "name": "Web.Host-rabbitmq-data",
+          "target": "/var/lib/rabbitmq",
+          "readOnly": false
+        }
+      ],
+      "env": {
+        "RABBITMQ_DEFAULT_USER": "{username.value}",
+        "RABBITMQ_DEFAULT_PASS": "{rabbitMqPassword.value}"
+      },
+      "bindings": {
+        "tcp": {
+          "scheme": "tcp",
+          "protocol": "tcp",
+          "transport": "tcp",
+          "targetPort": 5672
+        },
+        "management": {
+          "scheme": "http",
+          "protocol": "tcp",
+          "transport": "http",
+          "targetPort": 15672
+        }
+      }
+    },
+    "kafka": {
+      "type": "container.v0",
+      "connectionString": "{kafka.bindings.tcp.host}:{kafka.bindings.tcp.port}",
+      "image": "docker.io/confluentinc/confluent-local:7.6.1",
+      "volumes": [
+        {
+          "name": "Web.Host-kafka-data",
+          "target": "/var/lib/kafka/data",
+          "readOnly": false
+        }
+      ],
+      "env": {
+        "KAFKA_ADVERTISED_LISTENERS": "PLAINTEXT://localhost:29092,PLAINTEXT_HOST://localhost:9092"
+      },
+      "bindings": {
+        "tcp": {
+          "scheme": "tcp",
+          "protocol": "tcp",
+          "transport": "tcp",
+          "targetPort": 9092
+        }
+      }
+    },
+    "Api": {
+      "type": "project.v0",
+      "path": "../../Web.Api/Web.Api.csproj",
+      "env": {
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY": "in_memory",
+        "ASPNETCORE_FORWARDEDHEADERS_ENABLED": "true"
+      },
+      "bindings": {
+        "http": {
+          "scheme": "http",
+          "protocol": "tcp",
+          "transport": "http"
+        },
+        "https": {
+          "scheme": "https",
+          "protocol": "tcp",
+          "transport": "http"
+        }
+      }
+    },
+    "Web-Server": {
+      "type": "project.v0",
+      "path": "../../Web/Web.Server/Web.Server.csproj",
+      "env": {
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY": "in_memory",
+        "ASPNETCORE_FORWARDEDHEADERS_ENABLED": "true",
+        "services__Api__http__0": "{Api.bindings.http.url}",
+        "services__Api__https__0": "{Api.bindings.https.url}"
+      },
+      "bindings": {
+        "http": {
+          "scheme": "http",
+          "protocol": "tcp",
+          "transport": "http"
+        },
+        "https": {
+          "scheme": "https",
+          "protocol": "tcp",
+          "transport": "http"
+        }
+      }
+    },
+    "dbmanager": {
+      "type": "project.v0",
+      "path": "../../DbManager/DbManager.csproj",
+      "env": {
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY": "in_memory",
+        "ASPNETCORE_FORWARDEDHEADERS_ENABLED": "true",
+        "ConnectionStrings__redis": "{redis.connectionString}",
+        "ConnectionStrings__MPM-Smart": "{MPM-Smart.connectionString}"
+      },
+      "bindings": {
+        "http": {
+          "scheme": "http",
+          "protocol": "tcp",
+          "transport": "http"
+        },
+        "https": {
+          "scheme": "https",
+          "protocol": "tcp",
+          "transport": "http"
+        }
+      }
+    },
+    "rabbitMqPassword": {
+      "type": "parameter.v0",
+      "value": "{rabbitMqPassword.inputs.value}",
+      "inputs": {
+        "value": {
+          "type": "string",
+          "secret": true,
+          "default": {
+            "generate": {
+              "minLength": 22
+            }
+          }
+        }
+      }
+    }
+  }
+}
