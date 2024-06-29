@@ -31,14 +31,12 @@ var rabbitMq = builder.AddRabbitMQ("rabbitmq", userName: username, password: rab
 var kafka = builder.AddKafka("kafka")
     .WithDataVolume();
 
-var api = builder.AddProject<Projects.Web_Api>("Api", "Watch")
-    .WithHttpEndpoint();
+var api = builder.AddProject<Projects.Web_Api>("Api", "Watch");
 
 // Projects
 
 builder.AddProject<Projects.Web_Server>("Web-Server", "Watch")
-    .WithReference(api)
-    .WithHttpEndpoint();
+    .WithReference(api);
 
 var dbManager = builder.AddProject<Projects.DbManager>("dbmanager")
     .WithReference(redis)
