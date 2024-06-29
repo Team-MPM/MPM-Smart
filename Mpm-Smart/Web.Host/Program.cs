@@ -1,3 +1,4 @@
+using MPM_Betting.Aspire.AppHost;
 using MpmSmart.Web.Host;
 
 var builder = DistributedApplication.CreateBuilder(args);
@@ -22,7 +23,13 @@ var redis = builder.AddRedis("redis")
 var sqlServer = builder.AddSqlServer("sql", password: sqlPassword)
     .WithDataVolume();
 
-var sqlDb = sqlServer.AddDatabase("MPM-Smart");
+var primaryDb = sqlServer.AddDatabase("PrimaryDatabase");
+var tenantDb = sqlServer.AddDatabase("TenantDatabase");
+
+var mongoDbServer = builder.AddMongoDB("mongo")
+    .WithDataVolume();
+
+var homeDataDatabase = mongoDbServer.AddDatabase("HomeDataDatabase");
 
 var rabbitMq = builder.AddRabbitMQ("rabbitmq", userName: username, password: rabbitMqPassword)
     .WithManagementPlugin()
@@ -31,16 +38,35 @@ var rabbitMq = builder.AddRabbitMQ("rabbitmq", userName: username, password: rab
 var kafka = builder.AddKafka("kafka")
     .WithDataVolume();
 
-var api = builder.AddProject<Projects.Web_Api>("Api", "Watch");
+var mail = builder.AddMailDev("maildev", 9324, 9325);
 
-// Projects
+// Services
+
+var api = builder.AddProject<Projects.Web_Api>("Api", "Watch");
 
 builder.AddProject<Projects.Web_Server>("Web-Server", "Watch")
     .WithReference(api);
 
+// Management
+
 var dbManager = builder.AddProject<Projects.DbManager>("dbmanager")
     .WithReference(redis)
-    .WithReference(sqlDb);
+    .WithReference(primaryDb)
+    .WithReference(tenantDb)
+    .WithReference(homeDataDatabase);
+
+if (builder.ExecutionContext.IsRunMode)
+{
+    builder.AddContainer("grafana", "grafana/grafana")
+        .WithBindMount("../grafana/config", "/etc/grafana", isReadOnly: false)
+        .WithBindMount("../grafana/dashboards", "/var/lib/grafana/dashboards", isReadOnly: false)
+        .WithHttpEndpoint(port: 3000, targetPort: 3000, isProxied: false);
+    builder.AddContainer("prometheus", "prom/prometheus")
+        .WithBindMount("../prometheus", "/etc/prometheus")
+        .WithHttpEndpoint(port: 9090, targetPort: 9090, isProxied: false);
+}
+
+// Deployment
 
 if (publishToAzure)
 {

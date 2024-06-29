@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 1s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: [ 'localhost:9090' ]
+  - job_name: 'blazor'
+    static_configs:
+      - targets: ['host.docker.internal:5023']
+  - job_name: 'api'
+    static_configs:
+      - targets: [ 'host.docker.internal:5241' ]
+  - job_name: 'db-manager'
+    static_configs:
+      - targets: [ 'host.docker.internal:5148' ]
