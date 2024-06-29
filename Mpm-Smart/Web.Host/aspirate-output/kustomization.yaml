@@ -1,0 +1,17 @@
+namespace: mpm-smart
+
+resources:
+- redis
+- sql
+- rabbitmq
+- kafka
+- Api
+- Web-Server
+- dbmanager
+- namespace.yaml
+- dashboard.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+

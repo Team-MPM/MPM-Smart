@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="PDF (in)" type="StardustRunConfiguration" factoryName="build-pdf">
+  <configuration default="false" name="PDF" type="StardustRunConfiguration" factoryName="build-pdf">
     <option name="addCover" value="true" />
     <option name="addFooter" value="true" />
     <option name="addHeader" value="true" />

@@ -1,0 +1,35 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dbmanager
+  labels:
+    app: dbmanager
+spec:
+  minReadySeconds: 60
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dbmanager
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: dbmanager
+    spec:
+      containers:
+      - name: dbmanager
+        image: localhost:5001/mpm/dbmanager:latest
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 8080
+        - name: https
+          containerPort: 8443
+        envFrom:
+        - configMapRef:
+            name: dbmanager-env
+        - secretRef:
+            name: dbmanager-secrets
+      terminationGracePeriodSeconds: 180

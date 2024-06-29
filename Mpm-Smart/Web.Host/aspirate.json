@@ -1,0 +1,11 @@
+{
+  "TemplatePath": null,
+  "ContainerSettings": {
+    "Registry": "localhost:5001",
+    "RepositoryPrefix": "mpm",
+    "Tags": [
+      "latest"
+    ],
+    "Builder": "docker"
+  }
+}

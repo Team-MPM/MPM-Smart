@@ -1,0 +1,15 @@
+resources:
+- statefulset.yaml
+- service.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+- name: rabbitmq-env
+  literals:
+    - RABBITMQ_DEFAULT_USER=mpm
+    - RABBITMQ_DEFAULT_PASS=J0xIj6IMnezY41fJLArtz2
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:18889
+    - OTEL_SERVICE_NAME=rabbitmq
+
