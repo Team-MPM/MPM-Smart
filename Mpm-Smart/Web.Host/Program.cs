@@ -12,6 +12,7 @@ var publishToAzure = builder.ExecutionContext.IsPublishMode && builder.Configura
 var username = builder.AddParameter("username");
 var sqlPassword = builder.CreateStablePassword("sqlPassword");
 var rabbitMqPassword = builder.CreateStablePassword("rabbitMqPassword");
+var neo4JPassword = builder.CreateStablePassword("neo4Password");
 
 
 // Resources
@@ -39,6 +40,8 @@ var kafka = builder.AddKafka("kafka")
     .WithDataVolume();
 
 var mail = builder.AddMailDev("maildev", 9324, 9325);
+
+var neo4J  = builder.AddNeo4J("neo4j", 9326, 9327, neo4JPassword);
 
 // Services
 

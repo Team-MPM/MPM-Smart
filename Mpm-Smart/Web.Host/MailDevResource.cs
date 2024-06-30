@@ -1,7 +1,5 @@
 ﻿namespace MPM_Betting.Aspire.AppHost;
 
-// based on https://github.com/dotnet/docs-aspire/pull/755/files#conversations-menu
-
 public class MailDevResource(string name) : ContainerResource(name), IResourceWithConnectionString
 {
     private EndpointReference? m_SmtpReference;
