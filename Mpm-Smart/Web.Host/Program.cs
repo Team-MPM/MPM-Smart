@@ -25,7 +25,7 @@ var sqlServer = builder.AddSqlServer("sql", password: sqlPassword)
     .WithDataVolume();
 
 var primaryDb = sqlServer.AddDatabase("PrimaryDatabase");
-var tenantDb = sqlServer.AddDatabase("TenantDatabase");
+//var tenantDb = sqlServer.AddDatabase("TenantDatabase");
 
 var mongoDbServer = builder.AddMongoDB("mongo")
     .WithDataVolume();
@@ -45,17 +45,92 @@ var neo4J  = builder.AddNeo4J("neo4j", 9326, 9327, neo4JPassword);
 
 // Services
 
-var api = builder.AddProject<Projects.Web_Api>("Api", "Watch");
+var authService = builder.AddProject<Projects.AuthService>("AuthService", launchProfile)
+    .WithReference(redis)
+    .WithReference(sqlServer)
+    .WithReference(rabbitMq)
+    .WithReference(kafka)
+    .WithReference(neo4J);
 
-builder.AddProject<Projects.Web_Server>("Web-Server", "Watch")
+var notificationService = builder.AddProject<Projects.NotificationService>("NotificationService", launchProfile)
+    .WithReference(redis)
+    .WithReference(sqlServer)
+    .WithReference(rabbitMq)
+    .WithReference(kafka)
+    .WithReference(neo4J);
+
+var networkService = builder.AddProject<Projects.NetworkService>("NetworkService", launchProfile)
+    .WithReference(redis)
+    .WithReference(sqlServer)
+    .WithReference(rabbitMq)
+    .WithReference(kafka)
+    .WithReference(neo4J)
+    .WithReference(authService)
+    .WithReference(notificationService);
+
+var commandService = builder.AddProject<Projects.CommandService>("CommandService", launchProfile)
+    .WithReference(redis)
+    .WithReference(sqlServer)
+    .WithReference(rabbitMq)
+    .WithReference(kafka)
+    .WithReference(neo4J)
+    .WithReference(networkService)
+    .WithReference(authService)
+    .WithReference(notificationService);
+
+var homeDataService = builder.AddProject<Projects.HomeDataService>("HomeDataService", launchProfile)
+    .WithReference(redis)
+    .WithReference(sqlServer)
+    .WithReference(rabbitMq)
+    .WithReference(kafka)
+    .WithReference(neo4J)
+    .WithReference(homeDataDatabase)
+    .WithReference(networkService)
+    .WithReference(authService)
+    .WithReference(notificationService);
+
+var routineService = builder.AddProject<Projects.RoutineService>("RoutineService", launchProfile)
+    .WithReference(redis)
+    .WithReference(sqlServer)
+    .WithReference(rabbitMq)
+    .WithReference(kafka)
+    .WithReference(neo4J)
+    .WithReference(networkService)
+    .WithReference(authService)
+    .WithReference(commandService)
+    .WithReference(homeDataService)
+    .WithReference(notificationService);
+
+var dataGateway = builder.AddProject<Projects.Web_DataGateway>("DataGateway", launchProfile)
+    .WithReference(redis)
+    .WithReference(sqlServer)
+    .WithReference(rabbitMq)
+    .WithReference(kafka)
+    .WithReference(neo4J)
+    .WithReference(homeDataService)
+    .WithReference(authService);
+
+var api = builder.AddProject<Projects.Web_Api>("Api", launchProfile)
+    .WithReference(redis)
+    .WithReference(sqlServer)
+    .WithReference(rabbitMq)
+    .WithReference(kafka)
+    .WithReference(neo4J)
+    .WithReference(homeDataService)
+    .WithReference(authService)
+    .WithReference(dataGateway)
+    .WithReference(notificationService)
+    .WithReference(routineService);
+
+builder.AddProject<Projects.Web_Server>("Web-Server", launchProfile)
     .WithReference(api);
 
 // Management
 
-var dbManager = builder.AddProject<Projects.DbManager>("dbmanager")
+var dbManager = builder.AddProject<Projects.DbManager>("dbmanager", launchProfile)
     .WithReference(redis)
     .WithReference(primaryDb)
-    .WithReference(tenantDb)
+    //.WithReference(tenantDb)
     .WithReference(homeDataDatabase);
 
 if (builder.ExecutionContext.IsRunMode)
