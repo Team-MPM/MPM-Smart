@@ -9,6 +9,11 @@
 
     <ItemGroup>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+        <PackageReference Include="Grpc.Net.Client" Version="2.63.0"/>
+        <PackageReference Include="Grpc.Tools" Version="2.64.0">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
@@ -20,7 +25,9 @@
     <ItemGroup>
       <ProjectReference Include="..\ApiGatewaySchema\ApiGatewaySchema.csproj" />
       <ProjectReference Include="..\DataGatewaySchema\DataGatewaySchema.csproj" />
+      <ProjectReference Include="..\DataModel\DataModel.csproj" />
       <ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj" />
+      <ProjectReference Include="..\Services\Services.csproj" />
     </ItemGroup>
 
 </Project>

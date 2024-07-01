@@ -11,6 +11,7 @@
       <ProjectReference Include="..\DataGatewaySchema\DataGatewaySchema.csproj" />
       <ProjectReference Include="..\DataModel\DataModel.csproj" />
       <ProjectReference Include="..\Neo4Sharp\Neo4Sharp.csproj" />
+      <ProjectReference Include="..\Proto\Proto.csproj" />
       <ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj" />
     </ItemGroup>
 
