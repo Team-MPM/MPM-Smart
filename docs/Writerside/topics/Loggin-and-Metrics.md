@@ -26,7 +26,4 @@
     Access-Service -->|Metrics & Logs| CentralizedLogs
     Notification-Service -->|Metrics & Logs| CentralizedLogs
     Data-Gateway -->|Metrics & Logs| CentralizedLogs
-    
-    
-    
 ```

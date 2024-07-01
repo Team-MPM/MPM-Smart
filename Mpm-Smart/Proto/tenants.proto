@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+option csharp_namespace = "AuthService.Proto";
+
+package tenants;
+
+service Tenants {
+  rpc GetAll (google.protobuf.Empty) returns (TenantListResponse);
+  rpc GetByName (GetByNameRequest) returns (TenantListResponse);
+  rpc GetById (GetByIdRequest) returns (TenantResponse);
+}
+
+message GetByNameRequest {
+  string name = 1;
+}
+
+message GetByIdRequest {
+  string id = 1;
+}
+
+message Tenant {
+  string id = 1;
+  string name = 2;
+  string bannerUrl = 3;
+  string iconUrl = 4;
+}
+
+message TenantResponse {
+  optional Tenant tenant = 5;
+}
+
+message TenantListResponse {
+  repeated Tenant tenants = 5;
+}

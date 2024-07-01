@@ -4,9 +4,8 @@
 
 <instance-profile id="in"
                  name="Instance Name"
-                 start-page="starter.md">
+                 start-page="Architecture.md">
 
-    <toc-element topic="starter.md"/>
     <toc-element topic="Architecture.md">
         <toc-element topic="Service-Architecture.md"/>
         <toc-element topic="Loggin-and-Metrics.md"/>
