@@ -11,6 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\ModuleBase\ModuleBase.csproj" />
       <ProjectReference Include="..\SystemBase\SystemBase.csproj" />
     </ItemGroup>
 

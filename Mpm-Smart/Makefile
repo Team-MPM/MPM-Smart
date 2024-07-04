@@ -24,6 +24,10 @@ endif
 
 all: info proto
 
+clean: FORCE
+	@echo "Cleaning..."
+	$(WSL) rm -rf build/Packages
+
 info: FORCE
 	@echo "System Info:"
 	@echo "Platform: $(PLATFORM)"
@@ -33,10 +37,15 @@ proto: FORCE
 	@echo "Building Proto..."
 	dotnet build --no-incremental Proto/Proto.csproj
 
-build-arm:
+build-arm: FORCE
 	@echo "Building ARM Container..."
 	$(WSL) docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 	$(WSL) docker buildx build --platform linux/arm64 --no-cache -t mpm-arm-build -f build/Dockerfile.arm .
 	$(WSL) docker run --rm mpm-arm-build
+
+VirtualHost-Package: FORCE
+	@echo "Building VirtualHost Package..."
+	dotnet publish -c Release -o build/Packages/VirtualHost VirtualHost/VirtualHost.csproj
+	dotnet publish -c Release -o build/Packages/VirtualHost/Modules/CoreModule CoreModule/CoreModule.csproj
 
 FORCE: ;
