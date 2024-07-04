@@ -22,3 +22,39 @@
     build:
       context: .
       dockerfile: DbManager/Dockerfile
+
+  networkservice:
+    image: networkservice
+    build:
+      context: .
+      dockerfile: NetworkService/Dockerfile
+
+  routineservice:
+    image: routineservice
+    build:
+      context: .
+      dockerfile: RoutineService/Dockerfile
+
+  authservice:
+    image: authservice
+    build:
+      context: .
+      dockerfile: AuthService/Dockerfile
+
+  commandservice:
+    image: commandservice
+    build:
+      context: .
+      dockerfile: CommandService/Dockerfile
+
+  notificationservice:
+    image: notificationservice
+    build:
+      context: .
+      dockerfile: NotificationService/Dockerfile
+
+  homedataservice:
+    image: homedataservice
+    build:
+      context: .
+      dockerfile: HomeDataService/Dockerfile

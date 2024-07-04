@@ -1,3 +1,4 @@
+using MPM_Betting.Aspire.AppHost;
 using MpmSmart.Web.Host;
 
 var builder = DistributedApplication.CreateBuilder(args);
@@ -11,6 +12,7 @@ var publishToAzure = builder.ExecutionContext.IsPublishMode && builder.Configura
 var username = builder.AddParameter("username");
 var sqlPassword = builder.CreateStablePassword("sqlPassword");
 var rabbitMqPassword = builder.CreateStablePassword("rabbitMqPassword");
+var neo4JPassword = builder.CreateStablePassword("neo4Password");
 
 
 // Resources
@@ -22,7 +24,13 @@ var redis = builder.AddRedis("redis")
 var sqlServer = builder.AddSqlServer("sql", password: sqlPassword)
     .WithDataVolume();
 
-var sqlDb = sqlServer.AddDatabase("MPM-Smart");
+var primaryDb = sqlServer.AddDatabase("PrimaryDatabase");
+//var tenantDb = sqlServer.AddDatabase("TenantDatabase");
+
+var mongoDbServer = builder.AddMongoDB("mongo")
+    .WithDataVolume();
+
+var homeDataDatabase = mongoDbServer.AddDatabase("HomeDataDatabase");
 
 var rabbitMq = builder.AddRabbitMQ("rabbitmq", userName: username, password: rabbitMqPassword)
     .WithManagementPlugin()
@@ -31,16 +39,112 @@ var rabbitMq = builder.AddRabbitMQ("rabbitmq", userName: username, password: rab
 var kafka = builder.AddKafka("kafka")
     .WithDataVolume();
 
-var api = builder.AddProject<Projects.Web_Api>("Api", "Watch");
+var mail = builder.AddMailDev("maildev", 9324, 9325);
 
-// Projects
+var neo4J  = builder.AddNeo4J("neo4j", 9326, 9327, neo4JPassword);
 
-builder.AddProject<Projects.Web_Server>("Web-Server", "Watch")
+// Services
+
+var authService = builder.AddProject<Projects.AuthService>("AuthService", launchProfile)
+    .WithReference(redis)
+    .WithReference(sqlServer)
+    .WithReference(rabbitMq)
+    .WithReference(kafka)
+    .WithReference(neo4J);
+
+var notificationService = builder.AddProject<Projects.NotificationService>("NotificationService", launchProfile)
+    .WithReference(redis)
+    .WithReference(sqlServer)
+    .WithReference(rabbitMq)
+    .WithReference(kafka)
+    .WithReference(neo4J);
+
+var networkService = builder.AddProject<Projects.NetworkService>("NetworkService", launchProfile)
+    .WithReference(redis)
+    .WithReference(sqlServer)
+    .WithReference(rabbitMq)
+    .WithReference(kafka)
+    .WithReference(neo4J)
+    .WithReference(authService)
+    .WithReference(notificationService);
+
+var commandService = builder.AddProject<Projects.CommandService>("CommandService", launchProfile)
+    .WithReference(redis)
+    .WithReference(sqlServer)
+    .WithReference(rabbitMq)
+    .WithReference(kafka)
+    .WithReference(neo4J)
+    .WithReference(networkService)
+    .WithReference(authService)
+    .WithReference(notificationService);
+
+var homeDataService = builder.AddProject<Projects.HomeDataService>("HomeDataService", launchProfile)
+    .WithReference(redis)
+    .WithReference(sqlServer)
+    .WithReference(rabbitMq)
+    .WithReference(kafka)
+    .WithReference(neo4J)
+    .WithReference(homeDataDatabase)
+    .WithReference(networkService)
+    .WithReference(authService)
+    .WithReference(notificationService);
+
+var routineService = builder.AddProject<Projects.RoutineService>("RoutineService", launchProfile)
+    .WithReference(redis)
+    .WithReference(sqlServer)
+    .WithReference(rabbitMq)
+    .WithReference(kafka)
+    .WithReference(neo4J)
+    .WithReference(networkService)
+    .WithReference(authService)
+    .WithReference(commandService)
+    .WithReference(homeDataService)
+    .WithReference(notificationService);
+
+var dataGateway = builder.AddProject<Projects.Web_DataGateway>("DataGateway", launchProfile)
+    .WithReference(redis)
+    .WithReference(sqlServer)
+    .WithReference(rabbitMq)
+    .WithReference(kafka)
+    .WithReference(neo4J)
+    .WithReference(homeDataService)
+    .WithReference(authService);
+
+var api = builder.AddProject<Projects.Web_Api>("Api", launchProfile)
+    .WithReference(redis)
+    .WithReference(sqlServer)
+    .WithReference(rabbitMq)
+    .WithReference(kafka)
+    .WithReference(neo4J)
+    .WithReference(homeDataService)
+    .WithReference(authService)
+    .WithReference(dataGateway)
+    .WithReference(notificationService)
+    .WithReference(routineService);
+
+builder.AddProject<Projects.Web_Server>("Web-Server", launchProfile)
     .WithReference(api);
 
-var dbManager = builder.AddProject<Projects.DbManager>("dbmanager")
+// Management
+
+var dbManager = builder.AddProject<Projects.DbManager>("dbmanager", launchProfile)
     .WithReference(redis)
-    .WithReference(sqlDb);
+    .WithReference(primaryDb)
+    //.WithReference(tenantDb)
+    .WithReference(homeDataDatabase);
+
+if (builder.ExecutionContext.IsRunMode)
+{
+    builder.AddContainer("grafana", "grafana/grafana")
+        .WithBindMount("../grafana/config", "/etc/grafana", isReadOnly: false)
+        .WithBindMount("../grafana/dashboards", "/var/lib/grafana/dashboards", isReadOnly: false)
+        .WithHttpEndpoint(port: 3000, targetPort: 3000, isProxied: false);
+    builder.AddContainer("prometheus", "prom/prometheus")
+        .WithBindMount("../prometheus", "/etc/prometheus")
+        .WithHttpEndpoint(port: 9090, targetPort: 9090, isProxied: false);
+}
+
+// Deployment
 
 if (publishToAzure)
 {
