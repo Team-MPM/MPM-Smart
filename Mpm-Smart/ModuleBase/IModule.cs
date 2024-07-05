@@ -2,7 +2,7 @@
 
 public interface IModule
 {
-    public bool Init();
+    public bool Init(IServiceProvider serviceProvider);
     public bool Start();
     public bool Stop();
     public bool Enable();

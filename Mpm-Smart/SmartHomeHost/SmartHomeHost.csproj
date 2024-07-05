@@ -12,6 +12,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ModuleBase\ModuleBase.csproj" />
+      <ProjectReference Include="..\PluginBase\PluginBase.csproj" />
       <ProjectReference Include="..\SystemBase\SystemBase.csproj" />
     </ItemGroup>
 

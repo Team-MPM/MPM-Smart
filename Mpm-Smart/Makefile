@@ -45,7 +45,7 @@ build-arm: FORCE
 
 VirtualHost-Package: FORCE
 	@echo "Building VirtualHost Package..."
-	dotnet publish -c Release -o build/Packages/VirtualHost VirtualHost/VirtualHost.csproj
-	dotnet publish -c Release -o build/Packages/VirtualHost/Modules/CoreModule CoreModule/CoreModule.csproj
+	dotnet publish --self-contained -c Release -o build/Packages/VirtualHost VirtualHost/VirtualHost.csproj
+	dotnet publish --self-contained -c Release -o build/Packages/VirtualHost/Modules/CoreModule CoreModule/CoreModule.csproj
 
 FORCE: ;

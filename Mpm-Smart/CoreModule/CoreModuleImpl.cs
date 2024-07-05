@@ -1,4 +1,6 @@
-﻿using ModuleBase;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using ModuleBase;
 
 namespace CoreModule;
 
@@ -8,37 +10,47 @@ public class CoreModuleImpl : IModule
     public string Version { get; } = "1.0.0";
     public string Description { get; } = "Core module for Smart home the system";
     public string Author { get; } = "Team-Mpm";
-    
-    public bool IsRunning { get; private set; }
-    public bool IsEnabled { get; private set; }
+
+    public bool IsRunning { get; private set; } = false;
+    public bool IsEnabled { get; private set; } = true;
     
     public IModule[] Dependencies { get; } = [];
+
+    private IServiceProvider m_ServiceProvider = null!;
+    private ILogger<CoreModuleImpl> m_Logger = null!;
     
-    public bool Init()
+    public bool Init(IServiceProvider serviceProvider)
     {
-        IsRunning = true;
-        IsEnabled = true;
-        Console.WriteLine("CoreModule initialized");
+        m_ServiceProvider = serviceProvider;
+        m_Logger = serviceProvider.GetRequiredService<ILogger<CoreModuleImpl>>();
+        m_Logger.LogInformation("CoreModule initialized");
         return true;
     }
 
     public bool Start()
     {
-        throw new NotImplementedException();
+        m_Logger.LogInformation("CoreModule started");
+        IsRunning = true;
+        return true;
     }
 
     public bool Stop()
     {
-        throw new NotImplementedException();
+        m_Logger.LogInformation("CoreModule stopped");
+        IsRunning = false;
+        return true;
     }
 
     public bool Enable()
     {
-        throw new NotImplementedException();
+        IsEnabled = true;
+        return true;
     }
 
     public bool Disable()
     {
-        throw new NotImplementedException();
+        if (IsRunning) return false;
+        IsEnabled = false;
+        return true;
     }
 }
