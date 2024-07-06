@@ -15,7 +15,7 @@ public class LedDemoEndpoint
     {
         return new ContentResult
         {
-            Content = "<h1>Led Module!</h1>",
+            Content = "<h1>Led Module! Hi!</h1>",
             ContentType = "text/html",
             StatusCode = (int) HttpStatusCode.OK
         };

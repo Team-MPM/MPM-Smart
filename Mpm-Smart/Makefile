@@ -47,5 +47,28 @@ VirtualHost-Package: FORCE
 	@echo "Building VirtualHost Package..."
 	dotnet publish --self-contained -c Release -o build/Packages/VirtualHost VirtualHost/VirtualHost.csproj
 	dotnet publish --self-contained -c Release -o build/Packages/VirtualHost/Modules/CoreModule CoreModule/CoreModule.csproj
+	dotnet publish -c Release LedPlugin/LedPlugin.csproj
+	$(WSL) mkdir -p build/Packages/VirtualHost/Plugins
+	$(WSL) cp LedPlugin/bin/Release/net8.0/publish/LedPlugin.dll build/Packages/VirtualHost/Plugins/LedPlugin.dll
+
+# Plugins
+
+PROJECT_NAME := $(or $(project), VirtualHost)
+DEV_DIR := $(PROJECT_NAME)/Plugins
+UPDATE_SUBDIR := Update
+
+
+SRC_FILE := LedPlugin/bin/Release/net8.0/publish/LedPlugin.dll
+Plugin-Led: FORCE
+	@echo "Building Led Plugin..."
+	dotnet publish -c Release LedPlugin/LedPlugin.csproj
+	@$(WSL) if cp $(SRC_FILE) $(DEV_DIR); then \
+		echo "File copied successfully to $(DEV_DIR)"; \
+	else \
+		echo "Access denied. Checking for lock and moving to $(DEV_DIR)/$(UPDATE_SUBDIR)"; \
+		mkdir -p $(DEV_DIR)/$(UPDATE_SUBDIR); \
+		cp $(SRC_FILE) $(DEV_DIR)/$(UPDATE_SUBDIR); \
+		echo "File moved to $(DEV_DIR)/$(UPDATE_SUBDIR)"; \
+	fi
 
 FORCE: ;

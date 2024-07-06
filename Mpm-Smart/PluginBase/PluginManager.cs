@@ -37,10 +37,11 @@ public class PluginManager : IDisposable
         m_Watcher.Changed += (_, args) =>
         {
             m_Logger.LogInformation("Plugin {Name} changed. Reloading!", args.Name);
-            if (args.Name is null || !args.Name.EndsWith(".dll")) return;
-            var plugFile = $"Plugins/{args.Name}";
+            if (args.Name is null || !args.Name.EndsWith(".dll") || !File.Exists(args.FullPath)) return;
+            var plugFile = System.OperatingSystem.IsWindows() ? $"Plugins\\{args.Name}" : $"Plugins/{args.Name}";
             Unload(plugFile);
-            File.Move(args.FullPath, $"Plugins/{args.Name}", true);
+            File.Copy(args.FullPath, $"Plugins/{args.Name}", true);
+            File.Delete(args.FullPath);
             Load(plugFile);
         };
         
@@ -60,51 +61,58 @@ public class PluginManager : IDisposable
         var entry = m_Index.GetByPath(path);
         if (entry is { Loaded: true }) return;
         
-        if (entry?.Alc != null)
+        var absPath = Path.GetFullPath(path);
+        var alc = new AssemblyLoadContext(path, true);
+        var assemblyName = AssemblyLoadContext.GetAssemblyName(absPath);
+        entry = new PluginIndexEntry(path, assemblyName)
         {
-            entry.Assembly = entry.Alc.LoadFromAssemblyPath(entry.AbsolutePath);
-            entry.Loaded = true;
-        }
-        else
-        {
-            var absPath = Path.GetFullPath(path);
-            var alc = new AssemblyLoadContext(path, true);
-            var assemblyName = AssemblyLoadContext.GetAssemblyName(absPath);
-            entry = new PluginIndexEntry(path, assemblyName)
-            {
-                Alc = alc,
-                AbsolutePath = absPath,
-                Assembly = alc.LoadFromAssemblyPath(absPath),
-                Loaded = true,
-            };
-            m_Index.Add(entry);
-        }
+            Alc = alc,
+            AbsolutePath = absPath,
+            Assembly = alc.LoadFromAssemblyPath(absPath),
+            Loaded = true,
+        };
+        m_Index.Add(entry);
     }
     
-    [MethodImpl(MethodImplOptions.NoInlining)]
+    [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
     public void Unload(string path)
     {
         m_Logger.LogInformation("Unloading Plugin {Path}", path);
-        var entry = m_Index.GetByPath(path);
-        if (entry is null || !entry.Loaded) return;
-        
-        entry.Alc?.Unload();
-        var alcRef = new WeakReference(entry.Alc!);
-        var asmRef = new WeakReference(entry.Assembly!);
-        entry.Alc = null;
-        
+        if (Unload(path, out var alcRef, out var asmRef, out var asmNameRef)) return;
+
         // Make sure all references are cleared at this point!!!
         
         // Force GC to collect the assembly
-        for (var i = 0; alcRef.IsAlive || asmRef.IsAlive; i++)
+        for (var i = 0; alcRef.IsAlive || asmRef.IsAlive || asmNameRef.IsAlive; i++)
         {
             GC.Collect();
             GC.WaitForPendingFinalizers();
             m_Logger.LogInformation("{Path} GC Collecting attempt {I}", path, i);
         }
+    }
+
+    [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
+    private bool Unload(string path, out WeakReference alcRef, out WeakReference asmRef, out WeakReference asmNameRef)
+    {
+        alcRef = new WeakReference(null);
+        asmRef = new WeakReference(null);
+        asmNameRef = new WeakReference(null);
         
+        var entry = m_Index.GetByPath(path);
+        if (entry is null || !entry.Loaded) return true;
+        
+        m_Index.Remove(entry);
+        entry.Alc?.Unload();
+        
+        alcRef = new WeakReference(entry.Alc!);
+        asmRef = new WeakReference(entry.Assembly!);
+        asmNameRef = new WeakReference(entry.Name);
+        
+        entry.Alc = null;
         entry.Assembly = null;
-        entry.Loaded = false;
+        entry.Name = null!;
+        entry = null;
+        return false;
     }
 
     public void ReloadAll()
