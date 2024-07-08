@@ -1,1 +1,4 @@
 .azure
+build
+key
+key.pub
