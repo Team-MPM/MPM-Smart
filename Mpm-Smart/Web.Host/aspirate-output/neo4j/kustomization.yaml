@@ -1,0 +1,14 @@
+resources:
+- statefulset.yaml
+- service.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+- name: neo4j-env
+  literals:
+    - NEO4J_AUTH=neo4j/YI2BcCpX761whPcKqiKxZ2
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:18889
+    - OTEL_SERVICE_NAME=neo4j
+

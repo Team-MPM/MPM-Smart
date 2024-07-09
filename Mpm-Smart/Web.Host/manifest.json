@@ -58,9 +58,33 @@
         }
       }
     },
-    "MPM-Smart": {
+    "PrimaryDatabase": {
       "type": "value.v0",
-      "connectionString": "{sql.connectionString};Database=MPM-Smart"
+      "connectionString": "{sql.connectionString};Database=PrimaryDatabase"
+    },
+    "mongo": {
+      "type": "container.v0",
+      "connectionString": "mongodb://{mongo.bindings.tcp.host}:{mongo.bindings.tcp.port}",
+      "image": "docker.io/library/mongo:7.0",
+      "volumes": [
+        {
+          "name": "Web.Host-mongo-data",
+          "target": "/data/db",
+          "readOnly": false
+        }
+      ],
+      "bindings": {
+        "tcp": {
+          "scheme": "tcp",
+          "protocol": "tcp",
+          "transport": "tcp",
+          "targetPort": 27017
+        }
+      }
+    },
+    "HomeDataDatabase": {
+      "type": "value.v0",
+      "connectionString": "{mongo.connectionString}/HomeDataDatabase"
     },
     "rabbitmq": {
       "type": "container.v0",
@@ -115,14 +139,98 @@
         }
       }
     },
-    "Api": {
+    "maildev": {
+      "type": "container.v0",
+      "connectionString": "smtp://{maildev.bindings.smtp.host}:{maildev.bindings.smtp.port}",
+      "image": "docker.io/maildev/maildev:2.0.2",
+      "bindings": {
+        "http": {
+          "scheme": "http",
+          "protocol": "tcp",
+          "transport": "http",
+          "port": 9324,
+          "targetPort": 1080
+        },
+        "smtp": {
+          "scheme": "tcp",
+          "protocol": "tcp",
+          "transport": "tcp",
+          "port": 9325,
+          "targetPort": 1025
+        }
+      }
+    },
+    "neo4j": {
+      "type": "container.v0",
+      "connectionString": "neo4j://{neo4j.bindings.neo4j.host}:{neo4j.bindings.neo4j.port}",
+      "image": "docker.io/neo4j:5.21.0",
+      "volumes": [
+        {
+          "name": "data",
+          "target": "/data",
+          "readOnly": false
+        }
+      ],
+      "env": {
+        "NEO4J_AUTH": "neo4j/{neo4Password.value}"
+      },
+      "bindings": {
+        "http": {
+          "scheme": "http",
+          "protocol": "tcp",
+          "transport": "http",
+          "port": 9326,
+          "targetPort": 7474
+        },
+        "neo4j": {
+          "scheme": "http",
+          "protocol": "tcp",
+          "transport": "http",
+          "port": 9327,
+          "targetPort": 7687
+        }
+      }
+    },
+    "AuthService": {
       "type": "project.v0",
-      "path": "../Web.Api/Web.Api.csproj",
+      "path": "../AuthService/AuthService.csproj",
       "env": {
         "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES": "true",
         "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES": "true",
         "OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY": "in_memory",
-        "ASPNETCORE_FORWARDEDHEADERS_ENABLED": "true"
+        "ASPNETCORE_FORWARDEDHEADERS_ENABLED": "true",
+        "ConnectionStrings__redis": "{redis.connectionString}",
+        "ConnectionStrings__sql": "{sql.connectionString}",
+        "ConnectionStrings__rabbitmq": "{rabbitmq.connectionString}",
+        "ConnectionStrings__kafka": "{kafka.connectionString}",
+        "ConnectionStrings__neo4j": "{neo4j.connectionString}"
+      },
+      "bindings": {
+        "http": {
+          "scheme": "http",
+          "protocol": "tcp",
+          "transport": "http2"
+        },
+        "https": {
+          "scheme": "https",
+          "protocol": "tcp",
+          "transport": "http2"
+        }
+      }
+    },
+    "NotificationService": {
+      "type": "project.v0",
+      "path": "../NotificationService/NotificationService.csproj",
+      "env": {
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY": "in_memory",
+        "ASPNETCORE_FORWARDEDHEADERS_ENABLED": "true",
+        "ConnectionStrings__redis": "{redis.connectionString}",
+        "ConnectionStrings__sql": "{sql.connectionString}",
+        "ConnectionStrings__rabbitmq": "{rabbitmq.connectionString}",
+        "ConnectionStrings__kafka": "{kafka.connectionString}",
+        "ConnectionStrings__neo4j": "{neo4j.connectionString}"
       },
       "bindings": {
         "http": {
@@ -134,9 +242,207 @@
           "scheme": "https",
           "protocol": "tcp",
           "transport": "http"
-        },
+        }
+      }
+    },
+    "NetworkService": {
+      "type": "project.v0",
+      "path": "../NetworkService/NetworkService.csproj",
+      "env": {
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY": "in_memory",
+        "ASPNETCORE_FORWARDEDHEADERS_ENABLED": "true",
+        "ConnectionStrings__redis": "{redis.connectionString}",
+        "ConnectionStrings__sql": "{sql.connectionString}",
+        "ConnectionStrings__rabbitmq": "{rabbitmq.connectionString}",
+        "ConnectionStrings__kafka": "{kafka.connectionString}",
+        "ConnectionStrings__neo4j": "{neo4j.connectionString}",
+        "services__AuthService__http__0": "{AuthService.bindings.http.url}",
+        "services__AuthService__https__0": "{AuthService.bindings.https.url}",
+        "services__NotificationService__http__0": "{NotificationService.bindings.http.url}",
+        "services__NotificationService__https__0": "{NotificationService.bindings.https.url}"
+      },
+      "bindings": {
         "http": {
           "scheme": "http",
+          "protocol": "tcp",
+          "transport": "http2"
+        },
+        "https": {
+          "scheme": "https",
+          "protocol": "tcp",
+          "transport": "http2"
+        }
+      }
+    },
+    "CommandService": {
+      "type": "project.v0",
+      "path": "../CommandService/CommandService.csproj",
+      "env": {
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY": "in_memory",
+        "ASPNETCORE_FORWARDEDHEADERS_ENABLED": "true",
+        "ConnectionStrings__redis": "{redis.connectionString}",
+        "ConnectionStrings__sql": "{sql.connectionString}",
+        "ConnectionStrings__rabbitmq": "{rabbitmq.connectionString}",
+        "ConnectionStrings__kafka": "{kafka.connectionString}",
+        "ConnectionStrings__neo4j": "{neo4j.connectionString}",
+        "services__NetworkService__http__0": "{NetworkService.bindings.http.url}",
+        "services__NetworkService__https__0": "{NetworkService.bindings.https.url}",
+        "services__AuthService__http__0": "{AuthService.bindings.http.url}",
+        "services__AuthService__https__0": "{AuthService.bindings.https.url}",
+        "services__NotificationService__http__0": "{NotificationService.bindings.http.url}",
+        "services__NotificationService__https__0": "{NotificationService.bindings.https.url}"
+      },
+      "bindings": {
+        "http": {
+          "scheme": "http",
+          "protocol": "tcp",
+          "transport": "http2"
+        },
+        "https": {
+          "scheme": "https",
+          "protocol": "tcp",
+          "transport": "http2"
+        }
+      }
+    },
+    "HomeDataService": {
+      "type": "project.v0",
+      "path": "../HomeDataService/HomeDataService.csproj",
+      "env": {
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY": "in_memory",
+        "ASPNETCORE_FORWARDEDHEADERS_ENABLED": "true",
+        "ConnectionStrings__redis": "{redis.connectionString}",
+        "ConnectionStrings__sql": "{sql.connectionString}",
+        "ConnectionStrings__rabbitmq": "{rabbitmq.connectionString}",
+        "ConnectionStrings__kafka": "{kafka.connectionString}",
+        "ConnectionStrings__neo4j": "{neo4j.connectionString}",
+        "ConnectionStrings__HomeDataDatabase": "{HomeDataDatabase.connectionString}",
+        "services__NetworkService__http__0": "{NetworkService.bindings.http.url}",
+        "services__NetworkService__https__0": "{NetworkService.bindings.https.url}",
+        "services__AuthService__http__0": "{AuthService.bindings.http.url}",
+        "services__AuthService__https__0": "{AuthService.bindings.https.url}",
+        "services__NotificationService__http__0": "{NotificationService.bindings.http.url}",
+        "services__NotificationService__https__0": "{NotificationService.bindings.https.url}"
+      },
+      "bindings": {
+        "http": {
+          "scheme": "http",
+          "protocol": "tcp",
+          "transport": "http2"
+        },
+        "https": {
+          "scheme": "https",
+          "protocol": "tcp",
+          "transport": "http2"
+        }
+      }
+    },
+    "RoutineService": {
+      "type": "project.v0",
+      "path": "../RoutineService/RoutineService.csproj",
+      "env": {
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY": "in_memory",
+        "ASPNETCORE_FORWARDEDHEADERS_ENABLED": "true",
+        "ConnectionStrings__redis": "{redis.connectionString}",
+        "ConnectionStrings__sql": "{sql.connectionString}",
+        "ConnectionStrings__rabbitmq": "{rabbitmq.connectionString}",
+        "ConnectionStrings__kafka": "{kafka.connectionString}",
+        "ConnectionStrings__neo4j": "{neo4j.connectionString}",
+        "services__NetworkService__http__0": "{NetworkService.bindings.http.url}",
+        "services__NetworkService__https__0": "{NetworkService.bindings.https.url}",
+        "services__AuthService__http__0": "{AuthService.bindings.http.url}",
+        "services__AuthService__https__0": "{AuthService.bindings.https.url}",
+        "services__CommandService__http__0": "{CommandService.bindings.http.url}",
+        "services__CommandService__https__0": "{CommandService.bindings.https.url}",
+        "services__HomeDataService__http__0": "{HomeDataService.bindings.http.url}",
+        "services__HomeDataService__https__0": "{HomeDataService.bindings.https.url}",
+        "services__NotificationService__http__0": "{NotificationService.bindings.http.url}",
+        "services__NotificationService__https__0": "{NotificationService.bindings.https.url}"
+      },
+      "bindings": {
+        "http": {
+          "scheme": "http",
+          "protocol": "tcp",
+          "transport": "http2"
+        },
+        "https": {
+          "scheme": "https",
+          "protocol": "tcp",
+          "transport": "http2"
+        }
+      }
+    },
+    "DataGateway": {
+      "type": "project.v0",
+      "path": "../Web.DataGateway/Web.DataGateway.csproj",
+      "env": {
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY": "in_memory",
+        "ASPNETCORE_FORWARDEDHEADERS_ENABLED": "true",
+        "ConnectionStrings__redis": "{redis.connectionString}",
+        "ConnectionStrings__sql": "{sql.connectionString}",
+        "ConnectionStrings__rabbitmq": "{rabbitmq.connectionString}",
+        "ConnectionStrings__kafka": "{kafka.connectionString}",
+        "ConnectionStrings__neo4j": "{neo4j.connectionString}",
+        "services__HomeDataService__http__0": "{HomeDataService.bindings.http.url}",
+        "services__HomeDataService__https__0": "{HomeDataService.bindings.https.url}",
+        "services__AuthService__http__0": "{AuthService.bindings.http.url}",
+        "services__AuthService__https__0": "{AuthService.bindings.https.url}"
+      },
+      "bindings": {
+        "http": {
+          "scheme": "http",
+          "protocol": "tcp",
+          "transport": "http"
+        },
+        "https": {
+          "scheme": "https",
+          "protocol": "tcp",
+          "transport": "http"
+        }
+      }
+    },
+    "Api": {
+      "type": "project.v0",
+      "path": "../Web.Api/Web.Api.csproj",
+      "env": {
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY": "in_memory",
+        "ASPNETCORE_FORWARDEDHEADERS_ENABLED": "true",
+        "ConnectionStrings__redis": "{redis.connectionString}",
+        "ConnectionStrings__sql": "{sql.connectionString}",
+        "ConnectionStrings__rabbitmq": "{rabbitmq.connectionString}",
+        "ConnectionStrings__kafka": "{kafka.connectionString}",
+        "ConnectionStrings__neo4j": "{neo4j.connectionString}",
+        "services__HomeDataService__http__0": "{HomeDataService.bindings.http.url}",
+        "services__HomeDataService__https__0": "{HomeDataService.bindings.https.url}",
+        "services__AuthService__http__0": "{AuthService.bindings.http.url}",
+        "services__AuthService__https__0": "{AuthService.bindings.https.url}",
+        "services__DataGateway__http__0": "{DataGateway.bindings.http.url}",
+        "services__DataGateway__https__0": "{DataGateway.bindings.https.url}",
+        "services__NotificationService__http__0": "{NotificationService.bindings.http.url}",
+        "services__NotificationService__https__0": "{NotificationService.bindings.https.url}",
+        "services__RoutineService__http__0": "{RoutineService.bindings.http.url}",
+        "services__RoutineService__https__0": "{RoutineService.bindings.https.url}"
+      },
+      "bindings": {
+        "http": {
+          "scheme": "http",
+          "protocol": "tcp",
+          "transport": "http"
+        },
+        "https": {
+          "scheme": "https",
           "protocol": "tcp",
           "transport": "http"
         }
@@ -163,11 +469,6 @@
           "scheme": "https",
           "protocol": "tcp",
           "transport": "http"
-        },
-        "http": {
-          "scheme": "http",
-          "protocol": "tcp",
-          "transport": "http"
         }
       }
     },
@@ -180,7 +481,8 @@
         "OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY": "in_memory",
         "ASPNETCORE_FORWARDEDHEADERS_ENABLED": "true",
         "ConnectionStrings__redis": "{redis.connectionString}",
-        "ConnectionStrings__MPM-Smart": "{MPM-Smart.connectionString}"
+        "ConnectionStrings__PrimaryDatabase": "{PrimaryDatabase.connectionString}",
+        "ConnectionStrings__HomeDataDatabase": "{HomeDataDatabase.connectionString}"
       },
       "bindings": {
         "http": {
@@ -213,6 +515,21 @@
     "rabbitMqPassword": {
       "type": "parameter.v0",
       "value": "{rabbitMqPassword.inputs.value}",
+      "inputs": {
+        "value": {
+          "type": "string",
+          "secret": true,
+          "default": {
+            "generate": {
+              "minLength": 22
+            }
+          }
+        }
+      }
+    },
+    "neo4Password": {
+      "type": "parameter.v0",
+      "value": "{neo4Password.inputs.value}",
       "inputs": {
         "value": {
           "type": "string",

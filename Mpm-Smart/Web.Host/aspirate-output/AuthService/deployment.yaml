@@ -2,25 +2,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api
+  name: authservice
   labels:
-    app: api
+    app: authservice
 spec:
   minReadySeconds: 60
   replicas: 1
   selector:
     matchLabels:
-      app: api
+      app: authservice
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: api
+        app: authservice
     spec:
       containers:
-      - name: api
-        image: localhost:5001/mpm/api:latest
+      - name: authservice
+        image: localhost:5001/mpm/authservice:latest
         imagePullPolicy: Always
         ports:
         - name: http
@@ -29,7 +29,7 @@ spec:
           containerPort: 8443
         envFrom:
         - configMapRef:
-            name: api-env
+            name: authservice-env
         - secretRef:
-            name: api-secrets
+            name: authservice-secrets
       terminationGracePeriodSeconds: 180

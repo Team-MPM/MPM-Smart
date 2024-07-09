@@ -2,25 +2,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api
+  name: commandservice
   labels:
-    app: api
+    app: commandservice
 spec:
   minReadySeconds: 60
   replicas: 1
   selector:
     matchLabels:
-      app: api
+      app: commandservice
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: api
+        app: commandservice
     spec:
       containers:
-      - name: api
-        image: localhost:5001/mpm/api:latest
+      - name: commandservice
+        image: localhost:5001/mpm/commandservice:latest
         imagePullPolicy: Always
         ports:
         - name: http
@@ -29,7 +29,7 @@ spec:
           containerPort: 8443
         envFrom:
         - configMapRef:
-            name: api-env
+            name: commandservice-env
         - secretRef:
-            name: api-secrets
+            name: commandservice-secrets
       terminationGracePeriodSeconds: 180

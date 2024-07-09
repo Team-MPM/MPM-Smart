@@ -5,7 +5,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 // Configuration
 
-var launchProfile = builder.ExecutionContext.IsPublishMode ? "https" : "Watch";
+var launchProfile = builder.ExecutionContext.IsPublishMode ? "" : "Watch";
 
 var publishToAzure = builder.ExecutionContext.IsPublishMode && builder.Configuration["azure"] == "true";
 

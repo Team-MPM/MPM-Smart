@@ -29,11 +29,19 @@
       "MPM-Smart": {},
       "rabbitmq": {},
       "kafka": {},
-      "Api": {},
+      "Api": {
+        "ConnectionStrings__redis": "cqFbCT9/kpPZ1KwjcZNLcedRsa9uuu8y79AF/hXgXlBqSgapjWU=",
+        "ConnectionStrings__sql": "cqFbCT9/kpPZ1Kwjl\u002BRT67XN1grrssi/f8/LsjTgSE98Ag3pyzC7xx6YhSAJ7jstX3U6UmxvOuk6aUVjprRqeY8GbRFPjvGeIPDoVHEh3udTYPMgM0Bdqo0Ldzn9ev0VclTHwcnVLCTsP36QzUr\u002BTHLI",
+        "ConnectionStrings__rabbitmq": "cqFbCT9/kpPZ1KwjJ1hU/Wp4XT2cG/6Y/Ust8QboS0kjXx/3yjGtvBrT/3Fq1BMxGkYnWy5oS/UaaEJu\u002B4Z8JZUdVAFtk57jQoOz",
+        "ConnectionStrings__kafka": "cqFbCT9/kpPZ1Kwjshggzl6DCy4dGpy\u002BtSr1cAzkXFJ4Sgmqg24=",
+        "ConnectionStrings__neo4j": "cqFbCT9/kpPZ1KwjH968D17AUn8fAXJX5ufw\u002BQngVQ1zSh\u002B11Dn4wkCRjyhuqg=="
+      },
       "Web-Server": {},
       "dbmanager": {
         "ConnectionStrings__redis": "cqFbCT9/kpPZ1KwjcZNLcedRsa9uuu8y79AF/hXgXlBqSgapjWU=",
-        "ConnectionStrings__MPM-Smart": "cqFbCT9/kpPZ1KwjFDkZ9sXE4HyzNoAC\u002BjhA4TTgSE98Ag3pyzC7xx6YhSAJ7jstX3U6UmxvOuk6aUVjprRqeY8GbRFPjvGeIPDoVHEh3udTYPMgM0Bdqo0Ldzn9ev0VclTHwcnVLCTsP36QzUr\u002BTHLIK8KfhhIgBYtSKyv4OTsI/QEe3A=="
+        "ConnectionStrings__MPM-Smart": "cqFbCT9/kpPZ1KwjFDkZ9sXE4HyzNoAC\u002BjhA4TTgSE98Ag3pyzC7xx6YhSAJ7jstX3U6UmxvOuk6aUVjprRqeY8GbRFPjvGeIPDoVHEh3udTYPMgM0Bdqo0Ldzn9ev0VclTHwcnVLCTsP36QzUr\u002BTHLIK8KfhhIgBYtSKyv4OTsI/QEe3A==",
+        "ConnectionStrings__PrimaryDatabase": "cqFbCT9/kpPZ1KwjfQHn5p7L\u002BZfy2JZXggCZ8DTgSE98Ag3pyzC7xx6YhSAJ7jstX3U6UmxvOuk6aUVjprRqeY8GbRFPjvGeIPDoVHEh3udTYPMgM0Bdqo0Ldzn9ev0VclTHwcnVLCTsP36QzUr\u002BTHLIK8KfhhIgBYtSKzbaHXs64hkoyR07Gfo9Ow==",
+        "ConnectionStrings__HomeDataDatabase": "cqFbCT9/kpPZ1KwjyYfBh2y56v\u002BBcsNuSJIgvQrqVF52FFKglXP6mUTM2SFuqm5uSBM2AHJrRdgve3J1vadsJYQa"
       },
       "sqlPassword": {
         "value": "cqFbCT9/kpPZ1KwjE0YEYBbZ8saXlIvo2IEE\u002BB/8al1WHGXS7hj\u002Bo3zH/y8I0wYlK0w="
@@ -41,6 +49,64 @@
       "redis": {},
       "sql": {
         "MSSQL_SA_PASSWORD": "cqFbCT9/kpPZ1KwjE0YEYBbZ8saXlIvo2IEE\u002BB/8al1WHGXS7hj\u002Bo3zH/y8I0wYlK0w="
+      },
+      "neo4Password": {
+        "value": "cqFbCT9/kpPZ1KwjUlWh2RmE7zM9kQkFNiAhsD7MCHt6M0DCjWqmgUL71VAt9BUnJQ4="
+      },
+      "PrimaryDatabase": {},
+      "mongo": {},
+      "HomeDataDatabase": {},
+      "maildev": {},
+      "neo4j": {},
+      "AuthService": {
+        "ConnectionStrings__redis": "cqFbCT9/kpPZ1KwjcZNLcedRsa9uuu8y79AF/hXgXlBqSgapjWU=",
+        "ConnectionStrings__sql": "cqFbCT9/kpPZ1Kwjl\u002BRT67XN1grrssi/f8/LsjTgSE98Ag3pyzC7xx6YhSAJ7jstX3U6UmxvOuk6aUVjprRqeY8GbRFPjvGeIPDoVHEh3udTYPMgM0Bdqo0Ldzn9ev0VclTHwcnVLCTsP36QzUr\u002BTHLI",
+        "ConnectionStrings__rabbitmq": "cqFbCT9/kpPZ1KwjJ1hU/Wp4XT2cG/6Y/Ust8QboS0kjXx/3yjGtvBrT/3Fq1BMxGkYnWy5oS/UaaEJu\u002B4Z8JZUdVAFtk57jQoOz",
+        "ConnectionStrings__kafka": "cqFbCT9/kpPZ1Kwjshggzl6DCy4dGpy\u002BtSr1cAzkXFJ4Sgmqg24=",
+        "ConnectionStrings__neo4j": "cqFbCT9/kpPZ1KwjH968D17AUn8fAXJX5ufw\u002BQngVQ1zSh\u002B11Dn4wkCRjyhuqg=="
+      },
+      "NotificationService": {
+        "ConnectionStrings__redis": "cqFbCT9/kpPZ1KwjcZNLcedRsa9uuu8y79AF/hXgXlBqSgapjWU=",
+        "ConnectionStrings__sql": "cqFbCT9/kpPZ1Kwjl\u002BRT67XN1grrssi/f8/LsjTgSE98Ag3pyzC7xx6YhSAJ7jstX3U6UmxvOuk6aUVjprRqeY8GbRFPjvGeIPDoVHEh3udTYPMgM0Bdqo0Ldzn9ev0VclTHwcnVLCTsP36QzUr\u002BTHLI",
+        "ConnectionStrings__rabbitmq": "cqFbCT9/kpPZ1KwjJ1hU/Wp4XT2cG/6Y/Ust8QboS0kjXx/3yjGtvBrT/3Fq1BMxGkYnWy5oS/UaaEJu\u002B4Z8JZUdVAFtk57jQoOz",
+        "ConnectionStrings__kafka": "cqFbCT9/kpPZ1Kwjshggzl6DCy4dGpy\u002BtSr1cAzkXFJ4Sgmqg24=",
+        "ConnectionStrings__neo4j": "cqFbCT9/kpPZ1KwjH968D17AUn8fAXJX5ufw\u002BQngVQ1zSh\u002B11Dn4wkCRjyhuqg=="
+      },
+      "NetworkService": {
+        "ConnectionStrings__redis": "cqFbCT9/kpPZ1KwjcZNLcedRsa9uuu8y79AF/hXgXlBqSgapjWU=",
+        "ConnectionStrings__sql": "cqFbCT9/kpPZ1Kwjl\u002BRT67XN1grrssi/f8/LsjTgSE98Ag3pyzC7xx6YhSAJ7jstX3U6UmxvOuk6aUVjprRqeY8GbRFPjvGeIPDoVHEh3udTYPMgM0Bdqo0Ldzn9ev0VclTHwcnVLCTsP36QzUr\u002BTHLI",
+        "ConnectionStrings__rabbitmq": "cqFbCT9/kpPZ1KwjJ1hU/Wp4XT2cG/6Y/Ust8QboS0kjXx/3yjGtvBrT/3Fq1BMxGkYnWy5oS/UaaEJu\u002B4Z8JZUdVAFtk57jQoOz",
+        "ConnectionStrings__kafka": "cqFbCT9/kpPZ1Kwjshggzl6DCy4dGpy\u002BtSr1cAzkXFJ4Sgmqg24=",
+        "ConnectionStrings__neo4j": "cqFbCT9/kpPZ1KwjH968D17AUn8fAXJX5ufw\u002BQngVQ1zSh\u002B11Dn4wkCRjyhuqg=="
+      },
+      "CommandService": {
+        "ConnectionStrings__redis": "cqFbCT9/kpPZ1KwjcZNLcedRsa9uuu8y79AF/hXgXlBqSgapjWU=",
+        "ConnectionStrings__sql": "cqFbCT9/kpPZ1Kwjl\u002BRT67XN1grrssi/f8/LsjTgSE98Ag3pyzC7xx6YhSAJ7jstX3U6UmxvOuk6aUVjprRqeY8GbRFPjvGeIPDoVHEh3udTYPMgM0Bdqo0Ldzn9ev0VclTHwcnVLCTsP36QzUr\u002BTHLI",
+        "ConnectionStrings__rabbitmq": "cqFbCT9/kpPZ1KwjJ1hU/Wp4XT2cG/6Y/Ust8QboS0kjXx/3yjGtvBrT/3Fq1BMxGkYnWy5oS/UaaEJu\u002B4Z8JZUdVAFtk57jQoOz",
+        "ConnectionStrings__kafka": "cqFbCT9/kpPZ1Kwjshggzl6DCy4dGpy\u002BtSr1cAzkXFJ4Sgmqg24=",
+        "ConnectionStrings__neo4j": "cqFbCT9/kpPZ1KwjH968D17AUn8fAXJX5ufw\u002BQngVQ1zSh\u002B11Dn4wkCRjyhuqg=="
+      },
+      "HomeDataService": {
+        "ConnectionStrings__redis": "cqFbCT9/kpPZ1KwjcZNLcedRsa9uuu8y79AF/hXgXlBqSgapjWU=",
+        "ConnectionStrings__sql": "cqFbCT9/kpPZ1Kwjl\u002BRT67XN1grrssi/f8/LsjTgSE98Ag3pyzC7xx6YhSAJ7jstX3U6UmxvOuk6aUVjprRqeY8GbRFPjvGeIPDoVHEh3udTYPMgM0Bdqo0Ldzn9ev0VclTHwcnVLCTsP36QzUr\u002BTHLI",
+        "ConnectionStrings__rabbitmq": "cqFbCT9/kpPZ1KwjJ1hU/Wp4XT2cG/6Y/Ust8QboS0kjXx/3yjGtvBrT/3Fq1BMxGkYnWy5oS/UaaEJu\u002B4Z8JZUdVAFtk57jQoOz",
+        "ConnectionStrings__kafka": "cqFbCT9/kpPZ1Kwjshggzl6DCy4dGpy\u002BtSr1cAzkXFJ4Sgmqg24=",
+        "ConnectionStrings__neo4j": "cqFbCT9/kpPZ1KwjH968D17AUn8fAXJX5ufw\u002BQngVQ1zSh\u002B11Dn4wkCRjyhuqg==",
+        "ConnectionStrings__HomeDataDatabase": "cqFbCT9/kpPZ1KwjyYfBh2y56v\u002BBcsNuSJIgvQrqVF52FFKglXP6mUTM2SFuqm5uSBM2AHJrRdgve3J1vadsJYQa"
+      },
+      "RoutineService": {
+        "ConnectionStrings__redis": "cqFbCT9/kpPZ1KwjcZNLcedRsa9uuu8y79AF/hXgXlBqSgapjWU=",
+        "ConnectionStrings__sql": "cqFbCT9/kpPZ1Kwjl\u002BRT67XN1grrssi/f8/LsjTgSE98Ag3pyzC7xx6YhSAJ7jstX3U6UmxvOuk6aUVjprRqeY8GbRFPjvGeIPDoVHEh3udTYPMgM0Bdqo0Ldzn9ev0VclTHwcnVLCTsP36QzUr\u002BTHLI",
+        "ConnectionStrings__rabbitmq": "cqFbCT9/kpPZ1KwjJ1hU/Wp4XT2cG/6Y/Ust8QboS0kjXx/3yjGtvBrT/3Fq1BMxGkYnWy5oS/UaaEJu\u002B4Z8JZUdVAFtk57jQoOz",
+        "ConnectionStrings__kafka": "cqFbCT9/kpPZ1Kwjshggzl6DCy4dGpy\u002BtSr1cAzkXFJ4Sgmqg24=",
+        "ConnectionStrings__neo4j": "cqFbCT9/kpPZ1KwjH968D17AUn8fAXJX5ufw\u002BQngVQ1zSh\u002B11Dn4wkCRjyhuqg=="
+      },
+      "DataGateway": {
+        "ConnectionStrings__redis": "cqFbCT9/kpPZ1KwjcZNLcedRsa9uuu8y79AF/hXgXlBqSgapjWU=",
+        "ConnectionStrings__sql": "cqFbCT9/kpPZ1Kwjl\u002BRT67XN1grrssi/f8/LsjTgSE98Ag3pyzC7xx6YhSAJ7jstX3U6UmxvOuk6aUVjprRqeY8GbRFPjvGeIPDoVHEh3udTYPMgM0Bdqo0Ldzn9ev0VclTHwcnVLCTsP36QzUr\u002BTHLI",
+        "ConnectionStrings__rabbitmq": "cqFbCT9/kpPZ1KwjJ1hU/Wp4XT2cG/6Y/Ust8QboS0kjXx/3yjGtvBrT/3Fq1BMxGkYnWy5oS/UaaEJu\u002B4Z8JZUdVAFtk57jQoOz",
+        "ConnectionStrings__kafka": "cqFbCT9/kpPZ1Kwjshggzl6DCy4dGpy\u002BtSr1cAzkXFJ4Sgmqg24=",
+        "ConnectionStrings__neo4j": "cqFbCT9/kpPZ1KwjH968D17AUn8fAXJX5ufw\u002BQngVQ1zSh\u002B11Dn4wkCRjyhuqg=="
       }
     }
   },

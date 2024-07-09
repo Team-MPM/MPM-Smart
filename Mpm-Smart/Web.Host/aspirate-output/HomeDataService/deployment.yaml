@@ -2,25 +2,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api
+  name: homedataservice
   labels:
-    app: api
+    app: homedataservice
 spec:
   minReadySeconds: 60
   replicas: 1
   selector:
     matchLabels:
-      app: api
+      app: homedataservice
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: api
+        app: homedataservice
     spec:
       containers:
-      - name: api
-        image: localhost:5001/mpm/api:latest
+      - name: homedataservice
+        image: localhost:5001/mpm/homedataservice:latest
         imagePullPolicy: Always
         ports:
         - name: http
@@ -29,7 +29,7 @@ spec:
           containerPort: 8443
         envFrom:
         - configMapRef:
-            name: api-env
+            name: homedataservice-env
         - secretRef:
-            name: api-secrets
+            name: homedataservice-secrets
       terminationGracePeriodSeconds: 180

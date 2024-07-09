@@ -6,7 +6,7 @@ generatorOptions:
   disableNameSuffixHash: true
 
 configMapGenerator:
-- name: api-env
+- name: datagateway-env
   literals:
     - OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES=true
     - OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES=true
@@ -14,14 +14,11 @@ configMapGenerator:
     - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
     - services__HomeDataService__http__0=http://HomeDataService:8080
     - services__AuthService__http__0=http://AuthService:8080
-    - services__DataGateway__http__0=http://DataGateway:8080
-    - services__NotificationService__http__0=http://NotificationService:8080
-    - services__RoutineService__http__0=http://RoutineService:8080
     - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:18889
-    - OTEL_SERVICE_NAME=Api
+    - OTEL_SERVICE_NAME=DataGateway
     - ASPNETCORE_URLS=http://+:8080;
 
 secretGenerator:
-- name: api-secrets
+- name: datagateway-secrets
   envs:
-  - .api.secrets
+  - .datagateway.secrets

@@ -2,25 +2,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api
+  name: datagateway
   labels:
-    app: api
+    app: datagateway
 spec:
   minReadySeconds: 60
   replicas: 1
   selector:
     matchLabels:
-      app: api
+      app: datagateway
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: api
+        app: datagateway
     spec:
       containers:
-      - name: api
-        image: localhost:5001/mpm/api:latest
+      - name: datagateway
+        image: localhost:5001/mpm/datagateway:latest
         imagePullPolicy: Always
         ports:
         - name: http
@@ -29,7 +29,7 @@ spec:
           containerPort: 8443
         envFrom:
         - configMapRef:
-            name: api-env
+            name: datagateway-env
         - secretRef:
-            name: api-secrets
+            name: datagateway-secrets
       terminationGracePeriodSeconds: 180

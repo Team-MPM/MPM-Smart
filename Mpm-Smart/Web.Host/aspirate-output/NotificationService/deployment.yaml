@@ -2,25 +2,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api
+  name: notificationservice
   labels:
-    app: api
+    app: notificationservice
 spec:
   minReadySeconds: 60
   replicas: 1
   selector:
     matchLabels:
-      app: api
+      app: notificationservice
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: api
+        app: notificationservice
     spec:
       containers:
-      - name: api
-        image: localhost:5001/mpm/api:latest
+      - name: notificationservice
+        image: localhost:5001/mpm/notificationservice:latest
         imagePullPolicy: Always
         ports:
         - name: http
@@ -29,7 +29,7 @@ spec:
           containerPort: 8443
         envFrom:
         - configMapRef:
-            name: api-env
+            name: notificationservice-env
         - secretRef:
-            name: api-secrets
+            name: notificationservice-secrets
       terminationGracePeriodSeconds: 180

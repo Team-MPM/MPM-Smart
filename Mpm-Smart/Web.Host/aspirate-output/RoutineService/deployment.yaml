@@ -2,25 +2,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api
+  name: routineservice
   labels:
-    app: api
+    app: routineservice
 spec:
   minReadySeconds: 60
   replicas: 1
   selector:
     matchLabels:
-      app: api
+      app: routineservice
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: api
+        app: routineservice
     spec:
       containers:
-      - name: api
-        image: localhost:5001/mpm/api:latest
+      - name: routineservice
+        image: localhost:5001/mpm/routineservice:latest
         imagePullPolicy: Always
         ports:
         - name: http
@@ -29,7 +29,7 @@ spec:
           containerPort: 8443
         envFrom:
         - configMapRef:
-            name: api-env
+            name: routineservice-env
         - secretRef:
-            name: api-secrets
+            name: routineservice-secrets
       terminationGracePeriodSeconds: 180
