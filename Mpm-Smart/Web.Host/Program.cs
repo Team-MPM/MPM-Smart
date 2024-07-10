@@ -43,6 +43,12 @@ var mail = builder.AddMailDev("maildev", 9324, 9325);
 
 var neo4J  = builder.AddNeo4J("neo4j", 9326, 9327, neo4JPassword);
 
+var storage = builder.AddAzureStorage("Storage");
+
+var blobs = storage.AddBlobs("BlobConnection");
+var queues = storage.AddQueues("QueueConnection");
+var tables = storage.AddTables("QueueConnection");
+
 // Services
 
 var authService = builder.AddProject<Projects.AuthService>("AuthService", launchProfile)
@@ -120,7 +126,10 @@ var api = builder.AddProject<Projects.Web_Api>("Api", launchProfile)
     .WithReference(authService)
     .WithReference(dataGateway)
     .WithReference(notificationService)
-    .WithReference(routineService);
+    .WithReference(routineService)
+    .WithReference(blobs)
+    .WithReference(queues)
+    .WithReference(tables);
 
 builder.AddProject<Projects.Web_Server>("Web-Server", launchProfile)
     .WithReference(api);
@@ -131,7 +140,10 @@ var dbManager = builder.AddProject<Projects.DbManager>("dbmanager", launchProfil
     .WithReference(redis)
     .WithReference(primaryDb)
     //.WithReference(tenantDb)
-    .WithReference(homeDataDatabase);
+    .WithReference(homeDataDatabase)
+    .WithReference(blobs)
+    .WithReference(queues)
+    .WithReference(tables);
 
 if (builder.ExecutionContext.IsRunMode)
 {
@@ -150,6 +162,15 @@ if (publishToAzure)
 {
     redis.PublishAsAzureRedis();
     sqlServer.PublishAsAzureSqlDatabase();
+}
+else
+{
+    storage.RunAsEmulator(resourceBuilder =>
+    {
+        resourceBuilder.WithBlobPort(4800);
+        resourceBuilder.WithQueuePort(4801);
+        resourceBuilder.WithTablePort(4802);
+    });
 }
 
 await builder.Build().RunAsync();
