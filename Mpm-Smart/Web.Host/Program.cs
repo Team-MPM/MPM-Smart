@@ -47,7 +47,7 @@ var storage = builder.AddAzureStorage("Storage");
 
 var blobs = storage.AddBlobs("BlobConnection");
 var queues = storage.AddQueues("QueueConnection");
-var tables = storage.AddTables("QueueConnection");
+var tables = storage.AddTables("TablesConnection");
 
 // Services
 
@@ -145,6 +145,16 @@ var dbManager = builder.AddProject<Projects.DbManager>("dbmanager", launchProfil
     .WithReference(queues)
     .WithReference(tables);
 
+var adminDashboard = builder.AddProject<Projects.AdminDashboard>("AdminDashboard", launchProfile)
+    .WithReference(redis)
+    .WithReference(networkService)
+    .WithReference(authService)
+    .WithReference(notificationService)
+    .WithReference(routineService)
+    .WithReference(dataGateway)
+    .WithReference(api)
+    .WithReference(dbManager);
+
 if (builder.ExecutionContext.IsRunMode)
 {
     builder.AddContainer("grafana", "grafana/grafana")
@@ -167,9 +177,9 @@ else
 {
     storage.RunAsEmulator(resourceBuilder =>
     {
-        resourceBuilder.WithBlobPort(4800);
-        resourceBuilder.WithQueuePort(4801);
-        resourceBuilder.WithTablePort(4802);
+        resourceBuilder.WithBlobPort(4100);
+        resourceBuilder.WithQueuePort(4101);
+        resourceBuilder.WithTablePort(4102);
     });
 }
 

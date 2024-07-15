@@ -8,19 +8,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
-    </ItemGroup>
-
-    <ItemGroup>
       <Content Include="..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\ApiGatewaySchema\ApiGatewaySchema.csproj" />
+      <ProjectReference Include="..\ComponentLib\ComponentLib.csproj" />
+      <ProjectReference Include="..\DataGatewaySchema\DataGatewaySchema.csproj" />
+      <ProjectReference Include="..\DataModel\DataModel.csproj" />
+      <ProjectReference Include="..\Neo4Sharp\Neo4Sharp.csproj" />
+      <ProjectReference Include="..\Proto\Proto.csproj" />
       <ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj" />
       <ProjectReference Include="..\Services\Services.csproj" />
+      <ProjectReference Include="..\Utils\Utils.csproj" />
     </ItemGroup>
 
 </Project>

@@ -11,6 +11,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\AdminDashboard\AdminDashboard.csproj" />
       <ProjectReference Include="..\AuthService\AuthService.csproj" />
       <ProjectReference Include="..\CommandService\CommandService.csproj" />
       <ProjectReference Include="..\DbManager\DbManager.csproj" />
