@@ -10,8 +10,16 @@
 
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+        <PackageReference Include="AspNetCore.HealthChecks.AzureStorage" Version="7.0.0" />
+        <PackageReference Include="AspNetCore.HealthChecks.Kafka" Version="8.0.1" />
+        <PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="8.0.1" />
+        <PackageReference Include="AspNetCore.HealthChecks.Rabbitmq" Version="8.0.1" />
+        <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="8.0.1" />
+        <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="8.0.2" />
+        <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="8.0.1" />
+        <PackageReference Include="LanguageExt.Core" Version="4.4.9" />
 
-        <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.6.0" />
+        <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.7.0" />
         <PackageReference Include="Microsoft.Extensions.ServiceDiscovery" Version="8.0.2" />
         <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.9.0" />
         <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.9.0" />

@@ -13,4 +13,8 @@
       <ProjectReference Include="..\VirtualSystem\VirtualSystem.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="LanguageExt.Core" Version="4.4.9" />
+    </ItemGroup>
+
 </Project>

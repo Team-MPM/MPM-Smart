@@ -1,0 +1,33 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: maildev
+  labels:
+    app: maildev
+spec:
+  minReadySeconds: 60
+  replicas: 1
+  selector:
+    matchLabels:
+      app: maildev
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: maildev
+    spec:
+      containers:
+      - name: maildev
+        image: docker.io/maildev/maildev:2.0.2
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 1080
+        - name: smtp
+          containerPort: 1025
+        envFrom:
+        - configMapRef:
+            name: maildev-env
+      terminationGracePeriodSeconds: 180
