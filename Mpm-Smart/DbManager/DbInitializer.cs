@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Data.Common;
 using System.Diagnostics;
 using DataModel.PrimaryDb;
 using Microsoft.EntityFrameworkCore;
@@ -9,16 +10,25 @@ internal class DbInitializer(IWebHostEnvironment env, IServiceProvider servicePr
     : BackgroundService
 {
     public const string ActivitySourceName = "Migrations";
-
     private readonly ActivitySource m_ActivitySource = new(ActivitySourceName);
 
+    public Dictionary<string, object> Info { get; } = new();
     private PrimaryDbContext m_PrimaryDbContext;
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
+        Info["Started"] = DateTime.UtcNow;
+        
         using var scope = serviceProvider.CreateScope();
         m_PrimaryDbContext = scope.ServiceProvider.GetRequiredService<PrimaryDbContext>();
         await InitializeDatabaseAsync(cancellationToken);
+        
+        Info["Finished"] = DateTime.UtcNow;
+        
+        Info["Databases"] = new string[]
+        {
+            $"{m_PrimaryDbContext.Database.ProviderName}:{nameof(PrimaryDbContext)}"
+        };
     }
 
     private async Task InitializeDatabaseAsync(CancellationToken cancellationToken)

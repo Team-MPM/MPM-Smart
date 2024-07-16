@@ -1,9 +1,6 @@
 using DataModel.PrimaryDb;
 using DbManager;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using MPM_Betting.DbManager;
 
 var assemblyName = typeof(Program).Assembly.GetName().Name;
 
@@ -33,16 +30,12 @@ builder.Services.AddSingleton<DbInitializer>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<DbInitializer>());
 
 builder.Services.AddHealthChecks()
-    .AddCheck<DbInitializerHealthCheck>("DbInitializer");
+    .AddCheck<DbInitializerHealthCheck>("DbInitializer")
+    .AddSqlServer(builder.Configuration.GetConnectionString("PrimaryDatabase")!);
 
 var app = builder.Build();
 
 app.UseRouting();
 app.MapDefaultEndpoints();
-
-// app.MapGet("/health/db-initializer", async (HealthCheckService  healthCheckService) =>
-// {
-//     var healthResult = await healthCheckService.;
-// });
 
 await app.RunAsync();
