@@ -135,7 +135,6 @@ builder.AddProject<Projects.Web_Server>("Web-Server", launchProfile)
     .WithReference(api);
 
 // Management
-
 var dbManager = builder.AddProject<Projects.DbManager>("dbmanager", launchProfile)
     .WithReference(redis)
     .WithReference(primaryDb)

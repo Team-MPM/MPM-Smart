@@ -37,6 +37,11 @@ proto: FORCE
 	@echo "Building Proto..."
 	dotnet build --no-incremental Proto/Proto.csproj
 
+MIGRATION_NAME = $(or $(name), Initial)
+
+migrate-primary-db:
+	dotnet ef migrations add $(MIGRATION_NAME) --context PrimaryDbContext --output-dir Migrations/PrimaryDbtMigrations --startup-project DbManager/DbManager.csproj
+
 build-arm: FORCE
 	@echo "Building ARM Container..."
 	$(WSL) docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
