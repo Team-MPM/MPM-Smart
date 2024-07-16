@@ -1,3 +1,4 @@
+using Aspire.Hosting.Azure;
 using MPM_Betting.Aspire.AppHost;
 using MpmSmart.Web.Host;
 
@@ -142,7 +143,9 @@ var dbManager = builder.AddProject<Projects.DbManager>("dbmanager", launchProfil
     .WithReference(homeDataDatabase)
     .WithReference(blobs)
     .WithReference(queues)
-    .WithReference(tables);
+    .WithReference(tables)
+    .WithReference(kafka)
+    .WithReference(rabbitMq);
 
 var adminDashboard = builder.AddProject<Projects.AdminDashboard>("AdminDashboard", launchProfile)
     .WithReference(redis)
@@ -174,12 +177,26 @@ if (publishToAzure)
 }
 else
 {
-    storage.RunAsEmulator(resourceBuilder =>
+    storage.WithEndpoint(name: "blob", targetPort: 10000)
+        .WithEndpoint(name: "queue", targetPort: 10001)
+        .WithEndpoint(name: "table", targetPort: 10002)
+        .WithAnnotation(new ContainerImageAnnotation
+        {
+            Registry = "mcr.microsoft.com",
+            Image = "azure-storage/azurite",
+            Tag = "3.31.0"
+        });
+
+    void ConfigureContainer(IResourceBuilder<AzureStorageEmulatorResource> resourceBuilder)
     {
         resourceBuilder.WithBlobPort(4100);
         resourceBuilder.WithQueuePort(4101);
         resourceBuilder.WithTablePort(4102);
-    });
+    }
+
+    var surrogate = new AzureStorageEmulatorResource(storage.Resource);
+    var surrogateBuilder = builder.CreateResourceBuilder(surrogate);
+    ConfigureContainer(surrogateBuilder);
 }
 
 await builder.Build().RunAsync();

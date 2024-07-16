@@ -110,7 +110,7 @@ public static class Extensions
                 Predicate = r => r.Tags.Contains("live")
             });
             
-            app.MapHealthChecks("/health/ui", new HealthCheckOptions()
+            app.MapHealthChecks("/health/full", new HealthCheckOptions()
             {
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
             });
