@@ -58,3 +58,9 @@
     build:
       context: .
       dockerfile: HomeDataService/Dockerfile
+
+  admindashboard:
+    image: admindashboard
+    build:
+      context: .
+      dockerfile: AdminDashboard/Dockerfile

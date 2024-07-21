@@ -1,3 +1,4 @@
+using Aspire.Hosting.Azure;
 using MPM_Betting.Aspire.AppHost;
 using MpmSmart.Web.Host;
 
@@ -5,7 +6,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 // Configuration
 
-var launchProfile = builder.ExecutionContext.IsPublishMode ? "https" : "Watch";
+var launchProfile = builder.ExecutionContext.IsPublishMode ? "" : "Watch";
 
 var publishToAzure = builder.ExecutionContext.IsPublishMode && builder.Configuration["azure"] == "true";
 
@@ -42,6 +43,12 @@ var kafka = builder.AddKafka("kafka")
 var mail = builder.AddMailDev("maildev", 9324, 9325);
 
 var neo4J  = builder.AddNeo4J("neo4j", 9326, 9327, neo4JPassword);
+
+var storage = builder.AddAzureStorage("Storage");
+
+var blobs = storage.AddBlobs("BlobConnection");
+var queues = storage.AddQueues("QueueConnection");
+var tables = storage.AddTables("TablesConnection");
 
 // Services
 
@@ -120,18 +127,35 @@ var api = builder.AddProject<Projects.Web_Api>("Api", launchProfile)
     .WithReference(authService)
     .WithReference(dataGateway)
     .WithReference(notificationService)
-    .WithReference(routineService);
+    .WithReference(routineService)
+    .WithReference(blobs)
+    .WithReference(queues)
+    .WithReference(tables);
 
 builder.AddProject<Projects.Web_Server>("Web-Server", launchProfile)
     .WithReference(api);
 
 // Management
-
 var dbManager = builder.AddProject<Projects.DbManager>("dbmanager", launchProfile)
     .WithReference(redis)
     .WithReference(primaryDb)
     //.WithReference(tenantDb)
-    .WithReference(homeDataDatabase);
+    .WithReference(homeDataDatabase)
+    .WithReference(blobs)
+    .WithReference(queues)
+    .WithReference(tables)
+    .WithReference(kafka)
+    .WithReference(rabbitMq);
+
+var adminDashboard = builder.AddProject<Projects.AdminDashboard>("AdminDashboard", launchProfile)
+    .WithReference(redis)
+    .WithReference(networkService)
+    .WithReference(authService)
+    .WithReference(notificationService)
+    .WithReference(routineService)
+    .WithReference(dataGateway)
+    .WithReference(api)
+    .WithReference(dbManager);
 
 if (builder.ExecutionContext.IsRunMode)
 {
@@ -150,6 +174,29 @@ if (publishToAzure)
 {
     redis.PublishAsAzureRedis();
     sqlServer.PublishAsAzureSqlDatabase();
+}
+else
+{
+    storage.WithEndpoint(name: "blob", targetPort: 10000)
+        .WithEndpoint(name: "queue", targetPort: 10001)
+        .WithEndpoint(name: "table", targetPort: 10002)
+        .WithAnnotation(new ContainerImageAnnotation
+        {
+            Registry = "mcr.microsoft.com",
+            Image = "azure-storage/azurite",
+            Tag = "3.31.0"
+        });
+
+    void ConfigureContainer(IResourceBuilder<AzureStorageEmulatorResource> resourceBuilder)
+    {
+        resourceBuilder.WithBlobPort(4100);
+        resourceBuilder.WithQueuePort(4101);
+        resourceBuilder.WithTablePort(4102);
+    }
+
+    var surrogate = new AzureStorageEmulatorResource(storage.Resource);
+    var surrogateBuilder = builder.CreateResourceBuilder(surrogate);
+    ConfigureContainer(surrogateBuilder);
 }
 
 await builder.Build().RunAsync();

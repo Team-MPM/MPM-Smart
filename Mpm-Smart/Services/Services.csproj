@@ -15,4 +15,19 @@
       <ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.2" />
+      <PackageReference Include="Azure.Data.Tables" Version="12.8.3" />
+      <PackageReference Include="Azure.Storage.Blobs" Version="12.20.0" />
+      <PackageReference Include="Azure.Storage.Common" Version="12.19.0" />
+      <PackageReference Include="Azure.Storage.Queues" Version="12.18.0" />
+      <PackageReference Include="Duende.IdentityServer" Version="7.0.5" />
+      <PackageReference Include="Duende.IdentityServer.AspNetIdentity" Version="7.0.5" />
+      <PackageReference Include="Duende.IdentityServer.Configuration" Version="7.0.5" />
+      <PackageReference Include="Duende.IdentityServer.Configuration.EntityFramework" Version="7.0.5" />
+      <PackageReference Include="Duende.IdentityServer.EntityFramework.Storage" Version="7.0.5" />
+      <PackageReference Include="LanguageExt.Core" Version="4.4.9" />
+      <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.7" />
+    </ItemGroup>
+
 </Project>

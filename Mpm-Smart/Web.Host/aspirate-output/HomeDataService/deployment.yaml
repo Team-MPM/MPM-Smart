@@ -1,0 +1,35 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homedataservice
+  labels:
+    app: homedataservice
+spec:
+  minReadySeconds: 60
+  replicas: 1
+  selector:
+    matchLabels:
+      app: homedataservice
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: homedataservice
+    spec:
+      containers:
+      - name: homedataservice
+        image: localhost:5001/mpm/homedataservice:latest
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 8080
+        - name: https
+          containerPort: 8443
+        envFrom:
+        - configMapRef:
+            name: homedataservice-env
+        - secretRef:
+            name: homedataservice-secrets
+      terminationGracePeriodSeconds: 180
