@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace DataModel.PrimaryDb;
+namespace DataModel.Primary;
 
 public class PrimaryDbContext(DbContextOptions options) : DbContext(options)
 {

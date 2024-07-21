@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using DataModel.PrimaryDb;
+using DataModel.Primary;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 

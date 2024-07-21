@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace DataModel.PrimaryDb;
+namespace DataModel.Primary;
 
 public class AuditLogEntry
 {

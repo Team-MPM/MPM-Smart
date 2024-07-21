@@ -1,5 +1,5 @@
 using Confluent.Kafka;
-using DataModel.PrimaryDb;
+using DataModel.Primary;
 using DbManager;
 using HealthChecks.Kafka;
 using Microsoft.EntityFrameworkCore;

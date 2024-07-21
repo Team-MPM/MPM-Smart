@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Services.Grpc;
 
-public static class GrpcExtensions
+public static class Extensions
 {
     public delegate void OptionsBuilder(GrpcClientOptions options);
     
@@ -13,5 +14,11 @@ public static class GrpcExtensions
         optionsBuilder(client.Options);
         client.Init();
         services.AddSingleton<T>(client);
+    }
+
+    public static IHostApplicationBuilder AddGrpc(this IHostApplicationBuilder builder)
+    {
+        builder.Services.AddGrpc();
+        return builder;
     }
 }
