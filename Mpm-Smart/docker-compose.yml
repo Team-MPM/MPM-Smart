@@ -64,3 +64,9 @@
     build:
       context: .
       dockerfile: AdminDashboard/Dockerfile
+
+  identityserver:
+    image: identityserver
+    build:
+      context: .
+      dockerfile: IdentityServer/Dockerfile

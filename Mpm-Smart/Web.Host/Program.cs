@@ -26,7 +26,8 @@ var sqlServer = builder.AddSqlServer("sql", password: sqlPassword)
     .WithDataVolume();
 
 var primaryDb = sqlServer.AddDatabase("PrimaryDatabase");
-//var tenantDb = sqlServer.AddDatabase("TenantDatabase");
+var authDb = sqlServer.AddDatabase("AuthDatabase");
+var tenantDb = sqlServer.AddDatabase("TenantDatabase");
 
 var mongoDbServer = builder.AddMongoDB("mongo")
     .WithDataVolume();
@@ -51,6 +52,14 @@ var queues = storage.AddQueues("QueueConnection");
 var tables = storage.AddTables("TablesConnection");
 
 // Services
+
+var identityServer = builder.AddProject<Projects.IdentityServer>("IdentityServer", launchProfile)
+    .WithReference(redis)
+    .WithReference(sqlServer)
+    .WithReference(authDb)
+    .WithReference(rabbitMq)
+    .WithReference(kafka)
+    .WithReference(neo4J);
 
 var authService = builder.AddProject<Projects.AuthService>("AuthService", launchProfile)
     .WithReference(redis)
@@ -133,7 +142,8 @@ var api = builder.AddProject<Projects.Web_Api>("Api", launchProfile)
     .WithReference(tables);
 
 builder.AddProject<Projects.Web_Server>("Web-Server", launchProfile)
-    .WithReference(api);
+    .WithReference(api)
+    .WithReference(identityServer);
 
 // Management
 var dbManager = builder.AddProject<Projects.DbManager>("dbmanager", launchProfile)

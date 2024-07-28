@@ -1,4 +1,7 @@
+using System.Security.Claims;
 using AuthService.Services;
+using DataModel.Auth;
+using Duende.IdentityServer;
 using Services.Core;
 using Services.Db;
 using Services.Grpc;
@@ -11,12 +14,15 @@ builder
     .AddGrpc()
     .AddDb()
     .AddAuth()
-    .AddIdentity()
-    .AddIdentityServer();
+    .AddIdentity();
 
 var app = builder.Build();
 
-app.MapDefaultMiddleware();
+app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapDefaultEndpoints();
 app.MapGrpcService<TenantsService>();

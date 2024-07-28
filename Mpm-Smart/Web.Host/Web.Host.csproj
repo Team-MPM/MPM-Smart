@@ -16,6 +16,7 @@
       <ProjectReference Include="..\CommandService\CommandService.csproj" />
       <ProjectReference Include="..\DbManager\DbManager.csproj" />
       <ProjectReference Include="..\HomeDataService\HomeDataService.csproj" />
+      <ProjectReference Include="..\IdentityServer\IdentityServer.csproj" />
       <ProjectReference Include="..\NetworkService\NetworkService.csproj" />
       <ProjectReference Include="..\NotificationService\NotificationService.csproj" />
       <ProjectReference Include="..\RoutineService\RoutineService.csproj" />

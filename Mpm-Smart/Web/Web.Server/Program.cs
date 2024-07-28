@@ -1,17 +1,23 @@
 using Mpm_Smart_Web.Components;
+using Services.Db;
+using Services.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
 builder.AddServiceDefaults();
 
+builder
+    .AddAuth(useCookies: true)
+    .AddIdentity();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.MapDefaultEndpoints();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();
@@ -19,7 +25,6 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
