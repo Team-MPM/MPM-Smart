@@ -1,9 +1,8 @@
+.azure/
 .idea/
 .vs/
+.vscode/
 bin/
 obj/
 int/
-.azure/
 build/
-key
-key.pub

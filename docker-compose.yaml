@@ -1,0 +1,43 @@
+services:
+  web-app:
+    build:
+      context: .
+      dockerfile: source/Web/WebApp/WebApp/Dockerfile
+    ports:
+      - "1200:1200"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=1200
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:1200/health" ]
+      interval: 10s
+      retries: 10
+      start_period: 10s
+      timeout: 3s
+    depends_on:
+      - sql-server
+  
+  sql-server:
+    image: "mcr.microsoft.com/mssql/server:2019-latest"
+    container_name: "sql-server"
+    ports:
+      - "1300:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${Sa_Password:-1234}
+      - MSSQL_PID=Express
+    healthcheck:
+      test: [ "CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${Sa_Password:-1234} -Q 'SELECT 1' || exit 1" ]
+      interval: 10s
+      retries: 10
+      start_period: 10s
+      timeout: 3s
+    volumes:
+      - sql-data:/var/opt/mssql/data
+      - sql-log:/var/opt/mssql/log
+      - sql-secrets:/var/opt/mssql/secrets
+
+volumes:
+  sql-data:
+  sql-log:
+  sql-secrets:

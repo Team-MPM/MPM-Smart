@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App", "App", "{4908EA23-E560-41AD-B5C0-296EB5EFD72C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IOT", "IOT", "{D249B49F-467D-495B-9C99-09BD9F3BFE13}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{586DC58C-A83B-4787-A1A4-9577DA148A0A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{C6FA09FD-2470-4AB4-8133-E5732FEE2A0E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{A509ED06-7429-4241-AFA1-F0A4AB4D96C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp", "source\Web\WebApp\WebApp\WebApp.csproj", "{F7BCEF53-8689-4D9D-8C59-1627E7633FDF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp.Client", "source\Web\WebApp\WebApp.Client\WebApp.Client.csproj", "{C2E16FAB-D53F-4CC5-9595-F91F31DD4DC0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{31EA3731-BFA4-459A-B473-D5D7F460FBF3}"
+	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
+		docker-compose.yaml = docker-compose.yaml
+		Makefile = Makefile
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F7BCEF53-8689-4D9D-8C59-1627E7633FDF} = {A509ED06-7429-4241-AFA1-F0A4AB4D96C5}
+		{C2E16FAB-D53F-4CC5-9595-F91F31DD4DC0} = {A509ED06-7429-4241-AFA1-F0A4AB4D96C5}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F7BCEF53-8689-4D9D-8C59-1627E7633FDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7BCEF53-8689-4D9D-8C59-1627E7633FDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7BCEF53-8689-4D9D-8C59-1627E7633FDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7BCEF53-8689-4D9D-8C59-1627E7633FDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2E16FAB-D53F-4CC5-9595-F91F31DD4DC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2E16FAB-D53F-4CC5-9595-F91F31DD4DC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2E16FAB-D53F-4CC5-9595-F91F31DD4DC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2E16FAB-D53F-4CC5-9595-F91F31DD4DC0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
