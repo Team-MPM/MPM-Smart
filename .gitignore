@@ -3,3 +3,7 @@
 bin/
 obj/
 int/
+.azure/
+build/
+key
+key.pub
