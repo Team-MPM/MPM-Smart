@@ -15,29 +15,39 @@ services:
       start_period: 10s
       timeout: 3s
     depends_on:
-      - sql-server
-  
+      sql-server:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
   sql-server:
     image: "mcr.microsoft.com/mssql/server:2019-latest"
     container_name: "sql-server"
+    user: root
     ports:
       - "1300:1433"
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=${Sa_Password:-1234}
-      - MSSQL_PID=Express
+      - SA_PASSWORD=${Sa_Password:-SqlServer1234}
+      - MSSQL_PID=Developer
     healthcheck:
-      test: [ "CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${Sa_Password:-1234} -Q 'SELECT 1' || exit 1" ]
+      test: [ "CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P ${Sa_Password:-SqlServer1234} -Q 'SELECT 1' -C || exit 1" ]
       interval: 10s
-      retries: 10
-      start_period: 10s
+      retries: 3
       timeout: 3s
     volumes:
-      - sql-data:/var/opt/mssql/data
-      - sql-log:/var/opt/mssql/log
-      - sql-secrets:/var/opt/mssql/secrets
-
-volumes:
-  sql-data:
-  sql-log:
-  sql-secrets:
+      - ./docker/mssql-data:/var/opt/mssql/data
+      - ./docker/mssql-logs:/var/opt/mssql/log
+  redis:
+    image: redis:alpine
+    command: redis-server --appendonly yes
+    ports:
+      - "1301:6379"
+    volumes:
+      - ./docker/redis:/data
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 10s
+      retries: 3
+      timeout: 3s
