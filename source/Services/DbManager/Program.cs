@@ -1,10 +1,13 @@
 using DataModel.Primary;
 using DbManager;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var assemblyName = typeof(Program).Assembly.GetName().Name;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Console.WriteLine(builder.Configuration.GetConnectionString("PrimaryDb"));
 
 builder.Services.AddDbContextPool<PrimaryDbContext>(optionsBuilder =>
     {
@@ -32,5 +35,7 @@ builder.Services.AddHealthChecks()
     .AddRedis(builder.Configuration.GetConnectionString("Redis")!);
 
 var app = builder.Build();
+
+app.MapHealthChecks("/health");
 
 await app.RunAsync();

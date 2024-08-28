@@ -11,6 +11,7 @@ public class PrimaryDbContext(DbContextOptions options) : IdentityDbContext<Appl
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(PrimaryDbContext).Assembly);
     }
 }

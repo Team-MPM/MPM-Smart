@@ -4,12 +4,34 @@ services:
       context: .
       dockerfile: source/Web/WebApp/WebApp/Dockerfile
     ports:
-      - "1200:1200"
+      - "1200:8080"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=1200
+      - ASPNETCORE_ENVIRONMENT=Docker
+    networks:
+      - internal
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:1200/health" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 10s
+      retries: 10
+      start_period: 10s
+      timeout: 3s
+    depends_on:
+      sql-server:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+  db-manager:
+    build:
+      context: .
+      dockerfile: source/Services/DbManager/Dockerfile
+    ports:
+      - "1201:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+    networks:
+      - internal
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
       interval: 10s
       retries: 10
       start_period: 10s
@@ -20,8 +42,7 @@ services:
       redis:
         condition: service_healthy
   sql-server:
-    image: "mcr.microsoft.com/mssql/server:2019-latest"
-    container_name: "sql-server"
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
     user: root
     ports:
       - "1300:1433"
@@ -37,6 +58,8 @@ services:
     volumes:
       - ./docker/mssql-data:/var/opt/mssql/data
       - ./docker/mssql-logs:/var/opt/mssql/log
+    networks:
+      - internal
   redis:
     image: redis:alpine
     command: redis-server --appendonly yes
@@ -51,3 +74,8 @@ services:
       interval: 10s
       retries: 3
       timeout: 3s
+    networks:
+      - internal
+networks:
+    internal:
+        driver: bridge
