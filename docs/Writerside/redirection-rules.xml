@@ -10,4 +10,16 @@
         <description>Created after removal of "Starter" from Instance Name</description>
         <accepts>starter.html</accepts>
     </rule>
+    <rule id="4f76fe20">
+        <description>Created after removal of "Service Architecture" from Instance Name</description>
+        <accepts>Service-Architecture.html</accepts>
+    </rule>
+    <rule id="267e047c">
+        <description>Created after removal of "Logging and Metrics" from Instance Name</description>
+        <accepts>Loggin-and-Metrics.html</accepts>
+    </rule>
+    <rule id="6097141f">
+        <description><![CDATA[Created after removal of "<Architecture.md>" from Instance Name]]></description>
+        <accepts>Architecture.html</accepts>
+    </rule>
 </rules>
