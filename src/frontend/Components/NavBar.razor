@@ -1,0 +1,26 @@
+﻿<MudThemeProvider/>
+
+<PageTitle>MPM-Smart</PageTitle>
+
+<MudLayout>
+    <MudPaper Width="250px" Height="100vh" Elevation="0">
+        <MudNavMenu Class="mud-width-full">
+            <MudNavGroup Icon="@Icons.Material.Filled.Dashboard" Title="Dashboards" Expanded="true">
+                <MudNavLink Href="/users"  Match="NavLinkMatch.Prefix">Dashboard 1</MudNavLink>
+                <MudNavLink Href="/security"  Match="NavLinkMatch.Prefix">Dashboard 2</MudNavLink>
+            </MudNavGroup>
+            <MudNavGroup Icon="@Icons.Material.Filled.Devices" Title="Devices" Expanded="true">
+                <MudNavLink Href="/users"  Match="NavLinkMatch.Prefix">Sensor 1</MudNavLink>
+                <MudNavLink Href="/security"  Match="NavLinkMatch.Prefix">Sensor 2</MudNavLink>
+            </MudNavGroup>
+            <MudNavGroup Icon="@Icons.Material.Filled.Settings" Title="Settings" Expanded="true">
+                <MudNavLink Href="/users"  Match="NavLinkMatch.Prefix">Users</MudNavLink>
+                <MudNavLink Href="/security"  Match="NavLinkMatch.Prefix">Security</MudNavLink>
+            </MudNavGroup>
+        </MudNavMenu>
+    </MudPaper>
+</MudLayout>
+
+@code {
+    
+}
