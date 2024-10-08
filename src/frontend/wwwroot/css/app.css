@@ -1,5 +1,6 @@
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+   
 }
 
 h1:focus {
@@ -100,4 +101,18 @@ a, .btn-link {
 
 code {
     color: #c02d76;
+}
+.Login-Card{
+    
+    align-content: center;
+    
+    width: 550px;
+    height: 600px;
+    padding: 30px;
+}
+.Login{
+    display: flex;
+    margin-top: 100px;
+    justify-content: center;
+    align-items: center;
 }
