@@ -103,16 +103,71 @@ code {
     color: #c02d76;
 }
 .Login-Card{
-    
-    align-content: center;
-    
+    align-items: center;
+    justify-content: space-between;
     width: 550px;
-    height: 600px;
+    height: 400px;
     padding: 30px;
 }
 .Login{
     display: flex;
     margin-top: 100px;
     justify-content: center;
+    align-items: center;
+}
+.Login-Form{
+    height: 300px;
+    width: 100%;
+    display: flex;
+}
+.Login-Heading{
+    padding-bottom: 20px;
+}
+.Login-Header{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.Login-RememberMe{
+    width: 100%;
+    flex-direction: row;
+    display: flex;
+   justify-content: space-between;
+}
+.Dashboard-Main{
+    display: flex;
+    margin-top: 400px;
+}
+.Main-Content{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+.Nav-Bar{
+    padding: 0;
+    width: 250px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+.Main-Layout{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+.Header-Layout{
+    height: 100px;
+    width: 100%;
+}
+
+.MainLayout-NavBar{
+    padding-right: 20px;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
 }

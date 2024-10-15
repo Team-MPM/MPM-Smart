@@ -1,15 +1,15 @@
 ﻿@inherits LayoutComponentBase
-@using Frontend.Components
 
-<MudLayout>
-    <MudCardHeader>
-        <Frontend.Components.Header/>
-    </MudCardHeader>
-    <MudMainContent Style="padding-top: 20px;">
-        <MudCardContent Style="padding-left: 0">
+
+<MudLayout Class="Main-Layout">
+    <Header/>
+    <MudMainContent  Class="Main-Content">
+        <MudCardContent Style="padding-left: 0" Class="MainLayout-NavBar p0">
             <NavBar/>
         </MudCardContent>
-        @Body
+        <MudPaper>
+            @Body
+        </MudPaper>
     </MudMainContent>
 </MudLayout>
 

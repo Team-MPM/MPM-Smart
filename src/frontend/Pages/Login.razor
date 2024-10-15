@@ -1,12 +1,23 @@
 ﻿@page "/Login"
 @layout LoginLayout
 
-    <MudTextField Label="Username"/>
-    <MudTextField Label="Password"/>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary">Login</MudButton>
+<MudForm Spacing="2" Class="Login-Form">
+
+    <h1 class="Login-Heading">Sign In</h1>
+    <MudTextField T="string" Label="Username" Variant="Variant.Filled"/>
+    <MudTextField T="string" Label="Password" InputType="InputType.Password" Variant="Variant.Filled"/>
+    <div class="Login-RememberMe">
+        <MudCheckBox @bind-Value="RememberMe">Remember Me?</MudCheckBox>
+        <MudLink Href="#">Forgot Password?</MudLink>
+    </div>
+    <MudButton Class="Login-Button" Variant="Variant.Filled" Color="Color.Primary">Login</MudButton>
+</MudForm>
+
+
+
 
 
 
 @code {
-    
+    public bool RememberMe { get; set; }
 }

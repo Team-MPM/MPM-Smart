@@ -1,0 +1,52 @@
+﻿@page "/Dashboard"
+@layout MainLayout
+
+
+<h1>Dashboard</h1>
+
+    <MudGrid Class="Dashboard-Main">
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard>
+                <MudCardContent>
+                    <MudChart ChartType="ChartType.Line" XAxisLabels="XAxisLabels" ChartSeries="Series" />
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard>
+                <MudCardContent>
+                    <MudChart ChartType="ChartType.Bar" Data="@barChartData" XAxisLabels="XAxisLabels" ChartSeries="Series" />
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="4">
+            <MudCard>
+                <MudCardContent>
+                    <MudChart ChartType="ChartType.Pie" Data="@pieChartData" />
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+
+
+
+@code {
+    public List<ChartSeries> Series = new List<ChartSeries>()
+    {
+        new ChartSeries() { Name = "United States", Data = new double[] { 40, 20, 25, 27, 46, 60, 48, 80, 15 } },
+        new ChartSeries() { Name = "Germany", Data = new double[] { 19, 24, 35, 13, 28, 15, 13, 16, 31 } },
+        new ChartSeries() { Name = "Sweden", Data = new double[] { 8, 6, 11, 13, 4, 16, 10, 16, 18 } },
+    };
+    public string[] XAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep" };
+    
+
+    private ChartOptions barChartData = new ChartOptions
+    {
+    // Initialize your bar chart data here
+    };
+
+    private ChartOptions pieChartData = new ChartOptions
+    {
+    // Initialize your pie chart data here
+    };
+}
