@@ -22,4 +22,6 @@ var app = builder.Build();
 
 app.MapGet("/", () => "Hello World!");
 
+app.MapGet("/kys", (IHostApplicationLifetime env) => env.StopApplication());
+
 app.Run();
