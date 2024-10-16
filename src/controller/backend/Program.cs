@@ -18,6 +18,10 @@ builder.Services.AddDbContextPool<SystemDbContext>(options =>
 builder.Services.AddSingleton<DbInitializer>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<DbInitializer>());
 
+builder.Services.AddSingleton<PluginManager>();
+builder.Services.AddSingleton<PluginLoader>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<PluginLoader>());
+
 var app = builder.Build();
 
 app.MapGet("/", () => "Hello World!");
