@@ -56,7 +56,7 @@ jobs:
     - name: Run
       run: nohup dotnet run --project src/controller/control_process/ControlProcess.csproj > backend.log 2>&1 &
     - name: Wait
-      run: sleep 5
+      run: sleep 20
     - name: Log
       run: cat backend.log
 
