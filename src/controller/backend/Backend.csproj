@@ -8,6 +8,7 @@
 
   <PropertyGroup>
     <OutputPath>../../../build/controller/backend</OutputPath>
+    <StartWorkingDirectory>../../../build/controller/backend</StartWorkingDirectory>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 

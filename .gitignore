@@ -7,3 +7,5 @@ obj/
 int/
 build/
 docker/
+*.db
+*.user

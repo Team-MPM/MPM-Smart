@@ -1,4 +1,8 @@
 ﻿using System.Diagnostics;
+using NLog;
+using NLog.Extensions.Logging;
+
+Logger Logger = LogManager.GetCurrentClassLogger();
 
 const string processPath = @"../backend/backend.exe";
 const string processName = "Mpm-Smart-Backend";

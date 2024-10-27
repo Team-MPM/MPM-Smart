@@ -4,13 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data.System;
 
-public class SystemDbContext : IdentityDbContext<SystemUser>
+public class SystemDbContext(DbContextOptions<SystemDbContext> options) : IdentityDbContext<SystemUser>(options)
 {
-    public SystemDbContext(DbContextOptions<SystemDbContext> options) : base(options)
-    {
-        
-    }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

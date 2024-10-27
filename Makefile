@@ -53,10 +53,7 @@ build-image: configure $(TEMP_DIR)
 	sudo cp -r $(LIVE_BUILD_DIR)/* $(TEMP_DIR)
 	sudo umount $(TEMP_DIR)
 
-.PHONY: clean
-clean:
-	sudo rm -rf ./$(BUILD_DIR)
-	dotnet clean
+all:
 
 .PHONY: all
 all: bootstrap install-packages configure build-image restore build		
@@ -69,6 +66,10 @@ build-dotnet:
 restore:		
 	dotnet restore -f
 
-.PHONY: add-migration
 add-migration:
 	dotnet ef migrations add $(migrationName) --output-dir SystemMigrations --startup-project src/controller/backend/Backend.csproj --project src/controller/data/Data.csproj
+
+clean:
+	rm -rf build/
+
+.PHONY: all clean

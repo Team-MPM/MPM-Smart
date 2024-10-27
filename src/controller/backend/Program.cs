@@ -28,4 +28,4 @@ app.MapGet("/", () => "Hello World!");
 
 app.MapGet("/kys", (IHostApplicationLifetime env) => env.StopApplication());
 
-app.Run();
+await app.RunAsync("http://*:54321");
