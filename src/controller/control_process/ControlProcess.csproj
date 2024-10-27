@@ -12,7 +12,7 @@
     <StartWorkingDirectory>../../../build/controller/control-process</StartWorkingDirectory>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <PackageReference Include="NLog" Version="5.3.4" />
     <PackageReference Include="NLog.Config" Version="4.7.15" />

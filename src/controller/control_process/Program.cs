@@ -1,62 +1,126 @@
 ﻿using System.Diagnostics;
-using NLog;
+using Microsoft.Extensions.Logging;
+using NLog.Config;
 using NLog.Extensions.Logging;
+using NLog.Targets;
 
-Logger Logger = LogManager.GetCurrentClassLogger();
+namespace ControlProcess;
 
-const string processPath = @"../backend/backend.exe";
-const string processName = "Mpm-Smart-Backend";
-
-Console.WriteLine($"[INFO] Process Controller for {processName} started.");
-
-try
+internal class Program
 {
-    while (true)
-        StartAndMonitorProcess();
-}
-catch (Exception e)
-{
-    Console.WriteLine(e);
-}
-finally
-{
-    Console.WriteLine($"[INFO] Process Controller for {processName} stopped.");
-}
+    public const string BackendExecutablePath = "../backend/backend.exe";
+    public const string BackendProcessName = "Mpm-Smart-Backend";
+    public const int SignalWatchdogStopCode = 100;
 
-return 1;
+    public static void Main(string[] args)
+    {
+        var logger = CreateControlLogger();
 
-void StartAndMonitorProcess()
-{
-    var process = new Process();
+        var backendProcess = LaunchControlProcess(logger, BackendExecutablePath, BackendProcessName, ReloadPlugins);
 
-    process.StartInfo.FileName = processPath;
-    process.StartInfo.UseShellExecute = false;
-    process.StartInfo.RedirectStandardOutput = true;
-    process.StartInfo.RedirectStandardError = true;
-    process.EnableRaisingEvents = true;
+        backendProcess.Join();
+    }
 
-    process.OutputDataReceived += (_, e) => { if (e.Data != null) Console.WriteLine($"[OUTPUT] {e.Data}"); };
-    process.ErrorDataReceived += (_, e) => { if (e.Data != null) Console.WriteLine($"[ERROR] {e.Data}"); };
+    public static void StartAndMonitorProcess(ILogger logger, string path, Action<ILogger> restartCallback)
+    {
+        while (true)
+        {
+            var process = new Process();
 
-    Console.WriteLine($"[INFO] Starting process: {processPath}");
-    process.Start();
-    process.BeginOutputReadLine();
-    process.BeginErrorReadLine();
+            process.StartInfo.FileName = path;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
+            process.EnableRaisingEvents = true;
 
-    Console.WriteLine($"[INFO] Process {process.Id} started.");
+            process.OutputDataReceived += (_, e) =>
+            {
+                if (e.Data != null) logger.LogTrace("{Message}", e.Data);
+            };
+            process.ErrorDataReceived += (_, e) =>
+            {
+                if (e.Data != null) logger.LogError("{Message}", e.Data);
+            };
 
-    process.WaitForExit();
+            logger.LogInformation($"Starting process: {BackendExecutablePath}");
+            process.Start();
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
 
-    Console.WriteLine($"[INFO] Process {process.Id} exited with code {process.ExitCode}.");
+            logger.LogInformation("Process {ProcessId} started", process.Id);
 
-    ReloadPlugins();
+            process.WaitForExit();
 
-    Console.WriteLine("[INFO] Restarting process...");
-}
+            logger.LogInformation("Process {ProcessId} exited with code {ProcessExitCode}", process.Id,
+                process.ExitCode);
 
-static void ReloadPlugins()
-{
-    Console.WriteLine("[ACTION] Performing plugin reload...");
+            if (process.ExitCode == SignalWatchdogStopCode)
+            {
+                logger.LogInformation("Process {ProcessId} signaled watchdog to stop", process.Id);
+                break;
+            }
 
-    // TODO
+            restartCallback(logger);
+
+            logger.LogInformation(" Restarting process...");
+        }
+    }
+
+    public static void ReloadPlugins(ILogger logger)
+    {
+        logger.LogInformation("Performing plugin reload...");
+
+        // TODO
+    }
+
+    public static ILogger CreateControlLogger()
+    {
+        var loggerFactory = LoggerFactory.Create(builder =>
+        {
+            var config = new LoggingConfiguration();
+
+            config.AddRuleForAllLevels(new ConsoleTarget("console")
+            {
+                Layout = @"${date:format=HH\:mm\:ss} ${logger} ${message}",
+                Header = "Control Process",
+                Footer = "End of Control Process"
+            });
+
+            config.AddRuleForAllLevels(new FileTarget("file")
+            {
+                FileName = "control-process.log",
+                Layout = "${longdate} ${logger} ${message}",
+                Header = "Control Process",
+                Footer = "End of Control Process"
+            });
+
+            builder.AddNLog(config);
+        });
+
+        return loggerFactory.CreateLogger("Mpm-Smart-Watchdog");
+    }
+
+    public static Thread LaunchControlProcess(ILogger logger, string path, string processName, Action<ILogger> restartCallback)
+    {
+        try
+        {
+            var t = new Thread(() => StartAndMonitorProcess(logger, path, restartCallback))
+            {
+                IsBackground = true,
+                Name = processName,
+                Priority = ThreadPriority.AboveNormal
+            };
+
+            t.Start();
+
+            logger.LogInformation("Process Controller for {ProcessName} started", processName);
+
+            return t;
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Failed to start process controller for {ProcessName}", processName);
+            throw;
+        }
+    }
 }
