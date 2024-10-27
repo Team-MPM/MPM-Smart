@@ -11,7 +11,11 @@ namespace ControllerTests.ControlProcess;
 [TestSubject(typeof(Program))]
 public class ProgramTest : IAsyncLifetime
 {
+#if WINDOWS
     private const string BackendExecutablePath = "../backend/backend.exe";
+#else
+    private const string BackendExecutablePath = "../backend/backend";
+#endif
     private const string BackendProcessName = "Mpm-Smart-Backend-Test-Instance";
 
     private readonly ILogger m_Logger = new Mock<ILogger>().Object;

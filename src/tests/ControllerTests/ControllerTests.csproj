@@ -10,9 +10,13 @@
         <IsTestProject>true</IsTestProject>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
+        <DefineConstants>WINDOWS</DefineConstants>
+    </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.0"/>
-        <PackageReference Include="JetBrains.Annotations" Version="2024.3.0" />
+        <PackageReference Include="JetBrains.Annotations" Version="2024.3.0"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
         <PackageReference Include="Moq" Version="4.20.72"/>

@@ -1,26 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <OutputPath>../../../build/controller/control-process</OutputPath>
-    <StartWorkingDirectory>../../../build/controller/control-process</StartWorkingDirectory>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-  </PropertyGroup>
-  
-  <ItemGroup>
-    <PackageReference Include="NLog" Version="5.3.4" />
-    <PackageReference Include="NLog.Config" Version="4.7.15" />
-    <PackageReference Include="NLog.Extensions.Logging" Version="5.3.14" />
-  </ItemGroup>
+    <PropertyGroup>
+        <OutputPath>../../../build/controller/control-process</OutputPath>
+        <StartWorkingDirectory>../../../build/controller/control-process</StartWorkingDirectory>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    </PropertyGroup>
 
-  <Target Name="BuildBackend" BeforeTargets="Build">
-    <Exec Command="dotnet build ../backend/Backend.csproj" />
-  </Target>
+    <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
+        <DefineConstants>WINDOWS</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="NLog" Version="5.3.4"/>
+        <PackageReference Include="NLog.Config" Version="4.7.15"/>
+        <PackageReference Include="NLog.Extensions.Logging" Version="5.3.14"/>
+    </ItemGroup>
+
+    <Target Name="BuildBackend" BeforeTargets="Build">
+        <Exec Command="dotnet build ../backend/Backend.csproj"/>
+    </Target>
 
 </Project>

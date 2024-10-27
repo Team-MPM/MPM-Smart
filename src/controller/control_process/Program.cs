@@ -8,7 +8,11 @@ namespace ControlProcess;
 
 internal class Program
 {
-    public const string BackendExecutablePath = "../backend/backend.exe";
+#if WINDOWS
+    private const string BackendExecutablePath = "../backend/backend.exe";
+#else
+    private const string BackendExecutablePath = "../backend/backend";
+#endif
     public const string BackendProcessName = "Mpm-Smart-Backend";
     public const int SignalWatchdogStopCode = 100;
 
@@ -100,7 +104,8 @@ internal class Program
         return loggerFactory.CreateLogger("Mpm-Smart-Watchdog");
     }
 
-    public static Thread LaunchControlProcess(ILogger logger, string path, string processName, Action<ILogger> restartCallback)
+    public static Thread LaunchControlProcess(ILogger logger, string path, string processName,
+        Action<ILogger> restartCallback)
     {
         try
         {
