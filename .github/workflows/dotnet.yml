@@ -27,5 +27,7 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
+    - name: PWD
+      run: pwd
     - name: Test
       run: dotnet test --no-build --verbosity normal
