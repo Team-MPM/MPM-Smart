@@ -20,9 +20,19 @@ builder.Services.AddHostedService(sp => sp.GetRequiredService<DbInitializer>());
 
 builder.Services.AddSingleton<PluginManager>();
 builder.Services.AddSingleton<PluginLoader>();
-builder.Services.AddHostedService(sp => sp.GetRequiredService<PluginLoader>());
 
 var app = builder.Build();
+
+var pluginLoader = app.Services.GetRequiredService<PluginLoader>();
+await pluginLoader.StartAsync(CancellationToken.None);
+await pluginLoader.WaitForPluginsToLoadAsync();
+
+app.UseRouting();
+
+var pluginManager = app.Services.GetRequiredService<PluginManager>();
+var pluginEndpoints = pluginManager.Plugins.SelectMany(p => p.Endpoints);
+foreach (var registerPluginEndpoint in pluginEndpoints)
+    registerPluginEndpoint(app);
 
 app.MapGet("/", () => "Hello World!");
 

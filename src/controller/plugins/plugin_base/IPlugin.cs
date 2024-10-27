@@ -1,6 +1,17 @@
-﻿namespace PluginBase;
+﻿using Microsoft.AspNetCore.Routing;
 
-public interface IPlugin
+namespace PluginBase;
+
+public interface IPlugin : IDisposable
 {
+    Guid Guid { get; }
+    string Name { get; }
+    string Description { get; }
+    string Author { get; }
+    string Version { get; }
+    string IconUrl { get; }
+    string PluginUrl { get; }
+    IEnumerable<Action<IEndpointRouteBuilder>> Endpoints { get; }
     
+    void Initialize();
 }
