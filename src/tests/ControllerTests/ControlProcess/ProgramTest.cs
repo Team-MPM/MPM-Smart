@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using System.Net;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -14,7 +15,7 @@ public class ProgramTest : IAsyncLifetime
 #if WINDOWS
     private const string BackendExecutablePath = "../backend/backend.exe";
 #else
-    private const string BackendExecutablePath = "../backend/backend";
+    private const string BackendExecutablePath = "../backend/Backend";
 #endif
     private const string BackendProcessName = "Mpm-Smart-Backend-Test-Instance";
 
@@ -28,7 +29,14 @@ public class ProgramTest : IAsyncLifetime
         return Task.CompletedTask;
     }
 
-    public Task DisposeAsync() => Task.CompletedTask;
+    public Task DisposeAsync()
+    {
+        var processes = Process.GetProcessesByName("Backend");
+        foreach (var process in processes)
+            process.Kill();
+        
+        return Task.CompletedTask;
+    }
 
     [Fact]
     public void LaunchControlProcess_ShouldLaunchControlProcess()

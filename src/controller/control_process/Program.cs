@@ -11,7 +11,7 @@ internal class Program
 #if WINDOWS
     private const string BackendExecutablePath = "../backend/backend.exe";
 #else
-    private const string BackendExecutablePath = "../backend/backend";
+    private const string BackendExecutablePath = "../backend/Backend";
 #endif
     public const string BackendProcessName = "Mpm-Smart-Backend";
     public const int SignalWatchdogStopCode = 100;
