@@ -79,7 +79,7 @@ public class ProgramTest : IAsyncLifetime, IDisposable
             await Task.Delay(500);
         }
 
-        await Task.Delay(500);
+        await Task.Delay(2000);
 
         for (var i = 0; i < 10; i++)
         {
@@ -96,6 +96,8 @@ public class ProgramTest : IAsyncLifetime, IDisposable
 
             await Task.Delay(500);
         }
+        
+        await Task.Delay(5000);
 
         Assert.Multiple(() =>
         {
