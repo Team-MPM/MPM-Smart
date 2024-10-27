@@ -13,6 +13,7 @@ public static class HttpClientFactoryHelper
         services.AddHttpClient(TestClientName, client =>
         {
             client.BaseAddress = new Uri(baseUrl);
+            client.Timeout = TimeSpan.FromSeconds(5);
         });
 
         var serviceProvider = services.BuildServiceProvider();

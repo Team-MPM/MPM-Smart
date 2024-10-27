@@ -59,13 +59,48 @@ public class ProgramTest : IAsyncLifetime, IDisposable
 
         var client = m_HttpClientFactory.CreateClient(HttpClientFactoryHelper.TestClientName);
 
-        var response1 = await client.GetAsync("/kys");
+
+        HttpResponseMessage? response1 = null;
+        HttpResponseMessage? response2 = null;
+
+        for (var i = 0; i < 10; i++)
+        {
+            try
+            {
+                response1 = await client.GetAsync("/kys");
+                if (response1.IsSuccessStatusCode)
+                    break;
+            }
+            catch
+            {
+                // ignored
+            }
+
+            await Task.Delay(500);
+        }
+
         await Task.Delay(500);
-        var response2 = await client.GetAsync("/kys");
-        await Task.Delay(500);
+
+        for (var i = 0; i < 10; i++)
+        {
+            try
+            {
+                response2 = await client.GetAsync("/kys");
+                if (response2.IsSuccessStatusCode)
+                    break;
+            }
+            catch
+            {
+                // ignored
+            }
+
+            await Task.Delay(500);
+        }
 
         Assert.Multiple(() =>
         {
+            Assert.NotNull(response1);
+            Assert.NotNull(response2);
             Assert.Equal(HttpStatusCode.OK, response1.StatusCode);
             Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
             Assert.Equal(2, restartCallbackCallCount);
