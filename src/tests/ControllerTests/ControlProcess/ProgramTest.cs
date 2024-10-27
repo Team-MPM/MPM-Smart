@@ -23,7 +23,7 @@ public class ProgramTest : IAsyncLifetime
 
     public Task InitializeAsync()
     {
-        Directory.SetCurrentDirectory(Path.Combine(Assembly.GetExecutingAssembly().Location, "../../../../../../../build/controller/control-process"));
+        Directory.SetCurrentDirectory(Path.Combine(Assembly.GetExecutingAssembly().Location, "../../../../../../../build/controller/backend"));
         m_HttpClientFactory = HttpClientFactoryHelper.CreateHttpClientFactory("http://localhost:54321");
         return Task.CompletedTask;
     }
