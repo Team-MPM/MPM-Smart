@@ -10,7 +10,7 @@ using Xunit;
 namespace ControllerTests.ControlProcess;
 
 [TestSubject(typeof(Program))]
-public class ProgramTest : IAsyncLifetime
+public class ProgramTest : IAsyncLifetime, IDisposable
 {
 #if WINDOWS
     private const string BackendExecutablePath = "../backend/backend.exe";
@@ -24,18 +24,22 @@ public class ProgramTest : IAsyncLifetime
 
     public Task InitializeAsync()
     {
-        Directory.SetCurrentDirectory(Path.Combine(Assembly.GetExecutingAssembly().Location, "../../../../../../../build/controller/backend"));
+        Directory.SetCurrentDirectory(Path.Combine(Assembly.GetExecutingAssembly().Location,
+            "../../../../../../../build/controller/backend"));
         m_HttpClientFactory = HttpClientFactoryHelper.CreateHttpClientFactory("http://localhost:54321");
         return Task.CompletedTask;
     }
 
     public Task DisposeAsync()
     {
+        return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
         var processes = Process.GetProcessesByName("Backend");
         foreach (var process in processes)
             process.Kill();
-        
-        return Task.CompletedTask;
     }
 
     [Fact]
