@@ -6,7 +6,7 @@ using NLog.Targets;
 
 namespace ControlProcess;
 
-internal class Program
+public class Program
 {
 #if WINDOWS
     private const string BackendExecutablePath = "../backend/backend.exe";

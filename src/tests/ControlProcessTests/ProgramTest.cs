@@ -1,13 +1,14 @@
 ﻿using System.Diagnostics;
 using System.Net;
 using System.Reflection;
-using Microsoft.Extensions.Logging;
-using Moq;
 using ControlProcess;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
+using Moq;
+using TestBase.Helpers;
 using Xunit;
 
-namespace ControllerTests.ControlProcess;
+namespace ControlProcessTests;
 
 [TestSubject(typeof(Program))]
 public class ProgramTest : IAsyncLifetime, IDisposable

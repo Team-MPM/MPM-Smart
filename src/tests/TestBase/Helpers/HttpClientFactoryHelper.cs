@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace ControllerTests;
-
+namespace TestBase.Helpers;
 
 public static class HttpClientFactoryHelper
 {

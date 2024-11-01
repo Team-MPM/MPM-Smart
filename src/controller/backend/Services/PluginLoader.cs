@@ -12,7 +12,7 @@ public class PluginLoader(
     public const string ActivitySourceName = nameof(PluginLoader);
 
     private readonly ActivitySource m_ActivitySource = new(ActivitySourceName);
-    private readonly AssemblyLoadContext m_LoadContext = new AssemblyLoadContext(nameof(PluginLoader), true);
+    private readonly AssemblyLoadContext m_LoadContext = new(nameof(PluginLoader), true);
     private readonly TaskCompletionSource m_PluginsLoaded = new();
 
     public Task WaitForPluginsToLoadAsync() => m_PluginsLoaded.Task;
@@ -37,26 +37,9 @@ public class PluginLoader(
                 foreach (var plugin in assembly.DefinedTypes.Where(t =>
                              t.GetInterfaces().Any(i => i.FullName == typeof(IPlugin).FullName) == true))
                 {
-                    // var constructor = plugin.GetConstructor(Type.EmptyTypes);
-                    // if (constructor is null)
-                    // {
-                    //     logger.LogError("Failed to find constructor for plugin {PluginName}", plugin.FullName);
-                    //     continue;
-                    // }
-                    //
-                    // var instance = constructor.Invoke(null);
-                    
                     var instance = Activator.CreateInstance(plugin.AsType());
-                    
-                    // if (instance is not IPlugin pluginInstance)
-                    // {
-                    //     logger.LogError("Failed to create instance of plugin {PluginName}", plugin.FullName);
-                    //     continue;
-                    // }
-
-                    var type = instance.GetType();
-                    
-                    pluginManager.RegisterPlugin((IPlugin)instance);
+                    var pluginInstance = (IPlugin)instance!;
+                    pluginManager.RegisterPlugin(pluginInstance);
                 }
             }
         }
