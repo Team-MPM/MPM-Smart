@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.Loader;
 using PluginBase;
 
@@ -7,13 +8,15 @@ namespace Backend.Services;
 public class PluginLoader(
     IServiceProvider serviceProvider,
     ILogger<PluginLoader> logger
-) : BackgroundService, IDisposable
+) : BackgroundService
 {
     public const string ActivitySourceName = nameof(PluginLoader);
 
     private readonly ActivitySource m_ActivitySource = new(ActivitySourceName);
     private readonly AssemblyLoadContext m_LoadContext = new(nameof(PluginLoader), true);
     private readonly TaskCompletionSource m_PluginsLoaded = new();
+
+    public List<Assembly> PluginAssemblies { get; } = [];
 
     public Task WaitForPluginsToLoadAsync() => m_PluginsLoaded.Task;
 
@@ -33,7 +36,8 @@ public class PluginLoader(
             {
                 var assembly = m_LoadContext.LoadFromAssemblyPath(dllPath);
                 logger.LogInformation("Loaded assembly {AssemblyName}", assembly.FullName);
-
+                PluginAssemblies.Add(assembly);
+                
                 foreach (var plugin in assembly.DefinedTypes.Where(t =>
                              t.GetInterfaces().Any(i => i.FullName == typeof(IPlugin).FullName) == true))
                 {
