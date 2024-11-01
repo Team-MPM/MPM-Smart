@@ -17,7 +17,7 @@ public class PluginFixture
     {
         var pluginSourceDir = Path.Combine(Assembly.GetExecutingAssembly().Location,
             "../../../../../../../build/plugins");
-        var pluginTargetDir = Path.Combine(Assembly.GetExecutingAssembly().Location, "../Plugins");
+        var pluginTargetDir = Path.Combine(Assembly.GetExecutingAssembly().Location, "../plugins");
         var appPath = Path.Combine(Assembly.GetExecutingAssembly().Location, "../temp/app");
         
         DirectoryHelpers.EnsureEmpty(pluginSourceDir);
