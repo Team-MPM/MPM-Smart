@@ -1,27 +1,88 @@
+using System.Diagnostics;
 using Backend.Services;
 using Data.System;
 using Microsoft.EntityFrameworkCore;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Database
+
 builder.Services.AddDbContextPool<SystemDbContext>(options =>
 {
-    options.UseSqlite("Data Source=system.db", options =>
+    options.UseSqlite("Data Source=system.db", dbContextOptions =>
     {
-        options.MigrationsAssembly(typeof(SystemDbContext).Assembly.FullName);
+        dbContextOptions.MigrationsAssembly(typeof(SystemDbContext).Assembly.FullName);
     });
 
-    options.EnableSensitiveDataLogging();
+    //options.EnableSensitiveDataLogging();
     options.EnableDetailedErrors();
 });
 
 builder.Services.AddSingleton<DbInitializer>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<DbInitializer>());
 
+// Logging and Telemetry
+
+var telemetryDataService = new TelemetryDataService();
+builder.Services.AddSingleton(telemetryDataService);
+
+builder.Services.AddLogging(options =>
+{
+    options.ClearProviders();
+
+    options.AddSerilog(new LoggerConfiguration()
+        .WriteTo.Console()
+        .CreateLogger());
+    
+    options.AddSerilog(new LoggerConfiguration()
+        .WriteTo.File("logs/backend.log")
+        .MinimumLevel.Information()
+        .CreateLogger());
+    
+    options.AddSerilog(new LoggerConfiguration()
+        .WriteTo.File("logs/error.log")
+        .MinimumLevel.Error()
+        .CreateLogger());
+});
+
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(options =>
+    {
+        options.AddService("Mpm-Smart-Backend");
+    })
+    .WithLogging(options =>
+    {
+        options.AddInMemoryExporter(telemetryDataService.LogRecords);
+    })
+    .WithMetrics(options =>
+    {
+        options.AddAspNetCoreInstrumentation();
+        options.AddRuntimeInstrumentation()
+            .AddMeter(/* Register custom meters here later*/);
+        options.AddInMemoryExporter(telemetryDataService.Metrics);
+    })
+    .WithTracing(options =>
+    {
+        options.AddAspNetCoreInstrumentation();
+        options.AddHttpClientInstrumentation();
+        options.AddInMemoryExporter(telemetryDataService.Traces);
+    });
+
+// Plugins
+
 builder.Services.AddSingleton<PluginManager>();
 builder.Services.AddSingleton<PluginLoader>();
 
+// ----------------------------------------------------------------
+
 var app = builder.Build();
+
+// ----------------------------------------------------------------
 
 var pluginLoader = app.Services.GetRequiredService<PluginLoader>();
 await pluginLoader.StartAsync(CancellationToken.None);

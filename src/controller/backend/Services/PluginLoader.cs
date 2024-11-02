@@ -29,6 +29,7 @@ public class PluginLoader(
         var pluginManager = serviceProvider.GetRequiredService<PluginManager>();
 
         var pluginsDirectory = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "plugins");
+        logger.LogInformation("Loading Plugin from Directory: {PluginDirectory}", pluginsDirectory);
 
         foreach (var pluginDirectory in Directory.EnumerateDirectories(pluginsDirectory))
         {
