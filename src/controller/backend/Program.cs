@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Backend.Api;
 using Backend.Services;
 using Data.System;
 using Microsoft.EntityFrameworkCore;
@@ -62,9 +63,15 @@ builder.Services.AddOpenTelemetry()
     .WithMetrics(options =>
     {
         options.AddAspNetCoreInstrumentation();
-        options.AddRuntimeInstrumentation()
-            .AddMeter(/* Register custom meters here later*/);
-        options.AddInMemoryExporter(telemetryDataService.Metrics);
+        options.AddRuntimeInstrumentation();
+            //.AddMeter(/* Register custom meters here later*/);
+        options.AddInMemoryExporter(telemetryDataService.Metrics, readerOptions =>
+        {
+            readerOptions.PeriodicExportingMetricReaderOptions = new PeriodicExportingMetricReaderOptions
+            {
+                ExportIntervalMilliseconds = 1000
+            };
+        });
     })
     .WithTracing(options =>
     {
@@ -98,5 +105,7 @@ foreach (var registerPluginEndpoint in pluginEndpoints)
 app.MapGet("/", () => "Hello World!");
 
 app.MapGet("/kys", (IHostApplicationLifetime env) => env.StopApplication());
+
+app.MapTelemetryEndpoints();
 
 await app.RunAsync("http://*:54321");
