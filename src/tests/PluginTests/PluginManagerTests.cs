@@ -1,5 +1,8 @@
 ﻿using Backend.Services;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
+using Moq;
+using PluginBase;
 using PluginTests.Fixtures;
 using Xunit;
 
@@ -25,5 +28,46 @@ public class PluginManagerTests(PluginFixture fixture)
         {
             Assert.NotEmpty(plugin.Endpoints);
         });
+    }
+
+    [Fact]
+    public void PluginManager_RegisterPluginShouldInitializePlugin()
+    {
+        var logger = new Mock<ILogger<PluginManager>>().Object;
+        var pluginManager = new PluginManager(logger);
+        
+        var plugin = new Mock<IPlugin>();
+        plugin.Setup(p => p.Name).Returns("TestPlugin");
+        
+        pluginManager.RegisterPlugin(plugin.Object);
+        
+        plugin.Verify(p => p.Initialize(), Times.Once);
+    }
+    
+    [Fact]
+    public void PluginManager_DisposeShouldDisposeAllPlugins()
+    {
+        var logger = new Mock<ILogger<PluginManager>>().Object;
+        var pluginManager = new PluginManager(logger);
+        
+        var plugin = new Mock<IPlugin>();
+        
+        pluginManager.RegisterPlugin(plugin.Object);
+        pluginManager.Dispose();
+        
+        plugin.Verify(p => p.Dispose(), Times.Once);
+    }
+    
+    [Fact]
+    public void PluginManager_RegisterPluginShouldAddPluginToPluginsList()
+    {
+        var logger = new Mock<ILogger<PluginManager>>().Object;
+        var pluginManager = new PluginManager(logger);
+        
+        var plugin = new Mock<IPlugin>();
+        
+        pluginManager.RegisterPlugin(plugin.Object);
+        
+        Assert.Contains(plugin.Object, pluginManager.Plugins);
     }
 }

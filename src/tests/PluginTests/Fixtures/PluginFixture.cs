@@ -7,9 +7,9 @@ namespace PluginTests.Fixtures;
 
 public class PluginFixture
 {
-    public PluginLoader PluginLoader { get; private set; }
-    public PluginManager PluginManager { get; private set; }
-    public ServiceProvider ServiceProvider { get; private set; }
+    public PluginLoader PluginLoader { get; private set; } = null!;
+    public PluginManager PluginManager { get; private set; } = null!;
+    public ServiceProvider ServiceProvider { get; private set; } = null!;
 
     public int PluginCount { get; private set; }
     
