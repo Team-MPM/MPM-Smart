@@ -1,6 +1,9 @@
 using System.Diagnostics;
 using Backend.Api;
 using Backend.Services;
+using Backend.Services.Database;
+using Backend.Services.Plugins;
+using Backend.Services.Telemetry;
 using Data.System;
 using Microsoft.EntityFrameworkCore;
 using OpenTelemetry.Logs;
@@ -29,8 +32,11 @@ builder.Services.AddHostedService(sp => sp.GetRequiredService<DbInitializer>());
 
 // Logging and Telemetry
 
-var telemetryDataService = new TelemetryDataService();
+var telemetryDataService = new TelemetryDataCollector();
 builder.Services.AddSingleton(telemetryDataService);
+builder.Services.AddSingleton<TelemetryDataProvider>();
+builder.Services.AddSingleton<TelemetryDataProcessor>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<TelemetryDataProcessor>());
 
 builder.Services.AddLogging(options =>
 {

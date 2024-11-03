@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Backend.Services;
+using Backend.Services.Plugins;
 using Microsoft.Extensions.DependencyInjection;
 using TestBase.Helpers;
 

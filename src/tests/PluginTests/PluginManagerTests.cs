@@ -1,4 +1,5 @@
 ﻿using Backend.Services;
+using Backend.Services.Plugins;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Moq;

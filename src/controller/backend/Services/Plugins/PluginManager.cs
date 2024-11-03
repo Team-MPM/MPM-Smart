@@ -1,7 +1,6 @@
-using System.Reflection;
 using PluginBase;
 
-namespace Backend.Services;
+namespace Backend.Services.Plugins;
 
 public class PluginManager(ILogger<PluginManager> logger) : IDisposable
 {

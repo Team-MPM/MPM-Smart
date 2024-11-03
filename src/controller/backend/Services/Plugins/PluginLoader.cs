@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Runtime.Loader;
 using PluginBase;
 
-namespace Backend.Services;
+namespace Backend.Services.Plugins;
 
 public class PluginLoader(
     IServiceProvider serviceProvider,

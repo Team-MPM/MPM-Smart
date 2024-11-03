@@ -2,7 +2,7 @@
 using Data.System;
 using Microsoft.EntityFrameworkCore;
 
-namespace Backend.Services;
+namespace Backend.Services.Database;
 
 public class DbInitializer(
     IWebHostEnvironment env, 
