@@ -1,0 +1,21 @@
+﻿<Solution>
+  <Folder Name="/Src/">
+    <Project Path="src\frontend\Frontend.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/Src/Controller/">
+    <Project Path="src\controller\api_schema\ApiSchema.csproj" Type="Classic C#" />
+    <Project Path="src\controller\backend\Backend.csproj" Type="Classic C#" />
+    <Project Path="src\controller\control_process\ControlProcess.csproj" Type="Classic C#" />
+    <Project Path="src\controller\data\Data.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/Src/Controller/Plugins/">
+    <Project Path="src\controller\plugins\plugin_base\PluginBase.csproj" Type="Classic C#" />
+    <Project Path="src\controller\plugins\test_plugin\TestPlugin.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/Src/Tests/">
+    <Project Path="src\tests\ControllerTests\ControllerTests.csproj" Type="Classic C#" />
+    <Project Path="src\tests\ControlProcessTests\ControlProcessTests.csproj" Type="Classic C#" />
+    <Project Path="src\tests\PluginTests\PluginTests.csproj" Type="Classic C#" />
+    <Project Path="src\tests\TestBase\TestBase.csproj" Type="Classic C#" />
+  </Folder>
+</Solution>
