@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using Backend.Api;
-using Backend.Services;
 using Backend.Services.Database;
 using Backend.Services.Plugins;
 using Backend.Services.Telemetry;

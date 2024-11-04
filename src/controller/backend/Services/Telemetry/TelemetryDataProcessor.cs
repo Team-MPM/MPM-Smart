@@ -48,7 +48,7 @@ public class TelemetryDataProcessor(
             await WriteToDisk(m_MetricsBatch, m_MetricsFileStream);
             await WriteToDisk(m_TracesBatch, m_TracesFileStream);
 
-            dataCollector.ClearAll();
+            //dataCollector.ClearAll();
         }
     }
     
@@ -96,6 +96,32 @@ public class TelemetryDataProcessor(
                 });
                 break;
             case Metric metric:
+                foreach (ref readonly var point in metric.GetMetricPoints())
+                {
+                    double value;
+                    switch (metric.MetricType)
+                    {
+                        case MetricType.LongGauge:
+                        case MetricType.LongSum:
+                            value = point.GetSumLong();
+                            break;
+                        case MetricType.DoubleGauge:
+                        case MetricType.DoubleSum:
+                            value = point.GetSumDouble();
+                            break;
+                        case MetricType.Histogram:
+                            value = point.GetHistogramSum();
+                            break;
+                        case MetricType.ExponentialHistogram:
+                        case MetricType.LongSumNonMonotonic:
+                        case MetricType.DoubleSumNonMonotonic:
+                        default:
+                            continue;
+                    }
+
+                    logger.LogInformation("Metric {Name} {Value}", metric.Name, value);
+                }
+
                 m_MetricsBatch.Add(new MetricsEntry()
                 {
                     

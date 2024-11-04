@@ -1,6 +1,4 @@
-﻿namespace ApiSchema.Telemetry;
-
-public interface ICsvSerializable
+﻿public interface ICsvSerializable
 {
-    public string ToCsv();
+    string ToCsv();
 }

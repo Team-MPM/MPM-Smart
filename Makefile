@@ -66,8 +66,11 @@ build-dotnet:
 restore:		
 	dotnet restore -f
 
-add-migration:
-	dotnet ef migrations add $(migrationName) --output-dir SystemMigrations --startup-project src/controller/backend/Backend.csproj --project src/controller/data/Data.csproj
+add-system-migration:
+	dotnet ef migrations add $(name) --context SystemDbContext --output-dir SystemMigrations --startup-project src/controller/backend/Backend.csproj --project src/controller/data/Data.csproj
+
+add-telemetry-migration:
+	dotnet ef migrations add $(name) --context TelemetryDbContext --output-dir TelemetryMigrations --startup-project src/controller/backend/Backend.csproj --project src/controller/data/Data.csproj
 
 clean:
 	rm -rf build/

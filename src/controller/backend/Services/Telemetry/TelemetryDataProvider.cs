@@ -1,21 +1,24 @@
-﻿using ApiSchema.Telemetry;
+﻿using System.Diagnostics;
+using ApiSchema.Telemetry;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
 
 namespace Backend.Services.Telemetry;
 
-public class TelemetryDataProvider
+public class TelemetryDataProvider(TelemetryDataCollector collector)
 {
-    public IEnumerable<LogEntry> GetLogEntries()
+    public IEnumerable<LogRecord> GetLogEntries()
     {
-        throw new NotImplementedException();
+        return collector.LogRecords.ToList();
     }
     
-    public IEnumerable<MetricsEntry> GetMetricsEntries()
+    public IEnumerable<Metric> GetMetricsEntries()
     {
-        throw new NotImplementedException();
+        return collector.Metrics.ToList();
     }
     
-    public IEnumerable<TraceEntry> GetTraceEntries()
+    public IEnumerable<Activity> GetTraceEntries()
     {
-        throw new NotImplementedException();
+        return collector.Traces.ToList();
     }
 }

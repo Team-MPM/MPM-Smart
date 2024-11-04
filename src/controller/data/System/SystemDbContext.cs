@@ -1,5 +1,4 @@
-﻿using System.Data;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data.System;
@@ -10,7 +9,8 @@ public class SystemDbContext(DbContextOptions<SystemDbContext> options) : Identi
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(SystemDbContext).Assembly);
+        modelBuilder.ApplyConfiguration(new UserProfileEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new SystemUserEntityConfiguration());
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
