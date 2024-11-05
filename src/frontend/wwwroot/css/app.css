@@ -136,10 +136,13 @@ code {
    justify-content: space-between;
 }
 .Dashboard-Main{
+    
     display: flex;
     margin-top: 400px;
+    padding-right: 10px;
 }
 .Main-Content{
+    padding
     width: 100%;
     display: flex;
     flex-direction: row;
