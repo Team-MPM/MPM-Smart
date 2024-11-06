@@ -1,0 +1,36 @@
+﻿@page "/Settings/General"
+<h1>Benutzer</h1>
+<MudCard>
+    <MudAvatar Style="margin: 5px" Color="Color.Primary">D</MudAvatar>
+
+    <MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
+        <MudCardContent>
+            <MudTextField Label="Benutzername" Placeholder="Enter username" Value="username" />
+        </MudCardContent>
+    </MudCard>
+    <MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
+        <MudCardContent>
+            <MudTextField Label="Passwort" Placeholder="Enter password" Value="passwort" />
+        </MudCardContent>
+    </MudCard>
+    <MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
+        <MudCardContent>
+            <MudCardContent>Light Modus</MudCardContent>
+            <MudSwitch @bind-Value="Basic_Switch2" Color="Color.Primary"/>
+        </MudCardContent>
+    </MudCard>
+    <MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
+        <MudCardContent>
+            <MudRadio Color="Color.Primary" Value="true">Deutsch</MudRadio>
+            <MudRadio Color="Color.Primary" Value="true">English</MudRadio>
+        </MudCardContent>
+    </MudCard>    
+</MudCard>
+
+
+@code {
+    string username = "detrax";
+    string passwort = "*************";
+    public bool Basic_Switch2 { get; set; } = true;
+    
+}

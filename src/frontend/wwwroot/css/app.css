@@ -1,5 +1,7 @@
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    overflow-y: hidden;
+   
 }
 
 h1:focus {
@@ -18,10 +20,6 @@ a, .btn-link {
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-.content {
-    padding-top: 1.1rem;
 }
 
 .valid.modified:not([type=checkbox]) {
@@ -100,4 +98,38 @@ a, .btn-link {
 
 code {
     color: #c02d76;
+}
+
+.Login-Card{
+    align-items: center;
+    justify-content: space-between;
+    width: 550px;
+    height: 400px;
+    padding: 30px;
+}
+.Login{
+    display: flex;
+    margin-top: 100px;
+    justify-content: center;
+    align-items: center;
+}
+.Login-Form{
+    height: 300px;
+    width: 100%;
+    display: flex;
+}
+.Login-Heading{
+    padding-bottom: 20px;
+}
+.Login-Header{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.Login-RememberMe{
+    width: 100%;
+    flex-direction: row;
+    display: flex;
+   justify-content: space-between;
 }

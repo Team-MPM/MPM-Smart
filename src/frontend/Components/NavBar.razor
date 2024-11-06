@@ -1,0 +1,26 @@
+﻿<MudThemeProvider/>
+
+
+<MudLayout>
+    <MudPaper Class="" Height="100vh">
+        <MudNavMenu Class="">
+            <MudNavGroup Icon="@Icons.Material.Filled.Dashboard" Title="Dashboards" Expanded="true">
+                <MudNavLink Href="/"  Match="NavLinkMatch.Prefix">Dashboard 1</MudNavLink>
+                <MudNavLink Href="/"  Match="NavLinkMatch.Prefix">Dashboard 2</MudNavLink>
+            </MudNavGroup>
+            <MudNavGroup Icon="@Icons.Material.Filled.Devices" Title="Devices" Expanded="true">
+                <MudNavLink Href="/Devices/Device01"  Match="NavLinkMatch.Prefix">Sensor 1</MudNavLink>
+                <MudNavLink Href="/Devices/Device02"  Match="NavLinkMatch.Prefix">Sensor 2</MudNavLink>
+            </MudNavGroup>
+            <MudNavGroup Icon="@Icons.Material.Filled.Settings" Title="Settings" Expanded="true">
+                <MudNavLink Href="/Settings/General" Match="NavLinkMatch.Prefix">General</MudNavLink>
+                <MudNavLink Href="/Settings/Users" Match="NavLinkMatch.Prefix">Users</MudNavLink>
+                <MudNavLink Href="/Settings/logs" Match="NavLinkMatch.Prefix">Logs</MudNavLink>
+            </MudNavGroup>
+        </MudNavMenu>
+    </MudPaper>
+</MudLayout>
+
+@code {
+    
+}
