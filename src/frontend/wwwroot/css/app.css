@@ -103,7 +103,7 @@ a, .btn-link {
 code {
     color: #c02d76;
 }
-/*
+
 .Login-Card{
     align-items: center;
     justify-content: space-between;
@@ -137,6 +137,8 @@ code {
     display: flex;
    justify-content: space-between;
 }
+
+/*
 .Dashboard-Main{
     
     display: flex;

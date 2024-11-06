@@ -3,15 +3,12 @@
 
 
 <MudLayout Class="Login">
-    <MudAppBar >
-        <div Class="Login-Header">
-            <h3>MPM-Smart</h3>
-            <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" Edge="Edge.Start"/>
-        </div>
-        
+    <MudAppBar Fixed="true">
+        <h3>MPM-Smart</h3>
+        <MudSpacer/>
+        <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" Edge="Edge.Start"/>
     </MudAppBar>
     <MudCard Class="Login-Card">
-
         @Body
     </MudCard>
 </MudLayout>
