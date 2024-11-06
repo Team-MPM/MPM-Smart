@@ -22,10 +22,6 @@ a, .btn-link {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
-.content {
- 
-}
-
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;
 }
@@ -137,44 +133,3 @@ code {
     display: flex;
    justify-content: space-between;
 }
-
-/*
-.Dashboard-Main{
-    
-    display: flex;
-    margin-top: 400px;
-    padding-right: 10px;
-}
-.Main-Content{
-    padding: 0;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-}
-.Nav-Bar{
-    padding: 0;
-    width: 250px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-}
-.Main-Layout{
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-}
-.Header-Layout{
-    height: 100px;
-    width: 100%;
-}
-
-.MainLayout-NavBar{
-    padding-right: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}*/
