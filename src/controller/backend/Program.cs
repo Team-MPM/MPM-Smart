@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO.Abstractions;
 using Backend.Api;
 using Backend.Services.Database;
 using Backend.Services.Plugins;
@@ -12,6 +13,10 @@ using OpenTelemetry.Trace;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// General
+
+builder.Services.AddSingleton<IFileSystem, FileSystem>();
 
 // Database
 
@@ -87,8 +92,8 @@ builder.Services.AddOpenTelemetry()
 
 // Plugins
 
-builder.Services.AddSingleton<PluginManager>();
-builder.Services.AddSingleton<PluginLoader>();
+builder.Services.AddSingleton<IPluginManager, PluginManager>();
+builder.Services.AddSingleton<IPluginLoader, PluginLoader>();
 
 // ----------------------------------------------------------------
 

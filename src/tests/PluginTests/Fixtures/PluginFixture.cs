@@ -1,50 +1,73 @@
-﻿using System.Reflection;
+﻿using System.IO.Abstractions;
+using System.IO.Abstractions.TestingHelpers;
+using System.Reflection;
 using Backend.Services;
 using Backend.Services.Plugins;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Moq;
 using TestBase.Helpers;
 
 namespace PluginTests.Fixtures;
 
 public class PluginFixture
 {
-    public PluginLoader PluginLoader { get; private set; } = null!;
-    public PluginManager PluginManager { get; private set; } = null!;
-    public ServiceProvider ServiceProvider { get; private set; } = null!;
-
-    public int PluginCount { get; private set; }
+    public Mock<IPluginLoader> MockPluginLoader { get; private set; }
+    public Mock<IPluginManager> MockPluginManager { get; private set; }
+    public Mock<IWebHostEnvironment> MockWebHostEnvironment { get; private set; }
     
+    public ServiceProvider ServiceProvider { get; private set; }
+    public MockFileSystem MockFileSystem { get; set; }
+    
+    public int PluginCount { get; private set; }
+
     public PluginFixture()
     {
-        var pluginSourceDir = Path.Combine(Assembly.GetExecutingAssembly().Location,
+        var assemblyLocation = Assembly.GetExecutingAssembly().Location;
+        var pluginSourceDir = Path.Combine(assemblyLocation,
             "../../../../../../../build/plugins");
-        var pluginTargetDir = Path.Combine(Assembly.GetExecutingAssembly().Location, "../plugins");
-        var appPath = Path.Combine(Assembly.GetExecutingAssembly().Location, "../temp/app");
+        var pluginTargetDir = Path.Combine(assemblyLocation, "../plugins");
+        var appPath = Path.Combine(assemblyLocation, "../temp/app");
         
-        DirectoryHelpers.EnsureEmpty(pluginSourceDir);
-        DirectoryHelpers.EnsureEmpty(pluginTargetDir);
-        DirectoryHelpers.EnsureEmpty(appPath);
+        const string testPlugin1Json = $$"""
+                                         {
+                                           "Name": "Test Plugin 1",
+                                           "RegistryName": "test-plugin1",
+                                           "Description": "A test plugin",
+                                           "Author": "Gabriel Martin",
+                                           "Version": "1.0.0"
+                                         }
+                                         """;
         
-        DirectoryHelpers.Copy(pluginSourceDir, pluginTargetDir, true);
-        Directory.SetCurrentDirectory(appPath);
-        
-        PluginCount = Directory.GetDirectories(pluginTargetDir).Length;
-    }
+        var testPluginAssemblyBin = File.ReadAllBytes(pluginSourceDir + "/test-plugin/TestPlugin.dll");
 
-    public void LoadPlugins()
-    {
+        MockFileSystem = new MockFileSystem(new Dictionary<string, MockFileData>()
+        {
+            {
+                "mpm-smart/bin/plugins/test/plugin.json",
+                new MockFileData(testPlugin1Json)
+            },
+            {
+                "mpm-smart/bin/plugins/test/TestPlugin.dll",
+                new MockFileData(testPluginAssemblyBin)
+            }
+        }, Path.Combine(assemblyLocation, "../app/bin"));
+        
+        PluginCount = 1;
+
         var services = new ServiceCollection();
 
-        services.AddSingleton<PluginManager>();
-        services.AddSingleton<PluginLoader>();
+        MockWebHostEnvironment = new Mock<IWebHostEnvironment>();
+        MockPluginLoader = new Mock<IPluginLoader>();
+        MockPluginManager = new Mock<IPluginManager>();
+
+        services.AddSingleton(MockPluginLoader.Object);
+        services.AddSingleton(MockPluginManager.Object);
+        services.AddSingleton(MockWebHostEnvironment.Object);
+        services.AddSingleton<IFileSystem>(MockFileSystem);
         services.AddLogging();
 
         ServiceProvider = services.BuildServiceProvider();
-
-        PluginLoader = ServiceProvider.GetRequiredService<PluginLoader>();
-        PluginManager = ServiceProvider.GetRequiredService<PluginManager>();
-        
-        PluginLoader.StartAsync(CancellationToken.None);
-        PluginLoader.WaitForPluginsToLoadAsync().Wait();
     }
 }

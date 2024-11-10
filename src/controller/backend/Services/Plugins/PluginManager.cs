@@ -6,18 +6,11 @@ public class PluginManager(
     IServiceProvider sp,
     ILogger<PluginManager> logger,
     IWebHostEnvironment env
-) : IDisposable
+) : IPluginManager
 {
     public List<IPlugin> Plugins { get; } = [];
     public ServiceProvider? PluginServices { get; set; }
-
-
-    /// <summary>
-    /// Register a plugin with the PluginManager
-    /// </summary>
-    /// <param name="plugin">Plugin instance to register</param>
-    /// <param name="path">Plugin assembly Path</param>
-    /// <returns>Registration successful</returns>
+    
     public bool RegisterPlugin(IPlugin plugin, string path)
     {
         logger.LogInformation("Registered plugin {Id}", plugin.Guid.ToString());
@@ -54,8 +47,7 @@ public class PluginManager(
                 hostedService.StopAsync(CancellationToken.None).GetAwaiter().GetResult();
             }
         }
-
-
+        
         foreach (var plugin in Plugins)
         {
             plugin.Dispose();
@@ -76,12 +68,7 @@ public class PluginManager(
         PluginServices = services.BuildServiceProvider();
     }
 
-    /// <summary>
-    /// Should be called after all plugins are registered and configured.
-    /// Starts the Plugin System and launches all registered Services.
-    /// </summary>
-    /// <exception cref="InvalidOperationException">Plugin services aren't configured</exception>
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public async Task StartAsync()
     {
         if (PluginServices is null)
             throw new InvalidOperationException("Plugin Services not configured");
@@ -92,7 +79,7 @@ public class PluginManager(
         var hostedServices = PluginServices.GetServices<IHostedService>();
 
         foreach (var hostedService in hostedServices)
-            await hostedService.StartAsync(cancellationToken);
+            await hostedService.StartAsync(CancellationToken.None);
 
         logger.LogInformation("Plugin System started");
     }

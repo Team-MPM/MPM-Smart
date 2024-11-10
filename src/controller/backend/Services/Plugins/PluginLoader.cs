@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO.Abstractions;
 using System.Reflection;
 using System.Runtime.Loader;
 using PluginBase;
@@ -7,8 +8,10 @@ namespace Backend.Services.Plugins;
 
 public class PluginLoader(
     IServiceProvider serviceProvider,
-    ILogger<PluginLoader> logger
-) : BackgroundService
+    IWebHostEnvironment env,
+    ILogger<PluginLoader> logger,
+    IFileSystem fileSystem
+) : BackgroundService, IPluginLoader
 {
     public const string ActivitySourceName = nameof(PluginLoader);
 
@@ -19,6 +22,11 @@ public class PluginLoader(
     public List<Assembly> PluginAssemblies { get; } = [];
 
     public Task WaitForPluginsToLoadAsync() => m_PluginsLoaded.Task;
+    
+    public async Task LoadDefaultPluginsAsync()
+    {
+        await ExecuteAsync(CancellationToken.None);
+    }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -27,15 +35,33 @@ public class PluginLoader(
         var sw = Stopwatch.StartNew();
 
         var pluginManager = serviceProvider.GetRequiredService<PluginManager>();
-
-        var pluginsDirectory = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "plugins");
+        var pluginsDirectory = Path.Combine(env.ContentRootPath, "..", "..", "plugins");
+        
+        if (!fileSystem.Directory.Exists(pluginsDirectory))
+        {
+            logger.LogWarning("No plugins directory found at {PluginsDirectory}", pluginsDirectory);
+            m_PluginsLoaded.SetResult();
+            return Task.CompletedTask;
+        }
+        
         logger.LogInformation("Loading Plugin from Directory: {PluginDirectory}", pluginsDirectory);
 
-        foreach (var pluginDirectory in Directory.EnumerateDirectories(pluginsDirectory))
+        LoadPluginsFromDirectory(pluginsDirectory, pluginManager);
+
+        logger.LogInformation("Plugin System initialization completed after {ElapsedMilliseconds}ms",
+            sw.ElapsedMilliseconds);
+
+        m_PluginsLoaded.SetResult();
+        return Task.CompletedTask;
+    }
+
+    public void LoadPluginsFromDirectory(string pluginsDirectory, PluginManager pluginManager)
+    {
+        foreach (var pluginDirectory in fileSystem.Directory.EnumerateDirectories(pluginsDirectory))
         {
-            foreach (var dllPath in Directory.EnumerateFiles(pluginDirectory, "*.dll"))
+            foreach (var dllPath in fileSystem.Directory.EnumerateFiles(pluginDirectory, "*.dll"))
             {
-                var assembly = m_LoadContext.LoadFromAssemblyPath(dllPath);
+                var assembly = m_LoadContext.LoadFromStream(fileSystem.File.OpenRead(dllPath));
                 logger.LogInformation("Loaded assembly {AssemblyName}", assembly.FullName);
                 PluginAssemblies.Add(assembly);
                 
@@ -48,12 +74,6 @@ public class PluginLoader(
                 }
             }
         }
-
-        logger.LogInformation("Plugin System initialization completed after {ElapsedMilliseconds}ms",
-            sw.ElapsedMilliseconds);
-
-        m_PluginsLoaded.SetResult();
-        return Task.CompletedTask;
     }
 
     public override void Dispose()

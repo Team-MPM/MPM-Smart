@@ -8,10 +8,10 @@ public static class PluginExtensions
     /// <param name="webApplication"></param>
     public static async Task StartPluginSystemAsync(this WebApplication webApplication)
     {
-        var pluginManager = webApplication.Services.GetRequiredService<PluginManager>();
+        var pluginManager = webApplication.Services.GetRequiredService<IPluginManager>();
         pluginManager.MapPlugins(webApplication);
         pluginManager.ConfigureServices();
-        await pluginManager.StartAsync(CancellationToken.None);
+        await pluginManager.StartAsync();
     }
 
     /// <summary>
@@ -21,8 +21,7 @@ public static class PluginExtensions
     /// <returns>Task representing the Plugin Loading process</returns>
     public static async Task LoadPluginsAsync(this WebApplication webApplication)
     {
-        var pluginLoader = webApplication.Services.GetRequiredService<PluginLoader>();
-        await pluginLoader.StartAsync(CancellationToken.None);
-        await pluginLoader.WaitForPluginsToLoadAsync();
+        var pluginLoader = webApplication.Services.GetRequiredService<IPluginLoader>();
+        await pluginLoader.LoadDefaultPluginsAsync();
     }
 }
