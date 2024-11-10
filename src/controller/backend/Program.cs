@@ -96,16 +96,11 @@ var app = builder.Build();
 
 // ----------------------------------------------------------------
 
-var pluginLoader = app.Services.GetRequiredService<PluginLoader>();
-await pluginLoader.StartAsync(CancellationToken.None);
-await pluginLoader.WaitForPluginsToLoadAsync();
+await app.LoadPluginsAsync();
 
 app.UseRouting();
 
-var pluginManager = app.Services.GetRequiredService<PluginManager>();
-var pluginEndpoints = pluginManager.Plugins.SelectMany(p => p.Endpoints);
-foreach (var registerPluginEndpoint in pluginEndpoints)
-    registerPluginEndpoint(app);
+await app.StartPluginSystemAsync();
 
 app.MapGet("/", () => "Hello World!");
 

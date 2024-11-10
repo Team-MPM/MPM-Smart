@@ -44,7 +44,7 @@ public class PluginLoader(
                 {
                     var instance = Activator.CreateInstance(plugin.AsType());
                     var pluginInstance = (IPlugin)instance!;
-                    pluginManager.RegisterPlugin(pluginInstance);
+                    pluginManager.RegisterPlugin(pluginInstance, pluginDirectory);
                 }
             }
         }

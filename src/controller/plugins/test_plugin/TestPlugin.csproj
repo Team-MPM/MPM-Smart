@@ -12,11 +12,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\plugin_base\PluginBase.csproj" Private="False" />
+        <ProjectReference Include="..\plugin_base\PluginBase.csproj" Private="False"/>
     </ItemGroup>
 
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="plugin.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
 </Project>
