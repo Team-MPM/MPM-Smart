@@ -7,7 +7,7 @@ using PluginBase;
 namespace Backend.Services.Plugins;
 
 public class PluginLoader(
-    IServiceProvider serviceProvider,
+    IPluginManager pluginManager,
     IWebHostEnvironment env,
     ILogger<PluginLoader> logger,
     IFileSystem fileSystem
@@ -34,7 +34,6 @@ public class PluginLoader(
 
         var sw = Stopwatch.StartNew();
 
-        var pluginManager = serviceProvider.GetRequiredService<PluginManager>();
         var pluginsDirectory = Path.Combine(env.ContentRootPath, "..", "..", "plugins");
         
         if (!fileSystem.Directory.Exists(pluginsDirectory))
@@ -44,9 +43,7 @@ public class PluginLoader(
             return Task.CompletedTask;
         }
         
-        logger.LogInformation("Loading Plugin from Directory: {PluginDirectory}", pluginsDirectory);
-
-        LoadPluginsFromDirectory(pluginsDirectory, pluginManager);
+        LoadPluginsFromDirectory(pluginsDirectory);
 
         logger.LogInformation("Plugin System initialization completed after {ElapsedMilliseconds}ms",
             sw.ElapsedMilliseconds);
@@ -55,8 +52,10 @@ public class PluginLoader(
         return Task.CompletedTask;
     }
 
-    public void LoadPluginsFromDirectory(string pluginsDirectory, PluginManager pluginManager)
+    public void LoadPluginsFromDirectory(string pluginsDirectory)
     {
+        logger.LogInformation("Loading Plugins from Directory: {PluginDirectory}", pluginsDirectory);
+        
         foreach (var pluginDirectory in fileSystem.Directory.EnumerateDirectories(pluginsDirectory))
         {
             foreach (var dllPath in fileSystem.Directory.EnumerateFiles(pluginDirectory, "*.dll"))
