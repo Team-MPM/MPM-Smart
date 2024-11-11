@@ -6,7 +6,7 @@ public interface IPluginManager : IDisposable
 {
     public List<IPlugin> Plugins { get; }
 
-    public ServiceProvider? PluginServices { get; }
+    public IServiceProvider? PluginServices { get; }
 
     /// <summary>
     /// Register a plugin with the PluginManager
@@ -16,8 +16,16 @@ public interface IPluginManager : IDisposable
     /// <returns>Registration successful</returns>
     public bool RegisterPlugin(IPlugin plugin, string path);
 
+    /// <summary>
+    /// Map all registered plugins to the provided routeBuilder.
+    /// Should be called after all plugins are registered.
+    /// </summary>
+    /// <param name="routeBuilder"></param>
     public void MapPlugins(IEndpointRouteBuilder routeBuilder);
 
+    /// <summary>
+    /// Should be called after all plugins are registered.
+    /// </summary>
     public void ConfigureServices();
 
     /// <summary>
@@ -26,4 +34,10 @@ public interface IPluginManager : IDisposable
     /// </summary>
     /// <exception cref="InvalidOperationException">Plugin services aren't configured</exception>
     public Task StartAsync();
+
+    /// <summary>
+    /// Can be used to wait for the Plugin System to finish initializing.
+    /// </summary>
+    /// <returns>Task representing the wait operation</returns>
+    public Task WaitForPluginInitializationAsync();
 }

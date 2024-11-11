@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Backend.Services.Plugins;
 using Data.System;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,7 +8,8 @@ namespace Backend.Services.Database;
 public class DbInitializer(
     IWebHostEnvironment env, 
     IServiceProvider serviceProvider, 
-    ILogger<DbInitializer> logger
+    ILogger<DbInitializer> logger,
+    IPluginManager pluginManager
     ) : BackgroundService
 {
     public const string ActivitySourceName = "Migrations";
@@ -33,7 +35,30 @@ public class DbInitializer(
 
         await SeedAsync(cancellationToken);
 
-        logger.LogInformation("Database initialization completed after {ElapsedMilliseconds}ms",
+        logger.LogInformation("System Database initialization completed after {ElapsedMilliseconds}ms",
+            sw.ElapsedMilliseconds);
+
+        await pluginManager.WaitForPluginInitializationAsync();
+
+        logger.LogInformation("Starting Plugin System Database initialization after {ElapsedMilliseconds}ms",
+            sw.ElapsedMilliseconds);
+
+        using var pluginScope = pluginManager.PluginServices!.CreateScope();
+        var dbContextTypes = pluginScope.ServiceProvider.GetRequiredService<IServiceCollection>()
+            .Where(sd => sd.ServiceType.IsAssignableTo(typeof(DbContext)))
+            .Select(sd => sd.ServiceType);;
+
+        foreach (var contextType in dbContextTypes)
+        {
+            var dbContext = (DbContext)pluginScope.ServiceProvider
+                .GetRequiredService(contextType);
+            var dbStrategy = dbContext.Database.CreateExecutionStrategy();
+            await dbStrategy.ExecuteAsync(dbContext.Database.MigrateAsync, cancellationToken);
+            logger.LogInformation("Database {DatabaseName} initialization completed after {ElapsedMilliseconds}ms",
+                dbContext.Database.GetDbConnection().Database, sw.ElapsedMilliseconds);
+        }
+
+        logger.LogInformation("Plugin Database System initialization completed after {ElapsedMilliseconds}ms",
             sw.ElapsedMilliseconds);
     }
 

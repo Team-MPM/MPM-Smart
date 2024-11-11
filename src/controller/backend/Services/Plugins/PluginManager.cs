@@ -9,7 +9,11 @@ public class PluginManager(
 ) : IPluginManager
 {
     public List<IPlugin> Plugins { get; } = [];
-    public ServiceProvider? PluginServices { get; set; }
+    public IServiceProvider? PluginServices { get; set; }
+
+    private readonly TaskCompletionSource m_PluginsLoaded = new();
+
+    public Task WaitForPluginInitializationAsync() => m_PluginsLoaded.Task;
     
     public bool RegisterPlugin(IPlugin plugin, string path)
     {
@@ -59,6 +63,7 @@ public class PluginManager(
     public void ConfigureServices()
     {
         var services = new ServiceCollection();
+        services.AddSingleton<IServiceCollection>(services);
 
         foreach (var plugin in Plugins)
         {
@@ -80,6 +85,8 @@ public class PluginManager(
 
         foreach (var hostedService in hostedServices)
             await hostedService.StartAsync(CancellationToken.None);
+
+        m_PluginsLoaded.SetResult();
 
         logger.LogInformation("Plugin System started");
     }

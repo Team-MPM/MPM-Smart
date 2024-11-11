@@ -22,7 +22,7 @@ public class TestPluginClass : PluginBase<TestPluginClass>
         //services.AddDbContextPool
     }
 
-    protected override void SystemStart(IServiceProvider services)
+    protected override void SystemStart()
     {
         
     }

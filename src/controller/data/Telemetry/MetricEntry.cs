@@ -5,10 +5,11 @@ namespace Data.Telemetry;
 
 public class MetricEntry
 {
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public string MeterName { get; set; }
-    public string Type { get; set; }
+    public string Name { get; set; } = null!;
+    public string Description { get; set; } = null!;
+    public string MeterName { get; set; } = null!;
+    public string Type { get; set; } = null!;
+    public string Unit { get; set; } = null!;
 }
 
 public class MetricEntryEntity : MetricEntry
@@ -33,5 +34,8 @@ public class MetricEntryEntityConfiguration : IEntityTypeConfiguration<MetricEnt
         builder.Property(e => e.Type)
             .IsRequired()
             .HasMaxLength(30);
+        builder.Property(e => e.Unit)
+            .HasMaxLength(20)
+            .IsRequired();
     }
 }

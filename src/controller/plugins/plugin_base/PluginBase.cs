@@ -21,6 +21,7 @@ public abstract class PluginBase<T> : IPlugin where T : PluginBase<T>, IDisposab
     public string PluginUrl => $"https://mpm-smart.g-martin.work/plugins/{RegistryName}";
 
     protected IServiceProvider ApplicationServices { get; private set; } = null!;
+    protected IServiceProvider? Services { get; private set; }
     protected ILogger Logger { get; private set; } = null!;
 
     protected string PluginPath { get; private set; } = null!;
@@ -81,14 +82,14 @@ public abstract class PluginBase<T> : IPlugin where T : PluginBase<T>, IDisposab
     }
 
     /// <summary>
-    /// Starts the system for the plugin.
+    /// Starts the system for the plugin. Services are already configured and built here.
     /// </summary>
-    /// <param name="services">The service provider to use for starting the system.</param>
-    protected abstract void SystemStart(IServiceProvider services);
+    protected abstract void SystemStart();
 
     public void OnSystemStart(IServiceProvider services)
     {
-        SystemStart(services);
+        Services = services;
+        SystemStart();
     }
 
     public virtual void Dispose()
