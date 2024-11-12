@@ -1,9 +1,6 @@
-using System.Diagnostics;
 using System.IO.Abstractions;
-using Backend.Api;
 using Backend.Services.Database;
 using Backend.Services.Plugins;
-using Backend.Services.Telemetry;
 using Data.System;
 using Microsoft.EntityFrameworkCore;
 using OpenTelemetry.Logs;
@@ -11,6 +8,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
+using Shared.Services.Telemetry;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,9 +36,6 @@ builder.Services.AddHostedService(sp => sp.GetRequiredService<DbInitializer>());
 
 var telemetryDataService = new TelemetryDataCollector();
 builder.Services.AddSingleton(telemetryDataService);
-builder.Services.AddSingleton<TelemetryDataProvider>();
-builder.Services.AddSingleton<TelemetryDataProcessor>();
-builder.Services.AddHostedService(sp => sp.GetRequiredService<TelemetryDataProcessor>());
 
 builder.Services.AddLogging(options =>
 {
@@ -111,6 +106,4 @@ app.MapGet("/", () => "Hello World!");
 
 app.MapGet("/kys", (IHostApplicationLifetime env) => env.StopApplication());
 
-app.MapTelemetryEndpoints();
-
-await app.RunAsync("http://*:54321");
+await app.RunAsync("http://*:543");

@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
-using ApiSchema.Telemetry;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
+using Shared.Services.Telemetry;
 
-namespace Backend.Services.Telemetry;
+namespace TelemetryPlugin.Services;
 
 public class TelemetryDataProvider(TelemetryDataCollector collector)
 {

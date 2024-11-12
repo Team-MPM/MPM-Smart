@@ -13,6 +13,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\plugin_base\PluginBase.csproj" Private="False"/>
+        <ProjectReference Include="..\..\Shared\Shared.csproj" Private="False" />
     </ItemGroup>
 
     <ItemGroup>

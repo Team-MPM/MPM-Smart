@@ -1,4 +1,6 @@
 using PluginBase;
+using Serilog;
+using Shared.Services.Telemetry;
 
 namespace Backend.Services.Plugins;
 
@@ -64,6 +66,27 @@ public class PluginManager(
     {
         var services = new ServiceCollection();
         services.AddSingleton<IServiceCollection>(services);
+
+        services.AddSingleton(sp.GetRequiredService<TelemetryDataCollector>());
+
+        services.AddLogging(options =>
+        {
+            options.ClearProviders();
+
+            options.AddSerilog(new LoggerConfiguration()
+                .WriteTo.Console()
+                .CreateLogger());
+
+            options.AddSerilog(new LoggerConfiguration()
+                .WriteTo.File("logs/plugin.log")
+                .MinimumLevel.Information()
+                .CreateLogger());
+
+            options.AddSerilog(new LoggerConfiguration()
+                .WriteTo.File("logs/plugin-error.log")
+                .MinimumLevel.Error()
+                .CreateLogger());
+        });
 
         foreach (var plugin in Plugins)
         {

@@ -13,6 +13,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\plugin_base\PluginBase.csproj" Private="False"/>
+        <ProjectReference Include="..\..\Shared\Shared.csproj" Private="False" />
     </ItemGroup>
 
     <ItemGroup>
@@ -35,6 +36,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="OpenTelemetry" Version="1.9.0" />
     </ItemGroup>
 
 </Project>
