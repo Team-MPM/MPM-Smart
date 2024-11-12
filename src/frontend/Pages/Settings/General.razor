@@ -1,40 +1,52 @@
 ﻿@page "/Settings/General"
 @layout MainLayout
 
+<h1>General</h1>
 
-<h1>Benutzer</h1>
-<MudContainer Class="absolute" MaxWidth="MaxWidth.Large">
-    <!--
-    <MudAvatar Style="margin: 5px" Color="Color.Primary">D</MudAvatar>
+<MudCard Class="m-3" Style=" width: 30%; background-color: #3b3432; margin: 10px">
+    <MudCardContent>
+        <MudTextField Label="Systemname" Placeholder="Enter username" Value="systemname"/>
+    </MudCardContent>
+</MudCard>
 
-    <MudCard Class="m-3" Style=" background-color: #3b3432;">
-        <MudCardContent>
-            <MudTextField Label="Benutzername" Placeholder="Enter username" Value="username"/>
-        </MudCardContent>
-    </MudCard>
-    <MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
-        <MudCardContent>
-            <MudTextField Label="Passwort" Placeholder="Enter password" Value="passwort"/>
-        </MudCardContent>
-    </MudCard>
-    <MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
-        <MudCardContent>
-            <MudCardContent>Light Modus</MudCardContent>
-            <MudSwitch @bind-Value="Basic_Switch2" Color="Color.Primary"/>
-        </MudCardContent>
-    </MudCard>
-    <MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
-        <MudCardContent>
-            <MudRadio Color="Color.Primary" Value="true">Deutsch</MudRadio>
-            <MudRadio Color="Color.Primary" Value="true">English</MudRadio>
-        </MudCardContent>
-    </MudCard>-->
-</MudContainer>
+<MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
+    <text style="margin: 5px">Systemzeit</text>
+    <MudSelect T="string" @bind-Value="SelectedOption1">
+        @foreach (var systime in Systemtime)
+        {
+            <MudSelectItem Value="@systime">@systime</MudSelectItem>
+        }
+    </MudSelect>
+</MudCard>
 
+<MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
+    <text style="margin: 5px">Datenerfassungsintervall</text>
+    <MudSelect T="string" @bind-Value="SelectedOption2">
+        @foreach (var timeInt in TimeInterval)
+        {
+            <MudSelectItem Value="@timeInt">@timeInt</MudSelectItem>
+        }
+    </MudSelect>
+</MudCard>
+
+<MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
+    <MudCardContent>
+        <MudGrid Justify="Justify.SpaceBetween" AlignItems="Center" AlginContent="Center">
+            <MudItem>
+                <text style="color: white;">Backup</text>
+            </MudItem>
+            <MudItem Style="display: flex; justify-content: center; align-items: center;">
+                <MudIcon Icon="@Icons.Material.Filled.Download" />
+            </MudItem>
+        </MudGrid>
+    </MudCardContent>
+</MudCard>
 
 @code {
-    string username = "detrax";
-    string passwort = "*************";
-    public bool Basic_Switch2 { get; set; } = true;
-    
+private string SelectedOption1 { get; set; }
+private string SelectedOption2 { get; set; }
+private List<string> Systemtime = new() { "UTC", "UDT", "CET", "..." };
+private List<string> TimeInterval = new() { "jeden Tag", "jede Woche", "jedes Monat", "..." };
+private string systemname = "HTL KREMS Home";
 }
+
