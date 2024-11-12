@@ -3,44 +3,46 @@
 
 <h1>General</h1>
 
-<MudCard Class="m-3" Style=" width: 30%; background-color: #3b3432; margin: 10px">
-    <MudCardContent>
-        <MudTextField Label="Systemname" Placeholder="Enter username" Value="systemname"/>
-    </MudCardContent>
-</MudCard>
+<MudContainer Class="absolute" MaxWidth="MaxWidth.Large">
+    <MudCard Class="m-3" Style=" width: 30%; background-color: #3b3432; margin: 10px">
+        <MudCardContent>
+            <MudTextField Label="Systemname" Placeholder="Enter username" Value="systemname"/>
+        </MudCardContent>
+    </MudCard>
 
-<MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
-    <text style="margin: 5px">Systemzeit</text>
-    <MudSelect T="string" @bind-Value="SelectedOption1">
-        @foreach (var systime in Systemtime)
-        {
+    <MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
+        <text style="padding: 15px">Systemzeit</text>
+        <MudSelect T="string" @bind-Value="SelectedOption1">
+            @foreach (var systime in Systemtime)
+            {
             <MudSelectItem Value="@systime">@systime</MudSelectItem>
-        }
-    </MudSelect>
-</MudCard>
+            }
+        </MudSelect>
+    </MudCard>
 
-<MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
-    <text style="margin: 5px">Datenerfassungsintervall</text>
-    <MudSelect T="string" @bind-Value="SelectedOption2">
-        @foreach (var timeInt in TimeInterval)
-        {
+    <MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
+        <text style="padding: 15px">Datenerfassungsintervall</text>
+        <MudSelect T="string" @bind-Value="SelectedOption2">
+            @foreach (var timeInt in TimeInterval)
+            {
             <MudSelectItem Value="@timeInt">@timeInt</MudSelectItem>
-        }
-    </MudSelect>
-</MudCard>
+            }
+        </MudSelect>
+    </MudCard>
 
-<MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
-    <MudCardContent>
-        <MudGrid Justify="Justify.SpaceBetween" AlignItems="Center" AlginContent="Center">
-            <MudItem>
-                <text style="color: white;">Backup</text>
-            </MudItem>
-            <MudItem Style="display: flex; justify-content: center; align-items: center;">
-                <MudIcon Icon="@Icons.Material.Filled.Download" />
-            </MudItem>
-        </MudGrid>
-    </MudCardContent>
-</MudCard>
+    <MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
+        <MudCardContent>
+            <MudGrid Justify="Justify.SpaceBetween" AlignItems="Center" AlginContent="Center">
+                <MudItem>
+                    <text style="color: white;">Backup</text>
+                </MudItem>
+                <MudItem Style="display: flex; justify-content: center; align-items: center;">
+                    <MudIcon Icon="@Icons.Material.Filled.Download" />
+                </MudItem>
+            </MudGrid>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
 
 @code {
 private string SelectedOption1 { get; set; }

@@ -1,8 +1,89 @@
 ﻿@page "/Settings/Logs"
-<h3>Logs</h3>
 
-<p>Logs</p>
+<MudContainer Style="height: 500px" Class="p-4">
+    <MudText Typo="Typo.h4">Logs</MudText>
 
-@code {
-    
-}
+    <MudPaper Class="mt-2 p-2" Elevation="1" Style="max-height: 500px; overflow-y: auto;">
+        <MudList Dense="true" T="string">
+            <MudListItem T="string">
+                <MudText Color="Color.Error">[Error] - 14.10.2024 12:34:22 - Verbindung zum Server fehlgeschlagen. Timeout nach 30 Sekunden.</MudText>
+            </MudListItem>
+
+            <MudListItem T="string">
+                <MudText Color="Color.Warning">[Warning] - 14.10.2024 12:35:10 - Benutzer hat fehlende Berechtigungen für Zugriff auf "Plugins".</MudText>
+            </MudListItem>
+
+            <MudListItem T="string">
+                <MudText Color="Color.Success">[Update] - 14.10.2024 12:36:05 - Update auf Version 2.3.1 erfolgreich installiert.</MudText>
+            </MudListItem>
+
+            <MudListItem T="string">
+                <MudText>[Info] - 14.10.2024 12:37:15 - Benutzer "admin" hat sich erfolgreich angemeldet.</MudText>
+            </MudListItem>
+
+            <MudListItem T="string">
+                <MudText Color="Color.Error">[Error] - 14.10.2024 12:38:50 - Datenbankverbindung konnte nicht hergestellt werden. Fehlermeldung: "Host unreachable".</MudText>
+            </MudListItem>
+
+            <MudListItem T="string">
+                <MudText>[Info] - 14.10.2024 12:39:30 - Wartungsvorgang abgeschlossen. Alle Systeme betriebsbereit.</MudText>
+            </MudListItem>
+
+            <MudListItem T="string">
+                <MudText Color="Color.Warning">[Warning] - 14.10.2024 12:40:45 - Hohe CPU-Auslastung festgestellt. Prozess "DeviceMonitoring" benötigt 95% der CPU-Ressourcen.</MudText>
+            </MudListItem>
+
+            <MudListItem T="string">
+                <MudText Color="Color.Error">[Error] - 14.10.2024 12:42:10 - Datei "config.xml" konnte nicht geladen werden. Fehler: "Zugriff verweigert".</MudText>
+            </MudListItem>
+
+            <MudListItem T="string">
+                <MudText Color="Color.Success">[Update] - 14.10.2024 12:43:20 - Sicherheitsrichtlinien wurden aktualisiert.</MudText>
+            </MudListItem>
+
+            <MudListItem T="string">
+                <MudText>[Info] - 14.10.2024 12:44:55 - Netzwerk-Scan wurde erfolgreich abgeschlossen. 5 neue Geräte gefunden.</MudText>
+            </MudListItem>
+
+            <MudListItem T="string">
+                <MudText Color="Color.Error">[Error] - 14.10.2024 12:34:22 - Verbindung zum Server fehlgeschlagen. Timeout nach 30 Sekunden.</MudText>
+            </MudListItem>
+
+            <MudListItem T="string">
+                <MudText Color="Color.Warning">[Warning] - 14.10.2024 12:35:10 - Benutzer hat fehlende Berechtigungen für Zugriff auf "Plugins".</MudText>
+            </MudListItem>
+
+            <MudListItem T="string">
+                <MudText Color="Color.Success">[Update] - 14.10.2024 12:36:05 - Update auf Version 2.3.1 erfolgreich installiert.</MudText>
+            </MudListItem>
+
+            <MudListItem T="string">
+                <MudText>[Info] - 14.10.2024 12:37:15 - Benutzer "admin" hat sich erfolgreich angemeldet.</MudText>
+            </MudListItem>
+
+            <MudListItem T="string">
+                <MudText Color="Color.Error">[Error] - 14.10.2024 12:38:50 - Datenbankverbindung konnte nicht hergestellt werden. Fehlermeldung: "Host unreachable".</MudText>
+            </MudListItem>
+
+            <MudListItem T="string">
+                <MudText>[Info] - 14.10.2024 12:39:30 - Wartungsvorgang abgeschlossen. Alle Systeme betriebsbereit.</MudText>
+            </MudListItem>
+
+            <MudListItem T="string">
+                <MudText Color="Color.Warning">[Warning] - 14.10.2024 12:40:45 - Hohe CPU-Auslastung festgestellt. Prozess "DeviceMonitoring" benötigt 95% der CPU-Ressourcen.</MudText>
+            </MudListItem>
+
+            <MudListItem T="string">
+                <MudText Color="Color.Error">[Error] - 14.10.2024 12:42:10 - Datei "config.xml" konnte nicht geladen werden. Fehler: "Zugriff verweigert".</MudText>
+            </MudListItem>
+
+            <MudListItem T="string">
+                <MudText Color="Color.Success">[Update] - 14.10.2024 12:43:20 - Sicherheitsrichtlinien wurden aktualisiert.</MudText>
+            </MudListItem>
+
+            <MudListItem T="string">
+                <MudText>[Info] - 14.10.2024 12:44:55 - Netzwerk-Scan wurde erfolgreich abgeschlossen. 5 neue Geräte gefunden.</MudText>
+            </MudListItem>
+        </MudList>
+    </MudPaper>
+</MudContainer>

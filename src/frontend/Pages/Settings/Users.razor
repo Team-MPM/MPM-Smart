@@ -18,10 +18,11 @@
         <MudCardContent>
             <MudGrid Justify="Justify.SpaceBetween" AlignItems="Center" AlginContent="Center">
                 <MudItem>
-                    <text style="color: white;">Light Modus</text>
+                    <text style="color: white;">Backup</text>
                 </MudItem>
-                <MudItem Style="align-items: center">
-                    <MudSwitch @bind-Value="Label_Switch1"/>
+                <MudItem Style="display: flex; justify-content: center; align-items: center;">
+                    @* <MudSwitch @bind-Value="Label_Switch1"/> *@
+                    <MudIcon Icon="@Icons.Material.Filled.ToggleOn" />
                 </MudItem>
             </MudGrid>
         </MudCardContent>
