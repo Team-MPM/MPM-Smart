@@ -1,6 +1,30 @@
 ﻿@page "/Devices/Device02"
-<h3>Device02</h3>
+<h2>Device 2</h2>
+
+<MudContainer Class="flex-row d-flex pl-0 pt-3">
+    <MudContainer MaxWidth="MaxWidth.ExtraSmall" Class="flex-column d-flex ml-0">
+        <MudTextField @bind-Value="TextValue" Label="Name" ReadOnly="true" Variant="Variant.Filled"/>
+        <MudTextField @bind-Value="TextValue" Label="IP-Adresse" ReadOnly="true" Variant="Variant.Filled"/>
+        <MudTextField @bind-Value="TextValue" Label="Status" ReadOnly="true" Variant="Variant.Filled"/>
+        <MudTextField @bind-Value="TextValue" Label="Type" ReadOnly="true" Variant="Variant.Filled"/>
+        <MudTextField @bind-Value="TextValue" Label="ViniciusIsOarsch" ReadOnly="true" Variant="Variant.Filled"/>
+        <MudTextField @bind-Value="TextValue" Label="..." ReadOnly="true" Variant="Variant.Filled"/>
+    </MudContainer>
+    <MudContainer Style="width: 60%" Class="d-flex">
+        <MudCardContent Class="d-flex justify-space-around align-center flex-column" >
+            <MudChart ChartType="ChartType.Line" XAxisLabels="XAxisLabels" ChartSeries="Series" Height="250px" Width="500px"/>
+            <MudChart ChartType="ChartType.Line" XAxisLabels="XAxisLabels" ChartSeries="Series" Height="250px" Width="500px"/>
+        </MudCardContent>
+    </MudContainer>
+</MudContainer>
+
 
 @code {
-    
+private string TextValue { get; set; } = "This Property is like Vinis balondor it does not exist";
+private string[] XAxisLabels = new string[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+private List<ChartSeries> Series = new List<ChartSeries>
+{
+new ChartSeries { Name = "Series 1", Data = new double[] { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120 } },
+new ChartSeries { Name = "Series 2", Data = new double[] { 120, 110, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10 } }
+};
 }
