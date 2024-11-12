@@ -1,16 +1,20 @@
 ﻿@page "/Settings/General"
+@layout MainLayout
+
+
 <h1>Benutzer</h1>
-<MudCard>
+<MudContainer Class="absolute" MaxWidth="MaxWidth.Large">
+    <!--
     <MudAvatar Style="margin: 5px" Color="Color.Primary">D</MudAvatar>
 
-    <MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
+    <MudCard Class="m-3" Style=" background-color: #3b3432;">
         <MudCardContent>
-            <MudTextField Label="Benutzername" Placeholder="Enter username" Value="username" />
+            <MudTextField Label="Benutzername" Placeholder="Enter username" Value="username"/>
         </MudCardContent>
     </MudCard>
     <MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
         <MudCardContent>
-            <MudTextField Label="Passwort" Placeholder="Enter password" Value="passwort" />
+            <MudTextField Label="Passwort" Placeholder="Enter password" Value="passwort"/>
         </MudCardContent>
     </MudCard>
     <MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
@@ -24,8 +28,8 @@
             <MudRadio Color="Color.Primary" Value="true">Deutsch</MudRadio>
             <MudRadio Color="Color.Primary" Value="true">English</MudRadio>
         </MudCardContent>
-    </MudCard>    
-</MudCard>
+    </MudCard>-->
+</MudContainer>
 
 
 @code {
