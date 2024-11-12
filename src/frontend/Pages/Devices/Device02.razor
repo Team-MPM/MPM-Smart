@@ -2,13 +2,12 @@
 <h2>Device 2</h2>
 
 <MudContainer Class="flex-row d-flex pl-0 pt-3">
-    <MudContainer MaxWidth="MaxWidth.ExtraSmall" Class="flex-column d-flex ml-0">
-        <MudTextField @bind-Value="TextValue" Label="Name" ReadOnly="true" Variant="Variant.Filled"/>
-        <MudTextField @bind-Value="TextValue" Label="IP-Adresse" ReadOnly="true" Variant="Variant.Filled"/>
-        <MudTextField @bind-Value="TextValue" Label="Status" ReadOnly="true" Variant="Variant.Filled"/>
-        <MudTextField @bind-Value="TextValue" Label="Type" ReadOnly="true" Variant="Variant.Filled"/>
-        <MudTextField @bind-Value="TextValue" Label="ViniciusIsOarsch" ReadOnly="true" Variant="Variant.Filled"/>
-        <MudTextField @bind-Value="TextValue" Label="..." ReadOnly="true" Variant="Variant.Filled"/>
+    <MudContainer MaxWidth="MaxWidth.ExtraSmall" Class="flex-column justify-space-around d-flex ml-0">
+        <MudText>Name: @TextValue</MudText>
+        <MudText>IP-Address: @TextValue</MudText>
+        <MudText>Status: @TextValue</MudText>
+        <MudText>Type: @TextValue</MudText>
+        <MudText>...: @TextValue</MudText>
     </MudContainer>
     <MudContainer Style="width: 60%" Class="d-flex">
         <MudCardContent Class="d-flex justify-space-around align-center flex-column" >
