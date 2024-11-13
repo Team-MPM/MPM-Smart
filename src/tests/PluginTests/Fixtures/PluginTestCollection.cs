@@ -1,7 +1,6 @@
-﻿using PluginTests.Fixtures;
-using Xunit;
+﻿using Xunit;
 
-namespace PluginTests;
+namespace PluginTests.Fixtures;
 
 [CollectionDefinition(nameof(PluginTests))]
 public class PluginTestCollection : ICollectionFixture<PluginFixture>
