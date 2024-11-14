@@ -74,7 +74,7 @@ builder.Services.AddOpenTelemetry()
         {
             readerOptions.PeriodicExportingMetricReaderOptions = new PeriodicExportingMetricReaderOptions
             {
-                ExportIntervalMilliseconds = 1000
+                ExportIntervalMilliseconds = 5000
             };
         });
     })

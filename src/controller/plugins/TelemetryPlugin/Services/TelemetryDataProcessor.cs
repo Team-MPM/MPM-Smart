@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
+using System.Threading.Channels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,36 +25,31 @@ public class TelemetryDataProcessor(
         var metricChannel = dataCollector.MetricsChannel.Reader;
         var traceChannel = dataCollector.TraceChannel.Reader;
 
-        var logTask = Task.Run(async () =>
-        {
-            await foreach (var log in logChannel.ReadAllAsync(cancellationToken))
-            {
-                await ProcessLogRecord(log);
-            }
-        }, cancellationToken);
-
-        var metricTask = Task.Run(async () =>
-        {
-            await foreach (var metric in metricChannel.ReadAllAsync(cancellationToken))
-            {
-                await ProcessMetric(metric);
-            }
-        }, cancellationToken);
-
-        var traceTask = Task.Run(async () =>
-        {
-            await foreach (var trace in traceChannel.ReadAllAsync(cancellationToken))
-            {
-                await ProcessTrace(trace);
-            }
-        }, cancellationToken);
-
-        await Task.WhenAll(logTask, metricTask, traceTask);
+        await Task.WhenAll(
+            ProcessTaskTask(logChannel, ProcessLogRecord, cancellationToken),
+            ProcessTaskTask(metricChannel, ProcessMetric, cancellationToken),
+            ProcessTaskTask(traceChannel, ProcessTrace, cancellationToken));
     }
 
-    private async Task ProcessLogRecord(LogRecord record)
+    private async Task ProcessTaskTask<T>(ChannelReader<T> reader, Func<T, Task> handler,
+        CancellationToken cancellationToken)
     {
+        await foreach (var entry in reader.ReadAllAsync(cancellationToken))
+        {
+            try
+            {
+                await handler(entry);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Error processing telemetry data");
+            }
+        }
+    }
 
+    private Task ProcessLogRecord(LogRecord record)
+    {
+        return Task.CompletedTask;
     }
 
     private Task ProcessMetric(Metric metric) =>
@@ -66,14 +62,14 @@ public class TelemetryDataProcessor(
             _ => Task.CompletedTask
         };
 
-    private static async Task EnsureMetricExists(Metric metric, TelemetryDbContext dbContext)
+    private static async Task<Data.Metric> EnsureMetricExists(Metric metric, TelemetryDbContext dbContext)
     {
         var metricEntry = await dbContext.Metrics
             .Where(m => m.Name == metric.Name)
             .FirstOrDefaultAsync();
 
         if (metricEntry is not null)
-            return;
+            return metricEntry;
 
         metricEntry = new Data.Metric
         {
@@ -94,35 +90,86 @@ public class TelemetryDataProcessor(
 
         dbContext.Metrics.Add(metricEntry);
         await dbContext.SaveChangesAsync();
+        return metricEntry;
     }
-    
+
     private async Task ProcessHistogramMetric(Metric metric)
     {
         using var scope = serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<TelemetryDbContext>();
-        
-        await EnsureMetricExists(metric, dbContext);
-        
+
+        var metricEntry = await EnsureMetricExists(metric, dbContext);
+
         foreach (var metricPoint in metric.GetMetricPoints())
         {
             foreach (var histogramBucket in metricPoint.GetHistogramBuckets())
             {
-                
+                dbContext.HistogramBucketMetricEntries.Add(new HistogramBucketMetricEntry
+                {
+                    MetricId = metricEntry.Id,
+                    Bucket = histogramBucket.ExplicitBound,
+                    Count = histogramBucket.BucketCount,
+                    TimeStampStartUtc = metricPoint.StartTime.UtcDateTime,
+                    TimeStampEndUtc = metricPoint.EndTime.UtcDateTime
+                });
             }
+
+            dbContext.HistogramSumMetricEntries.Add(new HistogramSumMetricEntry
+            {
+                MetricId = metricEntry.Id,
+                Sum = metricPoint.GetHistogramSum(),
+                TimeStampStartUtc = metricPoint.StartTime.UtcDateTime,
+                TimeStampEndUtc = metricPoint.EndTime.UtcDateTime
+            });
         }
+
+        await dbContext.SaveChangesAsync();
     }
 
     private async Task ProcessGaugeMetric(Metric metric)
     {
+        using var scope = serviceProvider.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<TelemetryDbContext>();
+
+        var metricEntry = await EnsureMetricExists(metric, dbContext);
+
+        foreach (var metricPoint in metric.GetMetricPoints())
+        {
+            dbContext.GaugeMetricEntries.Add(new GaugeMetricEntry
+            {
+                MetricId = metricEntry.Id,
+                Value = metricPoint.GetGaugeLastValueDouble(),
+                TimeStampStartUtc = metricPoint.StartTime.UtcDateTime,
+                TimeStampEndUtc = metricPoint.EndTime.UtcDateTime
+            });
+        }
+
+        await dbContext.SaveChangesAsync();
     }
 
     private async Task ProcessSumMetric(Metric metric)
     {
-        
+        using var scope = serviceProvider.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<TelemetryDbContext>();
+
+        var metricEntry = await EnsureMetricExists(metric, dbContext);
+
+        foreach (var metricPoint in metric.GetMetricPoints())
+        {
+            dbContext.CounterMetricEntries.Add(new CounterMetricEntry
+            {
+                MetricId = metricEntry.Id,
+                Value = metricPoint.GetSumLong(),
+                TimeStampStartUtc = metricPoint.StartTime.UtcDateTime,
+                TimeStampEndUtc = metricPoint.EndTime.UtcDateTime
+            });
+        }
+
+        await dbContext.SaveChangesAsync();
     }
 
-    private async Task ProcessTrace(Activity activity)
+    private Task ProcessTrace(Activity activity)
     {
-
+        return Task.CompletedTask;
     }
 }

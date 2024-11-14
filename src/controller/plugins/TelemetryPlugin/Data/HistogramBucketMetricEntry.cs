@@ -5,7 +5,7 @@ namespace TelemetryPlugin.Data;
 
 public class HistogramBucketMetricEntry : MetricEntry
 {
-    public int Count { get; set; }
+    public long Count { get; set; }
     public double Bucket { get; set; }
 }
 
