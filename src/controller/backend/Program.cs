@@ -34,8 +34,8 @@ builder.Services.AddHostedService(sp => sp.GetRequiredService<DbInitializer>());
 
 // Logging and Telemetry
 
-var telemetryDataService = new TelemetryDataCollector();
-builder.Services.AddSingleton(telemetryDataService);
+var telemetryDataCollector = new TelemetryDataCollector();
+builder.Services.AddSingleton(telemetryDataCollector);
 
 builder.Services.AddLogging(options =>
 {
@@ -63,14 +63,14 @@ builder.Services.AddOpenTelemetry()
     })
     .WithLogging(options =>
     {
-        options.AddInMemoryExporter(telemetryDataService.LogRecords);
+        options.AddInMemoryExporter(telemetryDataCollector.LogRecords);
     })
     .WithMetrics(options =>
     {
         options.AddAspNetCoreInstrumentation();
         options.AddRuntimeInstrumentation();
             //.AddMeter(/* Register custom meters here later*/);
-        options.AddInMemoryExporter(telemetryDataService.Metrics, readerOptions =>
+        options.AddInMemoryExporter(telemetryDataCollector.Metrics, readerOptions =>
         {
             readerOptions.PeriodicExportingMetricReaderOptions = new PeriodicExportingMetricReaderOptions
             {
@@ -82,7 +82,7 @@ builder.Services.AddOpenTelemetry()
     {
         options.AddAspNetCoreInstrumentation();
         options.AddHttpClientInstrumentation();
-        options.AddInMemoryExporter(telemetryDataService.Traces);
+        options.AddInMemoryExporter(telemetryDataCollector.Traces);
     });
 
 // Plugins
