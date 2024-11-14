@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Shared.Services.Telemetry;
 
 namespace PluginTests.Fixtures;
 
@@ -18,6 +19,7 @@ public class PluginFixture
     public Mock<IServiceProvider> MockServiceProvider { get; private set; } = null!;
     public Mock<ILogger<PluginManager>> MockPluginManagerLogger { get; private set; } = null!;
     public Mock<ILogger<PluginLoader>> MockPluginLoaderLogger { get; private set; } = null!;
+    public Mock<ITelemetryDataCollector> MockTelemetryDataCollector { get; private set; } = null!;
 
     public ServiceProvider ServiceProvider { get; private set; } = null!;
     public MockFileSystem MockFileSystem { get; private set; } = null!;
@@ -32,17 +34,17 @@ public class PluginFixture
     public const string TestPluginVersion = "1.0.0";
 
     public const string TestPluginJson = $$"""
-                                            {
-                                              "Name": "{{TestPluginName}}",
-                                              "RegistryName": "{{TestPluginRegistryName}}",
-                                              "Description": "{{TestPluginDescription}}",
-                                              "Author": "{{TestPluginAuthor}}",
-                                              "Version": "{{TestPluginVersion}}"
-                                            }
-                                            """;
+                                           {
+                                             "Name": "{{TestPluginName}}",
+                                             "RegistryName": "{{TestPluginRegistryName}}",
+                                             "Description": "{{TestPluginDescription}}",
+                                             "Author": "{{TestPluginAuthor}}",
+                                             "Version": "{{TestPluginVersion}}"
+                                           }
+                                           """;
 
     private readonly byte[] m_TestPluginAssemblyBin;
-    
+
     public PluginFixture()
     {
         var assemblyLocation = Assembly.GetExecutingAssembly().Location;
@@ -58,7 +60,7 @@ public class PluginFixture
     public void Setup()
     {
         var assemblyLocation = Assembly.GetExecutingAssembly().Location;
-        
+
         MockFileSystem = new MockFileSystem(new Dictionary<string, MockFileData>()
         {
             {
@@ -71,20 +73,26 @@ public class PluginFixture
             }
         }, HostPath);
         
-        var services = new ServiceCollection();
-
         MockWebHostEnvironment = new Mock<IWebHostEnvironment>();
         MockPluginLoader = new Mock<IPluginLoader>();
         MockPluginManager = new Mock<IPluginManager>();
         MockServiceProvider = new Mock<IServiceProvider>();
         MockPluginManagerLogger = new Mock<ILogger<PluginManager>>();
         MockPluginLoaderLogger = new Mock<ILogger<PluginLoader>>();
+        MockTelemetryDataCollector = new Mock<ITelemetryDataCollector>();
 
-        MockWebHostEnvironment.Setup(we => we.ContentRootPath).Returns(HostPath);
+        MockServiceProvider.Setup(sp => sp.GetService(typeof(ITelemetryDataCollector)))
+            .Returns(MockTelemetryDataCollector.Object);
+
+        MockWebHostEnvironment.Setup(we => we.ContentRootPath)
+            .Returns(HostPath);
+
+        var services = new ServiceCollection();
 
         services.AddSingleton<IPluginManager, PluginManager>();
         services.AddSingleton<IPluginLoader, PluginLoader>();
         services.AddSingleton(MockWebHostEnvironment.Object);
+        services.AddSingleton(MockTelemetryDataCollector.Object);
         services.AddSingleton<IFileSystem>(MockFileSystem);
         services.AddLogging();
 

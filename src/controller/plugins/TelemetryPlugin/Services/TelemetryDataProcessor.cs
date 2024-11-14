@@ -14,11 +14,13 @@ using MetricType = OpenTelemetry.Metrics.MetricType;
 namespace TelemetryPlugin.Services;
 
 public class TelemetryDataProcessor(
-    TelemetryDataCollector dataCollector,
+    ITelemetryDataCollector dataCollector,
     ILogger<TelemetryDataProcessor> logger,
     IServiceProvider serviceProvider
 ) : BackgroundService
 {
+    private Dictionary<string, Data.Metric> MetricsInDatabase { get; } = [];
+
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         var logChannel = dataCollector.LogRecordChannel.Reader;
@@ -26,12 +28,12 @@ public class TelemetryDataProcessor(
         var traceChannel = dataCollector.TraceChannel.Reader;
 
         await Task.WhenAll(
-            ProcessTaskTask(logChannel, ProcessLogRecord, cancellationToken),
-            ProcessTaskTask(metricChannel, ProcessMetric, cancellationToken),
-            ProcessTaskTask(traceChannel, ProcessTrace, cancellationToken));
+            ProcessTask(logChannel, ProcessLogRecord, cancellationToken),
+            ProcessTask(metricChannel, ProcessMetric, cancellationToken),
+            ProcessTask(traceChannel, ProcessTrace, cancellationToken));
     }
 
-    private async Task ProcessTaskTask<T>(ChannelReader<T> reader, Func<T, Task> handler,
+    private async Task ProcessTask<T>(ChannelReader<T> reader, Func<T, Task> handler,
         CancellationToken cancellationToken)
     {
         await foreach (var entry in reader.ReadAllAsync(cancellationToken))
@@ -62,16 +64,19 @@ public class TelemetryDataProcessor(
             _ => Task.CompletedTask
         };
 
-    private static async Task<Data.Metric> EnsureMetricExists(Metric metric, TelemetryDbContext dbContext)
+    private async Task<Data.Metric> EnsureMetricExists(Metric metric, TelemetryDbContext dbContext)
     {
-        var metricEntry = await dbContext.Metrics
-            .Where(m => m.Name == metric.Name)
-            .FirstOrDefaultAsync();
+        if (MetricsInDatabase.GetValueOrDefault(metric.Name) is { } cacheEntry)
+            return cacheEntry;
 
-        if (metricEntry is not null)
-            return metricEntry;
+        if (await dbContext.Metrics
+                .FirstOrDefaultAsync(m => m.Name == metric.Name) is { } dbEntry)
+        {
+            MetricsInDatabase.Add(metric.Name, dbEntry);
+            return dbEntry;
+        }
 
-        metricEntry = new Data.Metric
+        var newEntry = new Data.Metric
         {
             Name = metric.Name,
             MetricName = metric.MeterName,
@@ -88,9 +93,10 @@ public class TelemetryDataProcessor(
             }
         };
 
-        dbContext.Metrics.Add(metricEntry);
+        dbContext.Metrics.Add(newEntry);
+        MetricsInDatabase.Add(metric.Name, newEntry);
         await dbContext.SaveChangesAsync();
-        return metricEntry;
+        return newEntry;
     }
 
     private async Task ProcessHistogramMetric(Metric metric)
