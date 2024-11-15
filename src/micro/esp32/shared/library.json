@@ -1,0 +1,9 @@
+{
+    "name": "Shared",
+    "version": "1.0.0",
+    "dependencies": {
+      
+    },
+    "frameworks": "Arduino",
+    "platforms": "nodemcu-32s"
+  }
