@@ -51,66 +51,66 @@ public class ProgramTest : IAsyncLifetime, IDisposable
     }
 
     [Fact]
-    public async Task LaunchControlProcess_ShouldMonitorProcess()
+    public Task LaunchControlProcess_ShouldMonitorProcess()
     {
         Assert.True(true);
-        return;
+        return Task.CompletedTask;
         
-        var restartCallbackCallCount = 0;
-
-        Program.LaunchControlProcess(m_Logger, BackendExecutablePath, BackendProcessName,
-            _ => { restartCallbackCallCount++; });
-
-        var client = m_HttpClientFactory.CreateClient(HttpClientFactoryHelper.TestClientName);
-
-
-        HttpResponseMessage? response1 = null;
-        HttpResponseMessage? response2 = null;
-
-        for (var i = 0; i < 10; i++)
-        {
-            try
-            {
-                response1 = await client.GetAsync("/kys");
-                if (response1.IsSuccessStatusCode)
-                    break;
-            }
-            catch
-            {
-                // ignored
-            }
-
-            await Task.Delay(500);
-        }
-
-        await Task.Delay(2000);
-
-        for (var i = 0; i < 10; i++)
-        {
-            try
-            {
-                response2 = await client.GetAsync("/kys");
-                if (response2.IsSuccessStatusCode)
-                    break;
-            }
-            catch
-            {
-                // ignored
-            }
-
-            await Task.Delay(500);
-        }
-        
-        await Task.Delay(5000);
-
-        Assert.Multiple(() =>
-        {
-            Assert.NotNull(response1);
-            Assert.NotNull(response2);
-            Assert.Equal(HttpStatusCode.OK, response1.StatusCode);
-            Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
-            Assert.True(restartCallbackCallCount > 1);
-        });
+        // var restartCallbackCallCount = 0;
+        //
+        // Program.LaunchControlProcess(m_Logger, BackendExecutablePath, BackendProcessName,
+        //     _ => { restartCallbackCallCount++; });
+        //
+        // var client = m_HttpClientFactory.CreateClient(HttpClientFactoryHelper.TestClientName);
+        //
+        //
+        // HttpResponseMessage? response1 = null;
+        // HttpResponseMessage? response2 = null;
+        //
+        // for (var i = 0; i < 10; i++)
+        // {
+        //     try
+        //     {
+        //         response1 = await client.GetAsync("/kys");
+        //         if (response1.IsSuccessStatusCode)
+        //             break;
+        //     }
+        //     catch
+        //     {
+        //         // ignored
+        //     }
+        //
+        //     await Task.Delay(500);
+        // }
+        //
+        // await Task.Delay(2000);
+        //
+        // for (var i = 0; i < 10; i++)
+        // {
+        //     try
+        //     {
+        //         response2 = await client.GetAsync("/kys");
+        //         if (response2.IsSuccessStatusCode)
+        //             break;
+        //     }
+        //     catch
+        //     {
+        //         // ignored
+        //     }
+        //
+        //     await Task.Delay(500);
+        // }
+        //
+        // await Task.Delay(5000);
+        //
+        // Assert.Multiple(() =>
+        // {
+        //     Assert.NotNull(response1);
+        //     Assert.NotNull(response2);
+        //     Assert.Equal(HttpStatusCode.OK, response1.StatusCode);
+        //     Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
+        //     Assert.True(restartCallbackCallCount > 1);
+        // });
     }
 
     [Fact]

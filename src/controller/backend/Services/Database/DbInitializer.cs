@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Backend.Services.Plugins;
 using Data.System;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Services.Database;
@@ -16,11 +17,13 @@ public class DbInitializer(
 
     private readonly ActivitySource m_ActivitySource = new(ActivitySourceName);
     private SystemDbContext m_DbContext = null!;
+    private UserManager<SystemUser> m_UserManager = null!;
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
         m_DbContext = scope.ServiceProvider.GetRequiredService<SystemDbContext>();
+        m_UserManager = scope.ServiceProvider.GetRequiredService<UserManager<SystemUser>>();
         await InitializeDatabaseAsync(cancellationToken);
     }
 
@@ -66,6 +69,18 @@ public class DbInitializer(
     {
         logger.LogInformation("Seeding database");
        
+        var adminUser = await m_UserManager.FindByNameAsync("admin");
+
+        if (adminUser is null)
+        {
+            var result = await m_UserManager.CreateAsync(new SystemUser
+            {
+                Email = null,
+                UserName = "admin",
+                UserProfile = new UserProfileEntity()
+            }, "admin");
+        }
+
         if (env.IsDevelopment())
         {
             

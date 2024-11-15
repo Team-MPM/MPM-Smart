@@ -5,6 +5,8 @@ namespace Data.System;
 
 public class SystemDbContext(DbContextOptions<SystemDbContext> options) : IdentityDbContext<SystemUser>(options)
 {
+    public DbSet<UserProfileEntity> UserProfiles { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
