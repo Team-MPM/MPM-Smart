@@ -35,7 +35,7 @@ builder.Services.AddHostedService(sp => sp.GetRequiredService<DbInitializer>());
 // Logging and Telemetry
 
 var telemetryDataCollector = new TelemetryDataCollector();
-builder.Services.AddSingleton(telemetryDataCollector);
+builder.Services.AddSingleton<ITelemetryDataCollector>(telemetryDataCollector);
 
 builder.Services.AddLogging(options =>
 {
@@ -74,7 +74,7 @@ builder.Services.AddOpenTelemetry()
         {
             readerOptions.PeriodicExportingMetricReaderOptions = new PeriodicExportingMetricReaderOptions
             {
-                ExportIntervalMilliseconds = 1000
+                ExportIntervalMilliseconds = 5000
             };
         });
     })

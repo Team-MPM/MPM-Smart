@@ -5,7 +5,7 @@ using OpenTelemetry.Metrics;
 
 namespace Shared.Services.Telemetry;
 
-public class TelemetryDataCollector
+public class TelemetryDataCollector : ITelemetryDataCollector
 {
     public TelemetryCollection<LogRecord> LogRecords { get; } = [];
     public TelemetryCollection<Metric> Metrics { get; } = [];

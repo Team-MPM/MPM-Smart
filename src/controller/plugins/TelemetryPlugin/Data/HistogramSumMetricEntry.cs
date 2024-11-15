@@ -5,7 +5,7 @@ namespace TelemetryPlugin.Data;
 
 public class HistogramSumMetricEntry : MetricEntry
 {
-    public int Count { get; set; }
+    public long Count { get; set; }
     public double Sum { get; set; }
 }
 

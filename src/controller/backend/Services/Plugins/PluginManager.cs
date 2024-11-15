@@ -67,7 +67,7 @@ public class PluginManager(
         var services = new ServiceCollection();
         services.AddSingleton<IServiceCollection>(services);
 
-        services.AddSingleton(sp.GetRequiredService<TelemetryDataCollector>());
+        services.AddSingleton(sp.GetRequiredService<ITelemetryDataCollector>());
 
         services.AddLogging(options =>
         {
