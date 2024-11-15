@@ -2,6 +2,4 @@
 
 #include <Arduino.h>
 
-void test() {
-    Serial.print("test");
-}
+void test();

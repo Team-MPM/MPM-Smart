@@ -6,4 +6,4 @@
     },
     "frameworks": "Arduino",
     "platforms": "nodemcu-32s"
-  }
+}
