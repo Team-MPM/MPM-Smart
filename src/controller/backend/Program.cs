@@ -81,6 +81,7 @@ builder.Services.AddIdentity<SystemUser, IdentityRole>(options =>
         options.Password.RequiredLength = 4;
         options.Password.RequireNonAlphanumeric = false;
         options.Password.RequireUppercase = false;
+        options.Lockout.AllowedForNewUsers = false;
         options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     })
     .AddEntityFrameworkStores<SystemDbContext>();
