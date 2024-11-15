@@ -18,12 +18,14 @@ public class DbInitializer(
     private readonly ActivitySource m_ActivitySource = new(ActivitySourceName);
     private SystemDbContext m_DbContext = null!;
     private UserManager<SystemUser> m_UserManager = null!;
+    private RoleManager<IdentityRole> m_RoleManager = null!;
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
         m_DbContext = scope.ServiceProvider.GetRequiredService<SystemDbContext>();
         m_UserManager = scope.ServiceProvider.GetRequiredService<UserManager<SystemUser>>();
+        m_RoleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         await InitializeDatabaseAsync(cancellationToken);
     }
 
@@ -69,16 +71,44 @@ public class DbInitializer(
     {
         logger.LogInformation("Seeding database");
        
-        var adminUser = await m_UserManager.FindByNameAsync("admin");
+        const string admin = "admin";
+        
+        var adminRole = await m_RoleManager.FindByNameAsync(admin);
+        
+        if (adminRole is null)
+        {
+            var result = await m_RoleManager.CreateAsync(new IdentityRole(admin));
+            
+            if (!result.Succeeded)
+            {
+                logger.LogError("Failed to create admin role: {@Error}", result.Errors);
+            }
+        }
+        
+        var adminUser = await m_UserManager.FindByNameAsync(admin);
 
         if (adminUser is null)
         {
             var result = await m_UserManager.CreateAsync(new SystemUser
             {
                 Email = null,
-                UserName = "admin",
+                UserName = admin,
                 UserProfile = new UserProfileEntity()
-            }, "admin");
+            }, admin);
+            
+            if (!result.Succeeded)
+            {
+                logger.LogError("Failed to create admin user: {@Error}", result.Errors);
+            }
+            
+            adminUser = await m_UserManager.FindByNameAsync(admin);
+            
+            result = await m_UserManager.AddToRoleAsync(adminUser!, admin);
+            
+            if (!result.Succeeded)
+            {
+                logger.LogError("Failed to add admin user to admin role: {@Error}", result.Errors);
+            }
         }
 
         if (env.IsDevelopment())
