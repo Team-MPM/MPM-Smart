@@ -1,4 +1,5 @@
-using Server.Components;
+using MudBlazor.Services;
+using Server.UI.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +7,8 @@ builder.AddServiceDefaults();
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddMudServices();
 
 var app = builder.Build();
 
@@ -17,11 +20,11 @@ if (!app.Environment.IsDevelopment())
 
 app.UseAntiforgery();
 
+app.MapDefaultEndpoints();
+
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
-
-app.MapDefaultEndpoints();
 
 app.MapGet("/hello", () => "Hello, World!");
 

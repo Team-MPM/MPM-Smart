@@ -1,0 +1,85 @@
+﻿@inherits LayoutComponentBase
+
+@inject NavigationManager NavigationManager
+
+<MudLayout>
+    <MudAppBar Color="Color.Primary" Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit"
+                       Edge="Edge.Start" OnClick="@ToggleDrawer"/>
+        <MudText Typo="Typo.h6">@Title</MudText>
+        <MudSpacer/>
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" OnClick="OpenGithub"/>
+        <MudToggleIconButton @bind-Toggled="@UseDarkMode"
+                             Icon="@Icons.Material.Filled.LightMode"
+                             Class="mud-theme-primary"
+                             ToggledIcon="@Icons.Material.Filled.DarkMode"
+                             ToggledColor="@Color.Success"
+                             title="@(UseDarkMode ? "On" : "Off")"/>
+    </MudAppBar>
+
+    <MudDrawer @bind-Open="@m_NavOpen" Elevation="1" Width="235px">
+        <MudDrawerHeader Class="flex-column">
+            <MudText Typo="Typo.h6">Mpm-Smart</MudText>
+            <MudText Typo="Typo.body2" Class="mud-text-secondary">Plugin Repository</MudText>
+        </MudDrawerHeader>
+        <MudNavMenu Color="Color.Primary">
+            <MudNavGroup Title="General" Expanded="true" Icon="@Icons.Material.Filled.Dashboard">
+                <MudNavLink Match="NavLinkMatch.All" Href="/"
+                            Icon="@Icons.Material.Filled.Home">Home
+                </MudNavLink>
+                <MudNavLink Match="NavLinkMatch.All" Href="/devices"
+                            Icon="@Icons.Material.Filled.Devices">Devices
+                </MudNavLink>
+                <MudNavLink Match="NavLinkMatch.All" Href="/community"
+                            Icon="@Icons.Material.Filled.People">Community
+                </MudNavLink>
+            </MudNavGroup>
+            <MudNavGroup Title="Plugins" Expanded="true" Icon="@Icons.Material.Filled.SettingsSystemDaydream">
+                <MudNavLink Match="NavLinkMatch.All" Href="/plugins/telemetry"
+                            Icon="@Icons.Material.Filled.Dataset">Telemetry
+                </MudNavLink>
+                <MudNavLink Match="NavLinkMatch.All" Href="/plugins/environmental"
+                            Icon="@Icons.Material.Filled.Thermostat">Environmental
+                </MudNavLink>
+                <MudNavLink Match="NavLinkMatch.All" Href="/plugins/gas"
+                            Icon="@Icons.Material.Filled.GasMeter">Gas Detector
+                </MudNavLink>
+                <MudNavLink Match="NavLinkMatch.All" Href="/plugins/led"
+                            Icon="@Icons.Material.Filled.Light">LED Controller
+                </MudNavLink>
+            </MudNavGroup>
+        </MudNavMenu>
+    </MudDrawer>
+
+    <MudMainContent Class="pt-20 px-12">
+        <MudContainer Class="mt-6">
+            <CascadingValue Value="this">
+                @Body
+            </CascadingValue>
+        </MudContainer>
+    </MudMainContent>
+
+</MudLayout>
+
+<MudThemeProvider IsDarkMode="@UseDarkMode"/>
+<MudPopoverProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+
+@code {
+    
+    public bool UseDarkMode { get; set; } = true;
+    public string Title { get; set; } = "";
+    private bool m_NavOpen = true;
+
+    private void ToggleDrawer(MouseEventArgs obj)
+    {
+        m_NavOpen = !m_NavOpen;
+    }
+
+    private void OpenGithub(MouseEventArgs obj)
+    {
+        NavigationManager.NavigateTo("https://github.com/team-mpm/mpm-smart");
+    }
+
+}

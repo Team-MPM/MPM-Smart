@@ -9,5 +9,10 @@
     <ItemGroup>
       <ProjectReference Include="..\ServerServiceDefaults\ServerServiceDefaults.csproj" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <PackageReference Include="LanguageExt.Core" Version="4.4.9" />
+      <PackageReference Include="MudBlazor" Version="7.15.0" />
+    </ItemGroup>
 
 </Project>
