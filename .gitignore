@@ -11,3 +11,5 @@ docker/
 *.user
 *.db
 *.user
+
+integrity.dat
