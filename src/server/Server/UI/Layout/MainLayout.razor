@@ -17,7 +17,7 @@
                              title="@(UseDarkMode ? "On" : "Off")"/>
     </MudAppBar>
 
-    <MudDrawer @bind-Open="@m_NavOpen" Elevation="1" Width="235px">
+    <MudDrawer @bind-Open="@m_NavOpen" Elevation="1" Width="240px">
         <MudDrawerHeader Class="flex-column">
             <MudText Typo="Typo.h6">Mpm-Smart</MudText>
             <MudText Typo="Typo.body2" Class="mud-text-secondary">Plugin Repository</MudText>
@@ -34,18 +34,29 @@
                             Icon="@Icons.Material.Filled.People">Community
                 </MudNavLink>
             </MudNavGroup>
-            <MudNavGroup Title="Plugins" Expanded="true" Icon="@Icons.Material.Filled.SettingsSystemDaydream">
-                <MudNavLink Match="NavLinkMatch.All" Href="/plugins/telemetry"
-                            Icon="@Icons.Material.Filled.Dataset">Telemetry
+            <MudNavGroup Title="Plugins" Expanded="true" Icon="@Icons.Material.Filled.Folder">
+                <MudNavLink Match="NavLinkMatch.All" Href="/plugin-index"
+                            Icon="@Icons.Material.Filled.Search">Index
                 </MudNavLink>
-                <MudNavLink Match="NavLinkMatch.All" Href="/plugins/environmental"
-                            Icon="@Icons.Material.Filled.Thermostat">Environmental
+                <MudNavLink Match="NavLinkMatch.All" Href="/plugin-upload"
+                            Icon="@Icons.Material.Filled.Upload">Upload
                 </MudNavLink>
-                <MudNavLink Match="NavLinkMatch.All" Href="/plugins/gas"
-                            Icon="@Icons.Material.Filled.GasMeter">Gas Detector
+            </MudNavGroup>
+            <MudNavGroup Title="Documentation" Expanded="true" Icon="@Icons.Material.Filled.Pageview">
+                <MudNavLink Match="NavLinkMatch.All" Href="/docs/installation"
+                            Icon="@Icons.Material.Filled.InstallDesktop">Installation
                 </MudNavLink>
-                <MudNavLink Match="NavLinkMatch.All" Href="/plugins/led"
-                            Icon="@Icons.Material.Filled.Light">LED Controller
+                <MudNavLink Match="NavLinkMatch.All" Href="/docs/configuration"
+                            Icon="@Icons.Material.Filled.Settings">System Configuration
+                </MudNavLink>
+                <MudNavLink Match="NavLinkMatch.All" Href="/docs/device-management"
+                            Icon="@Icons.Material.Filled.DeviceHub">Device Management
+                </MudNavLink>
+                <MudNavLink Match="NavLinkMatch.All" Href="/docs/plugin-system"
+                            Icon="@Icons.Material.Filled.Plumbing">Plugin System
+                </MudNavLink>
+                <MudNavLink Match="NavLinkMatch.All" Href="/docs/configuration"
+                            Icon="@Icons.Material.Filled.VerifiedUser">User Management & AC
                 </MudNavLink>
             </MudNavGroup>
         </MudNavMenu>
@@ -67,7 +78,7 @@
 <MudSnackbarProvider/>
 
 @code {
-    
+
     public bool UseDarkMode { get; set; } = true;
     public string Title { get; set; } = "";
     private bool m_NavOpen = true;
