@@ -2,7 +2,8 @@
     "name": "Shared",
     "version": "1.0.0",
     "dependencies": {
-      
+        "esphome/AsyncTCP-esphome": "^2.1.4",
+        "esphome/ESPAsyncWebServer-esphome": "^3.2.2"
     },
     "frameworks": "Arduino",
     "platforms": "nodemcu-32s"

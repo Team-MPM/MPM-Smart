@@ -12,5 +12,10 @@
 			"path": "shared"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.associations": {
+			"*.embeddedhtml": "html",
+			"xiosbase": "cpp"
+		}
+	}
 }

@@ -1,10 +1,12 @@
-#include <Arduino.h>
-#include "test.h"
+#include "Application.h"
+
+using namespace Mpm;
 
 void setup() {
-  test();
+  Application app = Application();
 }
 
 void loop() {
+
 }
 
