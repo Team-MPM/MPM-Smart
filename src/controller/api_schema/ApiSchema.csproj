@@ -11,7 +11,6 @@
       <Folder Include="Dataquery\" />
       <Folder Include="Devicemanagement\" />
       <Folder Include="Log\" />
-      <Folder Include="Settings\" />
     </ItemGroup>
 
 </Project>

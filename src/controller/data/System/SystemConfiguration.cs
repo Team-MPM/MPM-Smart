@@ -8,7 +8,7 @@ public class SystemConfiguration
     public int Id { get; set; }
     public string SystemName { get; set; } = "Controller";
     public TimeZones TimeZone { get; set; } = TimeZones.UTC;
-    public int TimeBetweenDataUpdates { get; set; } = 5;
+    public int TimeBetweenDataUpdatesSeconds { get; set; } = 5;
 }
 
 public enum TimeZones

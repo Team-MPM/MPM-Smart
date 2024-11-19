@@ -119,7 +119,7 @@ public class DbInitializer(
             {
                 SystemName = "Controller",
                 TimeZone = TimeZones.UTC,
-                TimeBetweenDataUpdates = 5
+                TimeBetweenDataUpdatesSeconds = 5
             }, cancellationToken);
             logger.LogInformation("System Configuration seeded");
         }
