@@ -8,7 +8,10 @@ public class SystemUser : IdentityUser
 {
     public int UserProfileId { get; set; }
     public UserProfileEntity? UserProfile { get; set; }
+
 }
+
+
 
 public class SystemUserEntityConfiguration : IEntityTypeConfiguration<SystemUser>
 {

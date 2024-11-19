@@ -162,6 +162,8 @@ app.MapOpenApi();
 
 app.MapIdentityEndpoints(key);
 
+app.MapUserManagementEndpoints();
+
 app.MapGet("/", () => "Hello World!");
 
 app.MapGet("/kys", (IHostApplicationLifetime env) => env.StopApplication());

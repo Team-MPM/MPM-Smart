@@ -65,5 +65,25 @@ public static class IdentityEndpoints
                 Profile = profile as UserProfile
             });
         }).RequireAuthorization("token");
+
+
+        // TODO OPTIONAL
+
+
+        // group.MapGet("/logout", async (
+        //     HttpContext context,
+        //     UserManager<SystemUser> userManager,
+        //     SystemDbContext dbContext) =>
+        // {
+        //     var user = await userManager.GetUserAsync(context.User);
+        //
+        //     if (user is null)
+        //         return Results.Unauthorized();
+        //
+        //     var token = context.Request.Headers["Authorization"].ToString().Split(" ")[1];
+        //
+        //     return Results.Ok();
+        //
+        // }).RequireAuthorization("token");
     }
 }
