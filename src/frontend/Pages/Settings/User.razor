@@ -1,7 +1,7 @@
-﻿@page "/Settings/Users"
+﻿@page "/Settings/User"
 
-<h1>Benutzer</h1>
-<MudContainer Class="absolute" MaxWidth="MaxWidth.Large">
+<MudContainer Class="p-4" MaxWidth="MaxWidth.Large">
+    <MudText Typo="Typo.h4">User-Settings</MudText>
     <MudAvatar Style="margin: 10px" Color="Color.Primary">D</MudAvatar>
 
     <MudCard Class="m-3" Style=" width: 30%; background-color: #3b3432; margin: 10px">
@@ -22,7 +22,7 @@
                 </MudItem>
                 <MudItem Style="display: flex; justify-content: center; align-items: center;">
                     @* <MudSwitch @bind-Value="Label_Switch1"/> *@
-                    <MudIcon Icon="@Icons.Material.Filled.ToggleOn" />
+                    <MudIcon Icon="@Icons.Material.Filled.ToggleOn"/>
                 </MudItem>
             </MudGrid>
         </MudCardContent>

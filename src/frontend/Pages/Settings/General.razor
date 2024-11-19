@@ -1,9 +1,9 @@
 ﻿@page "/Settings/General"
 @layout MainLayout
 
-<h1>General</h1>
 
-<MudContainer Class="absolute" MaxWidth="MaxWidth.Large">
+<MudContainer Class="p-4" MaxWidth="MaxWidth.Large"  >
+    <MudText Typo="Typo.h4">General-Settings</MudText>
     <MudCard Class="m-3" Style=" width: 30%; background-color: #3b3432; margin: 10px">
         <MudCardContent>
             <MudTextField Label="Systemname" Placeholder="Enter username" Value="systemname"/>
@@ -15,7 +15,7 @@
         <MudSelect T="string" @bind-Value="SelectedOption1">
             @foreach (var systime in Systemtime)
             {
-            <MudSelectItem Value="@systime">@systime</MudSelectItem>
+                <MudSelectItem Value="@systime">@systime</MudSelectItem>
             }
         </MudSelect>
     </MudCard>
@@ -25,7 +25,7 @@
         <MudSelect T="string" @bind-Value="SelectedOption2">
             @foreach (var timeInt in TimeInterval)
             {
-            <MudSelectItem Value="@timeInt">@timeInt</MudSelectItem>
+                <MudSelectItem Value="@timeInt">@timeInt</MudSelectItem>
             }
         </MudSelect>
     </MudCard>
@@ -37,7 +37,7 @@
                     <text style="color: white;">Backup</text>
                 </MudItem>
                 <MudItem Style="display: flex; justify-content: center; align-items: center;">
-                    <MudIcon Icon="@Icons.Material.Filled.Download" />
+                    <MudIcon Icon="@Icons.Material.Filled.Download"/>
                 </MudItem>
             </MudGrid>
         </MudCardContent>

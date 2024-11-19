@@ -1,9 +1,8 @@
 ﻿@page "/Settings/Logs"
 
-<MudContainer Style="height: 500px" Class="p-4">
+<MudContainer Style="height: 700px" Class="p-4">
     <MudText Typo="Typo.h4">Logs</MudText>
-
-    <MudPaper Class="mt-2 p-2" Elevation="1" Style="max-height: 500px; overflow-y: auto;">
+    <MudPaper Class="mt-2 p-2" Elevation="1" Style="max-height: 600px; overflow-y: auto;">
         <MudList Dense="true" T="string">
             <MudListItem T="string">
                 <MudText Color="Color.Error">[Error] - 14.10.2024 12:34:22 - Verbindung zum Server fehlgeschlagen. Timeout nach 30 Sekunden.</MudText>
@@ -86,4 +85,20 @@
             </MudListItem>
         </MudList>
     </MudPaper>
+
+    <MudContainer Style="padding: 20px">
+        <MudGrid Justify="Justify.FlexEnd" AlignItems="Center" Spacing="3">
+            <MudItem>
+                <MudButton Variant="Variant.Filled">Errors</MudButton>
+            </MudItem>
+            <MudItem>
+                <MudButton Variant="Variant.Filled">Warnings</MudButton>
+            </MudItem>
+            <MudItem>
+                <MudButton Variant="Variant.Filled">Update</MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+
+    
 </MudContainer>
