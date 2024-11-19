@@ -17,11 +17,15 @@
                 <MudNavLink Href="/Settings/User" Match="NavLinkMatch.Prefix">User</MudNavLink>
                 <MudNavLink Href="/Settings/logs" Match="NavLinkMatch.Prefix">Logs</MudNavLink>
                 <MudNavLink Href="/Settings/DeviceSettings" Match="NavLinkMatch.Prefix">Device</MudNavLink>
+                @if(IsAdmin)
+                {
+                <MudNavLink Href="/Settings/User-Management" Match="NavLinkMatch.Prefix">User-Management</MudNavLink>
+                }
             </MudNavGroup>
         </MudNavMenu>
     </MudPaper>
 </MudLayout>
 
 @code {
-    
+   public bool IsAdmin = true;
 }

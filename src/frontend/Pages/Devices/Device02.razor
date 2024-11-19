@@ -1,5 +1,17 @@
 ﻿@page "/Devices/Device02"
+@inject IDialogService DialogService
+
+@if(ShowAlertUpdateSuccessful) {
+    <MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Right"
+              Elevation="80" ShowCloseIcon="true" CloseIconClicked="(() => ShowAlertUpdateSuccessful = false)">
+        Successfully updated @DeviceName
+    </MudAlert>
+}
+
 <h2>Device 2</h2>
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="justify-end d-flex">
+    <MudButton OnClick="@(() => OpenDialogAsync())" Class="mr-3 mud-theme-primary" Variant="Variant.Filled">Update</MudButton>
+</MudContainer>
 
 <MudContainer Class="flex-row d-flex pl-0 pt-3">
     <MudContainer Style="height: 600px" MaxWidth="MaxWidth.ExtraSmall">
@@ -42,12 +54,31 @@
 
 
 @code {
-private string TextValue { get; set; } = "This Property is like Vinis balondor it does not exist";
-private string[] XAxisLabels = new string[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-private List<ChartSeries> Series = new List<ChartSeries>
-{
-new ChartSeries { Name = "Series 1", Data = new double[] { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120 } },
-new ChartSeries { Name = "Series 2", Data = new double[] { 120, 110, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10 } }
-};
-private TimeOnly time = new TimeOnly(12, 34, 56);
+    string DeviceName = "Device 2";
+    private string TextValue { get; set; } = "This Property is like Vinis balondor it does not exist";
+    private string[] XAxisLabels = new string[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+
+    private List<ChartSeries> Series = new List<ChartSeries>
+    {
+        new ChartSeries { Name = "Series 1", Data = new double[] { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120 } },
+        new ChartSeries { Name = "Series 2", Data = new double[] { 120, 110, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10 } }
+    };
+
+    private TimeOnly time = new TimeOnly(12, 34, 56);
+
+    public bool ShowAlertUpdateSuccessful { get; set; } = false;
+    
+    private Task OpenDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+
+        var parameters = new DialogParameters<UpdateDialog>
+        {
+            { x => x.Page, this }
+        };
+        return DialogService.ShowAsync<UpdateDialog>("Update Device", parameters, options); 
+
+    }
+}
+
 }

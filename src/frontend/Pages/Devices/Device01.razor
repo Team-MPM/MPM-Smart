@@ -1,6 +1,8 @@
 ﻿@page "/Devices/Device01"
 <h2>Device 1</h2>
-
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="justify-end d-flex">
+    <MudButton Class="mr-3 mud-theme-primary" Variant="Variant.Filled">Update</MudButton>
+</MudContainer>
 
 <MudContainer Class="flex-row d-flex pl-0 pt-3">
     <MudContainer Style="height: 600px" MaxWidth="MaxWidth.ExtraSmall">
@@ -34,7 +36,8 @@
     
     
     <MudContainer Style="width: 60%" Class="d-flex">
-        <MudCardContent Class="d-flex justify-space-between align-center flex-column">
+        
+        <MudCardContent Class="d-flex justify-space-between align-end flex-column">
             <MudChart ChartType="ChartType.Line" XAxisLabels="XAxisLabels" ChartSeries="Series" Height="250px" Width="500px"/>
             <MudChart ChartType="ChartType.Line" XAxisLabels="XAxisLabels" ChartSeries="Series" Height="250px" Width="500px"/>
         </MudCardContent>
