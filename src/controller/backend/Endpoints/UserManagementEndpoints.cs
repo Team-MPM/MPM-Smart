@@ -1,9 +1,8 @@
-﻿using System.Text;
-using ApiSchema.Settings;
+﻿using ApiSchema.Settings;
+using ApiSchema.Usermanagement;
 using Data.System;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Backend.Endpoints;
 
@@ -34,6 +33,9 @@ public static class UserManagementEndpoints
             var user = await userManager.GetUserAsync(context.User);
             if (user is null)
                 return Results.Unauthorized();
+
+            if(user.UserName == "admin")
+                return Results.BadRequest("Username for the \"admin\" user cannot be changed");
 
             if (string.IsNullOrWhiteSpace(model.Username))
                 return Results.BadRequest();
@@ -69,13 +71,33 @@ public static class UserManagementEndpoints
 
         group.MapGet("/language", async (
             HttpContext context,
-            UserManager<SystemUser> userManager) =>
+            UserManager<SystemUser> userManager,
+            SystemDbContext dbContext) =>
         {
             var user = await userManager.GetUserAsync(context.User);
             if (user is null)
                 return Results.Unauthorized();
-            return Results.Ok(user.UserProfile?.Language);
+            var userProfile = await dbContext.UserProfiles.FindAsync(user.UserProfileId);
+            return Results.Ok(userProfile!.Language.ToString());
 
+        }).RequireAuthorization("token");
+
+        group.MapPost("/language", async (
+            HttpContext context,
+            UserManager<SystemUser> userManager,
+            SystemDbContext dbContext,
+            [FromBody] LanguageModel model) =>
+        {
+            var user = await userManager.GetUserAsync(context.User);
+            if (user is null)
+                return Results.Unauthorized();
+            if(!Enum.IsDefined(typeof(Language), model.Language))
+                return Results.BadRequest("Invalid language");
+
+            var userProfile = await dbContext.UserProfiles.FindAsync(user.UserProfileId);
+            userProfile!.Language = (Language) model.Language;
+            await dbContext.SaveChangesAsync();
+            return Results.Ok();
         }).RequireAuthorization("token");
 
     }
