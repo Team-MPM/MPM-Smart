@@ -7,3 +7,9 @@ obj/
 int/
 build/
 docker/
+
+*.user
+*.db
+*.user
+
+integrity.dat

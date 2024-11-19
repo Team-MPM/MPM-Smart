@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace System.Data;
+namespace Data.System;
 
 public record UserProfile
 {
@@ -17,7 +17,7 @@ public class UserProfileEntityConfiguration : IEntityTypeConfiguration<UserProfi
 {
     public void Configure(EntityTypeBuilder<UserProfileEntity> builder)
     {
-        builder.ToTable("UserProfile");
+        builder.ToTable("UserProfiles");
         builder.HasKey(e => e.Id);
         builder.Property(e => e.UseDarkMode).IsRequired();
     }

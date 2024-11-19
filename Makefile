@@ -2,7 +2,7 @@ BUILD_DIR := ./build
 LIVE_BUILD_DIR := $(BUILD_DIR)/live
 IMAGE_NAME := raspbian-custom.img
 DEBIAN_MIRROR := http://raspbian.raspberrypi.org/raspbian
-RELEASE := buster
+RELEASE := bookworm
 ARCH := armhf
 PACKAGE_FILES_DIR := ./packages
 LIVE_BUILD_CONFIG := config
@@ -28,7 +28,7 @@ install-tools-arch:
 
 .PHONY: bootstrap
 bootstrap: $(LIVE_BUILD_DIR)
-	sudo debootstrap --arch=$(ARCH) --foreign $(RELEASE) $(LIVE_BUILD_DIR) $(DEBIAN_MIRROR)
+	sudo debootstrap --no-check-gpg --arch=$(ARCH) --foreign  $(RELEASE) $(LIVE_BUILD_DIR) $(DEBIAN_MIRROR)
 	sudo cp /usr/bin/qemu-arm-static $(LIVE_BUILD_DIR)/usr/bin/
 	sudo chroot $(LIVE_BUILD_DIR) /bin/bash -c "/debootstrap/debootstrap --second-stage"
 
@@ -44,18 +44,16 @@ install-packages: copy-packages
 configure:
 
 .PHONY: build-image
-build-image: bootstrap install-packages configure $(TEMP_DIR)
-	dd if=/dev/zero of=$(BUILD_DIR)/$(IMAGE_NAME) bs=1M count=4096
-	mkfs.ext4 $(BUILD_DIR)/$(IMAGE_NAME)
+build-image: configure $(TEMP_DIR)
+#	dd if=/dev/zero of=$(BUILD_DIR)/$(IMAGE_NAME) bs=256k count=32768
+	sudo umount $(TEMP_DIR)
+	truncate -s 8G $(BUILD_DIR)/$(IMAGE_NAME)
+	sudo mkfs.ext4 $(BUILD_DIR)/$(IMAGE_NAME)
 	sudo mount -o loop $(BUILD_DIR)/$(IMAGE_NAME) $(TEMP_DIR)
 	sudo cp -r $(LIVE_BUILD_DIR)/* $(TEMP_DIR)
-	sudo umount /mnt
+	sudo umount $(TEMP_DIR)
 
-.PHONY: clean
-clean:
-	rm -rf $(BUILD_DIR)
-	rm -f $(IMAGE_NAME)
-	dotnet clean
+all:
 
 .PHONY: all
 all: bootstrap install-packages configure build-image restore build		
@@ -68,6 +66,13 @@ build-dotnet:
 restore:		
 	dotnet restore -f
 
-.PHONY: add-migration
-add-migration:
-	dotnet ef migrations add $(migrationName) --output-dir SystemMigrations --startup-project src/controller/backend/Backend.csproj --project src/controller/data/Data.csproj
+add-system-migration:
+	dotnet ef migrations add $(name) --context SystemDbContext --output-dir SystemMigrations --startup-project src/controller/backend/Backend.csproj --project src/controller/data/Data.csproj
+
+add-telemetry-migration:
+	dotnet ef migrations add $(name) --context TelemetryDbContext --output-dir TelemetryMigrations --startup-project src/controller/backend/Backend.csproj --project src/controller/data/Data.csproj
+
+clean:
+	rm -rf build/
+
+.PHONY: all clean
