@@ -111,6 +111,19 @@ public class DbInitializer(
             }
         }
 
+        // System Configuration
+
+        if(!await m_DbContext.SystemConfiguration.AnyAsync(cancellationToken))
+        {
+            await m_DbContext.SystemConfiguration.AddAsync(new SystemConfiguration()
+            {
+                SystemName = "Controller",
+                TimeZone = TimeZones.UTC,
+                TimeBetweenDataUpdates = 5
+            }, cancellationToken);
+            logger.LogInformation("System Configuration seeded");
+        }
+
         if (env.IsDevelopment())
         {
             

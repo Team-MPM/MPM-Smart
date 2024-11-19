@@ -161,8 +161,8 @@ await app.StartPluginSystemAsync();
 app.MapOpenApi();
 
 app.MapIdentityEndpoints(key);
-
 app.MapUserManagementEndpoints();
+app.MapSettingsEndpoints();
 
 app.MapGet("/", () => "Hello World!");
 
