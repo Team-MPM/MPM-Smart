@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "sandbox",
+			"path": "sandbox"
+		},
+		{
+			"name": "shared",
+			"path": "shared"
+		}
+	],
+	"settings": {}
+}
