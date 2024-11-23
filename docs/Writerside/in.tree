@@ -3,8 +3,22 @@
         SYSTEM "https://resources.jetbrains.com/writerside/1.0/product-profile.dtd">
 
 <instance-profile id="in"
-                 name="Writerside"
-                  start-page="Test.md">
+                 name="Mpm-Smart"
+                  start-page="Home.md">
 
-    <toc-element topic="Test.md"/>
+    <toc-element topic="Home.md">
+        <toc-element topic="Terms.md"/>
+    </toc-element>
+    <toc-element topic="User-Guide.md">
+        <toc-element topic="Initial-Setup.md"/>
+        <toc-element topic="User-Management.md"/>
+        <toc-element topic="Devices-Integration.md"/>
+        <toc-element topic="Plugin-Management.md"/>
+    </toc-element>
+    <toc-element topic="Developer-Documentation.md">
+        <toc-element topic="Plugins.md">
+            <toc-element topic="Creating-your-first-Plugin.md"/>
+            <toc-element topic="Managing-Plugin-Services.md"/>
+        </toc-element>
+    </toc-element>
 </instance-profile>

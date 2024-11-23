@@ -22,4 +22,8 @@
         <description><![CDATA[Created after removal of "<Architecture.md>" from Instance Name]]></description>
         <accepts>Architecture.html</accepts>
     </rule>
+    <rule id="1f19d353">
+        <description>Created after removal of "Test" from Mpm-Smart</description>
+        <accepts>Test.html</accepts>
+    </rule>
 </rules>
