@@ -1,4 +1,4 @@
-﻿name: Build documentation
+﻿name: Build documentation for GitHub Pages
 
 on:
   push:
