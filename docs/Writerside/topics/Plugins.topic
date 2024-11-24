@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       id="Plugins" title="Plugins">
+
+    <title>
+        Plugins
+    </title>
+
+    <chapter title="Overview" id="overview">
+        <p>
+            Plugins are a way to extend the functionality of the Core Application Layer provided by the Mpm-Smart
+            ecosystem.
+            Plugins are usually provided by a Plugin Server or loaded from a local directory on the controller.
+            Plugins are exclusive to the backend layer.
+            In the UI, all plugins can implement a set of options and views providing user interactivity for
+            plugin-specific settings and exposed data.
+        </p>
+    </chapter>
+
+    <chapter title="How plugins get loaded" id="how-plugins-get-loaded">
+        <p>
+            Plugins are loaded by the Plugin Manager. The Plugin Manager is responsible for loading, unloading,
+            and managing the lifecycle of plugins.
+            All Plugins are loaded at startup and are initialized in no specific order.
+            Currently, there is no way of reloading plugins while the backend service is running.
+            In deployment, this update workflow is automated by the control process shipping with the backend.
+        </p>
+    </chapter>
+
+</topic>

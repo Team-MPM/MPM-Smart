@@ -26,4 +26,8 @@
         <description>Created after removal of "Test" from Mpm-Smart</description>
         <accepts>Test.html</accepts>
     </rule>
+    <rule id="5092f058">
+        <description>Created after removal of "Common Terms" from Mpm-Smart</description>
+        <accepts>Terms.html</accepts>
+    </rule>
 </rules>

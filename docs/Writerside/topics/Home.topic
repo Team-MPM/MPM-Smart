@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       id="Home" title="Home">
+
+    <title>
+        Home
+    </title>
+    <chapter title="The Team" id="the-team">
+        <list>
+            <li>Plazinski Olaf (Team Lead)</li>
+            <li>Martin Gabriel (Tech)</li>
+            <li>Mayer Julian (UI)</li>
+            <li>Toifl Jacob (UI)</li>
+        </list>
+    </chapter>
+    <chapter title="The idea" id="the-idea">
+        <p>Creating a fully wireless smart-home/<tooltip term="iot">IOT</tooltip> automation system with a central
+            management controller.
+            We implement an open standard built on plugins and an
+            extensible architecture.
+            The entire Project is fully open source, and contributions
+            from the community are highly welcome.
+            We collect metrics and telemetry from
+            multiple sources and display them in custom configurable dashboards.
+            We also plan
+            to support actor devices that can be controlled via the dashboard in real time
+            or automatically controlled via dynamic workflows.</p>
+    </chapter>
+
+</topic>
