@@ -3,7 +3,6 @@
 <MudContainer Class="p-4" MaxWidth="MaxWidth.Large">
     <MudText Typo="Typo.h4">Device-Settings</MudText>
 
-    <!-- Add Button -->
     <MudContainer Style="padding: 20px;">
         <MudGrid Justify="Justify.FlexEnd" AlignItems="Center">
             <MudItem>
@@ -12,7 +11,6 @@
         </MudGrid>
     </MudContainer>
 
-    <!-- Device List -->
     <MudContainer Class="p-4">
         @foreach (var device in devices)
         {
@@ -32,31 +30,27 @@
 </MudContainer>
 
 @code {
-// Devices List
-private List<string> devices = new List<string>
-{
-"Olaf's SmartHome",
-"Julian's SmartHome",
-"Jacob's SmartHome",
-"Gabriel's SmartHome"
-};
+    private List<string> devices = new List<string>
+    {
+        "Olaf's SmartHome",
+        "Julian's SmartHome",
+        "Jacob's SmartHome",
+        "Gabriel's SmartHome"
+    };
 
-// Add a new device
-private void AddDevice()
-{
-devices.Add($"New Device {devices.Count + 1}");
-}
+    private void AddDevice()
+    {
+        devices.Add("New Device");
+    }
 
-// Edit device
-private void EditDevice(string device)
-{
-Console.WriteLine($"Edit clicked for: {device}");
-}
+    private void EditDevice(string device)
+    {
+        
+    }
 
-// Delete device
-private void DeleteDevice(string device)
-{
-devices.Remove(device);
-Console.WriteLine($"Deleted: {device}");
-}
+    private void DeleteDevice(string device)
+    {
+        devices.Remove(device);
+        StateHasChanged();
+    }
 }

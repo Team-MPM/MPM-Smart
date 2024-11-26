@@ -1,0 +1,48 @@
+﻿@page "/HomePage"
+@layout HomePageLayout 
+
+@using System.Runtime.InteropServices
+@using MudBlazor
+
+<MudContainer Class="card-container">
+    <MudGrid Gutter="3">
+        <MudItem xs="12" sm="4">
+            <MudCard Class="card-style" Hover="true" @onclick="NavigateToLogin">
+                <MudCardMedia Image="https://via.placeholder.com/150" Alt="SmartHome Schule" Class="card-media" />
+                <MudCardContent>
+                    <MudText Typo="Typo.h5" Class="card-title">Schule</MudText>
+                    <MudText Typo="Typo.body2" Class="card-description">SmartHome der HTL KREMS</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="4">
+            <MudCard Class="card-style" Hover="true" @onclick="NavigateToLogin">
+                <MudCardMedia Image="https://via.placeholder.com/150" Alt="SmartHome Olaf" Class="card-media" />
+                <MudCardContent>
+                    <MudText Typo="Typo.h5" Class="card-title">Olaf's Zuhause</MudText>
+                    <MudText Typo="Typo.body2" Class="card-description">SmartHome von Olaf</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="4">
+            <MudCard Class="card-style" Hover="true" @onclick="NavigateToLogin">
+                <MudCardMedia Image="https://via.placeholder.com/150" Alt="SmartHome Jacob" Class="card-media" />
+                <MudCardContent>
+                    <MudText Typo="Typo.h5" Class="card-title">Jacobs's Zuhause</MudText>
+                    <MudText Typo="Typo.body2" Class="card-description">SmartHome von Jacob</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    private void NavigateToLogin()
+    {
+        NavigationManager.NavigateTo("/Login"); 
+    }
+}
+
