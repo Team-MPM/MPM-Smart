@@ -1,15 +1,8 @@
 ﻿@page "/Devices/Device02"
 @inject IDialogService DialogService
 
-@if(ShowAlertUpdateSuccessful) {
-    <MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Right"
-              Elevation="80" ShowCloseIcon="true" CloseIconClicked="(() => ShowAlertUpdateSuccessful = false)">
-        Successfully updated @DeviceName
-    </MudAlert>
-}
-
-<h2>Device 2</h2>
-<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="justify-end d-flex">
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="justify-space-between d-flex">
+    <h2>Device 2</h2>
     <MudButton OnClick="@(() => OpenDialogAsync())" Class="mr-3 mud-theme-primary" Variant="Variant.Filled">Update</MudButton>
 </MudContainer>
 
@@ -32,7 +25,6 @@
                 <MudText>Unkreativität:</MudText>
                 <MudProgressLinear Color="Color.Primary" Size="Size.Large" Value="100"/>
             </div>
-
         </MudContainer>
         <MudContainer Style="height: 300px"  Class="flex-column justify-space-around d-flex mt-10 ml-0">
             <MudText>Name: @TextValue</MudText>
@@ -46,6 +38,19 @@
 
     <MudContainer Style="width: 60%" Class="d-flex">
         <MudCardContent Class="d-flex justify-space-between align-center flex-column">
+            <MudContainer Class="mr-0" Style="max-width: 300px" >
+                <MudSelect Class="align-end" Style="width: 300px"
+                           @bind-Value="_value"
+                           Label="Timespan"
+                           Variant="Variant.Filled"
+                           Placeholder="Choose Timespan">
+
+                    @foreach (var span in _timespans)
+                    {
+                    <MudSelectItem Value="span">@span</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudContainer>
             <MudChart ChartType="ChartType.Line" XAxisLabels="XAxisLabels" ChartSeries="Series" Height="250px" Width="500px"/>
             <MudChart ChartType="ChartType.Line" XAxisLabels="XAxisLabels" ChartSeries="Series" Height="250px" Width="500px"/>
         </MudCardContent>
@@ -65,20 +70,36 @@
     };
 
     private TimeOnly time = new TimeOnly(12, 34, 56);
-
-    public bool ShowAlertUpdateSuccessful { get; set; } = false;
     
     private Task OpenDialogAsync()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true };
 
-        var parameters = new DialogParameters<UpdateDialog>
-        {
-            { x => x.Page, this }
-        };
-        return DialogService.ShowAsync<UpdateDialog>("Update Device", parameters, options); 
-
+        
+        return DialogService.ShowAsync<UpdateDialog2>("Update Device", options); 
     }
-}
-
+    string _value;
+    
+    private string[] _timespans =
+    {
+        "15 Minutes",
+        "30 Minutes",
+        "1 Hour",
+        "2 Hours",
+        "4 Hours",
+        "8 Hours",
+        "12 Hours",
+        "1 Day",
+        "1 Week",
+        "1 Month"
+    };
+    
+    private Dictionary<string,string> _deviceOptions = new Dictionary<string, string>
+    {
+        {"Device 1", "Device 1"},
+        {"Device 2", "Device 2"},
+        {"Device 3", "Device 3"},
+        {"Device 4", "Device 4"},
+        {"Device 5", "Device 5"},
+    };
 }

@@ -1,7 +1,9 @@
 ﻿@page "/Devices/Device01"
-<h2>Device 1</h2>
-<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="justify-end d-flex">
-    <MudButton Class="mr-3 mud-theme-primary" Variant="Variant.Filled">Update</MudButton>
+@inject IDialogService DialogService
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="justify-space-between d-flex">
+    <h2>Device 1</h2>
+    <MudButton OnClick="@(() => OpenDialogAsync())" Class="mr-3 mud-theme-primary" Variant="Variant.Filled">Update</MudButton>
 </MudContainer>
 
 <MudContainer Class="flex-row d-flex pl-0 pt-3">
@@ -23,7 +25,7 @@
                 <MudText>Unkreativität:</MudText>
                 <MudProgressLinear Color="Color.Primary" Size="Size.Large" Value="100"/>
             </div>
-            
+
         </MudContainer>
         <MudContainer Style="height: 300px"  Class="flex-column justify-space-around d-flex mt-10 ml-0">
             <MudText>Name: @TextValue</MudText>
@@ -33,25 +35,65 @@
             <MudText>...: @TextValue</MudText>
         </MudContainer>
     </MudContainer>
-    
-    
+
+
     <MudContainer Style="width: 60%" Class="d-flex">
-        
         <MudCardContent Class="d-flex justify-space-between align-end flex-column">
+            <MudContainer Class="mr-0" Style="max-width: 300px" >
+                <MudSelect Class="align-end" Style="width: 300px"
+                    @bind-Value="_value"
+                    Label="Timespan"
+                    Variant="Variant.Filled"
+                    Placeholder="Choose Timespan">
+
+                    @foreach (var span in _timespans)
+                    {
+                    <MudSelectItem Value="span">@span</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudContainer>
             <MudChart ChartType="ChartType.Line" XAxisLabels="XAxisLabels" ChartSeries="Series" Height="250px" Width="500px"/>
             <MudChart ChartType="ChartType.Line" XAxisLabels="XAxisLabels" ChartSeries="Series" Height="250px" Width="500px"/>
         </MudCardContent>
     </MudContainer>
-</MudContainer>    
+</MudContainer>
 
 
 @code {
+    string DeviceName = "Device 1";
     private string TextValue { get; set; } = "This Property is like Vinis balondor it does not exist";
     private string[] XAxisLabels = new string[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+
     private List<ChartSeries> Series = new List<ChartSeries>
     {
-        new ChartSeries { Name = "Series 1", Data = new double[] { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120 } },
+    new ChartSeries { Name = "Series 1", Data = new double[] { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120 } },
         new ChartSeries { Name = "Series 2", Data = new double[] { 120, 110, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10 } }
     };
+
     private TimeOnly time = new TimeOnly(12, 34, 56);
+
+    public bool ShowAlertUpdateSuccessful { get; set; } = false;
+
+    private Task OpenDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+
+        return DialogService.ShowAsync<UpdateDialog1>("Update Device", options);
+
+    }
+    string _value;
+    
+    private string[] _timespans =
+    {
+        "15 Minutes",
+        "30 Minutes",
+        "1 Hour",
+        "2 Hours",
+        "4 Hours",
+        "8 Hours",
+        "12 Hours",
+        "1 Day",
+        "1 Week",
+        "1 Month"
+    };
 }
