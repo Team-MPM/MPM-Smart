@@ -1,8 +1,11 @@
-﻿using ApiSchema.Settings;
+﻿using System.Reflection.Metadata.Ecma335;
+using ApiSchema.Settings;
 using ApiSchema.Usermanagement;
 using Data.System;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Endpoints;
 
@@ -100,5 +103,69 @@ public static class UserManagementEndpoints
             return Results.Ok();
         }).RequireAuthorization("token");
 
+        group.MapGet("/getUsers", async (
+            HttpContext context,
+            UserManager<SystemUser> userManager) =>
+        {
+            var user = await userManager.GetUserAsync(context.User);
+            if (user is null)
+                return Results.Unauthorized();
+            var users = await userManager.Users.Include(s => s.UserProfile).ToListAsync();
+            var usersInAdmin = await userManager.GetUsersInRoleAsync("admin");
+            return Results.Ok(users.Select(u => new
+            {
+                Username=u.UserName,
+                Language=u.UserProfile!.Language,
+                UseDarkMode=u.UserProfile.UseDarkMode,
+                IsAdmin=usersInAdmin.Contains(u)
+            }));
+        }).RequireAuthorization("token");
+
+        group.MapPost("/addUser", async (
+            HttpContext context,
+            [FromBody] AddUserModel model,
+            UserManager<SystemUser> userManager,
+            RoleManager<IdentityRole> roleManager) =>
+        {
+            var user = await userManager.GetUserAsync(context.User);
+            if(user is null)
+                return Results.Unauthorized();
+            var usersInAdmin = await userManager.GetUsersInRoleAsync("admin");
+            if (!usersInAdmin.Contains(user))
+                return Results.Forbid();
+            var newUser = await userManager.FindByNameAsync(model.Username);
+            if(newUser is not null)
+                return Results.BadRequest("User already exists");
+
+            var result = await userManager.CreateAsync(new SystemUser()
+            {
+                UserName = model.Username,
+                UserProfile = new UserProfileEntity()
+            }, model.Password);
+
+            if (!result.Succeeded)
+                return Results.InternalServerError();
+
+            return Results.Created();
+        }).RequireAuthorization("token");
+
+        group.MapDelete("/removeUser", async (
+            HttpContext context,
+            UserManager<SystemUser> userManager,
+            [FromBody] RemoveUserModel model) =>
+        {
+            var user = await userManager.GetUserAsync(context.User);
+            if(user is null)
+                return Results.Unauthorized();
+            var usersInAdmin = await userManager.GetUsersInRoleAsync("admin");
+            if (!usersInAdmin.Contains(user))
+                return Results.Forbid();
+            var username = context.Request.Query["username"];
+            var userToRemove = await userManager.FindByNameAsync(model.Username);
+            if(userToRemove is null)
+                return Results.NotFound();
+            var result = await userManager.DeleteAsync(userToRemove);
+            return result.Succeeded ? Results.Ok() : Results.InternalServerError();
+        }).RequireAuthorization("token");
     }
 }
