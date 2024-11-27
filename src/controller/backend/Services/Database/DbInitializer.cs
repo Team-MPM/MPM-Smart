@@ -111,6 +111,17 @@ public class DbInitializer(
             }
         }
 
+        // Guess user
+
+        if (await m_UserManager.FindByNameAsync("visitor") is null)
+        {
+            var result = await m_UserManager.CreateAsync(new SystemUser()
+            {
+                UserName = "Visitor",
+                UserProfile = new UserProfileEntity()
+            });
+        }
+
         // System Configuration
 
         if(!await m_DbContext.SystemConfiguration.AnyAsync(cancellationToken))

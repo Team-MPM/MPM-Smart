@@ -37,7 +37,7 @@ public static class UserManagementEndpoints
             if (user is null)
                 return Results.Unauthorized();
 
-            if(user.UserName == "admin")
+            if(!user.CanChangeUsername)
                 return Results.BadRequest("Username for the \"admin\" user cannot be changed"); //TODO
 
             if (string.IsNullOrWhiteSpace(model.Username))
