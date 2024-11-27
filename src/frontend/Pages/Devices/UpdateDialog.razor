@@ -1,0 +1,35 @@
+﻿
+<MudDialog >
+    <TitleContent>
+        Device Settings
+    </TitleContent>
+    <DialogContent>
+        <MudContainer Style="height: 600px" Class="d-flex flex-row">
+            <p>DARKNESS</p>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    
+    [Parameter] public Device02 Page { get; set; }
+
+    private void Submit()
+    {
+        Page.ShowAlertUpdateSuccessful = true;
+        StateHasChanged();
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+}

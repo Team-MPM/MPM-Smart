@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE terms SYSTEM "https://resources.jetbrains.com/writerside/1.0/glossary.dtd">
+<terms>
+    <term name="Controller">
+        Centralized management unit
+    </term>
+    <term name="Sensor">
+        Device for collecting data
+    </term>
+    <term name="ESP32">
+        Microcontroller
+    </term>
+    <term name="Blazor">
+        Web framework
+    </term>
+    <term name="CI">
+        Continuous Integration
+    </term>
+    <term name="CD">
+        Continuous Delivery
+    </term>
+    <term name="Docker">
+        Container Engine
+    </term>
+    <term name="Raspberry PI">
+        Linux SOC
+    </term>
+    <term name="SOC">
+        System on a Chip
+    </term>
+    <term name="IDE">
+        Integrated Development Environment
+    </term>
+    <term name="OS">
+        Operating System
+    </term>
+    <term name="API">
+        Application Programming Interface
+    </term>
+    <term name="EF">
+        Entity Framework
+    </term>
+    <term name="IF">
+        Identity Framework
+    </term>
+    <term name="ORM">
+        Object Relational Mapper
+    </term>
+    <term name="FreeRTOS">
+        Free lightweight Realtime OS
+    </term>
+    <term name="Git">
+        Free VCS
+    </term>
+    <term name="VCS">
+        Version Control System
+    </term>
+    <term name="ASP.NET">
+        .NET (C#) Web framework
+    </term>
+    <term name="SQLite">
+        Lightweight relational database
+    </term>
+    <term name="TLDP">
+        The Linux documentation platform
+    </term>
+    <term name="MSDN">
+        Microsoft Software Developer Network
+    </term>
+    <term name="VPN">
+        Virtual Private Network
+    </term>
+    <term name="SSH">
+        Secure Shell Protocol. Used for secure remote access.
+    </term>
+    <term name="iot">
+        Internet of Things
+    </term>
+</terms>

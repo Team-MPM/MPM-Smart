@@ -1,0 +1,58 @@
+﻿@page "/Settings/User"
+
+<MudContainer Class="p-4" MaxWidth="MaxWidth.Large">
+    <MudText Typo="Typo.h4">User-Settings</MudText>
+    <MudAvatar Style="margin: 10px" Color="Color.Primary">D</MudAvatar>
+
+    <MudCard Class="m-3" Style=" width: 30%; background-color: #3b3432; margin: 10px">
+        <MudCardContent>
+            <MudTextField Label="Benutzername" Placeholder="Enter username" Value="username"/>
+        </MudCardContent>
+    </MudCard>
+    <MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
+        <MudCardContent>
+            <MudTextField Label="Passwort" Placeholder="Enter password" Value="passwort"/>
+        </MudCardContent>
+    </MudCard>
+    <MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
+        <MudCardContent>
+            <MudGrid Justify="Justify.SpaceBetween" AlignItems="Center" AlginContent="Center">
+                <MudItem>
+                    <text style="color: white;">Backup</text>
+                </MudItem>
+                <MudItem Style="display: flex; justify-content: center; align-items: center;">
+                    @* <MudSwitch @bind-Value="Label_Switch1"/> *@
+                    <MudIcon Icon="@Icons.Material.Filled.ToggleOn"/>
+                </MudItem>
+            </MudGrid>
+        </MudCardContent>
+    </MudCard>
+
+
+    <MudCard Style="width: 30%; background-color: #3b3432; margin: 10px;">
+        <MudCardContent>
+            <MudRadio Color="Color.Primary" Value="true">
+                <MudText Style="font-size: 0.8rem;">Deutsch</MudText>
+            </MudRadio>
+        </MudCardContent>
+        <MudCardContent>
+            <MudRadio Color="Color.Primary" Value="true">
+                <MudText Style="font-size: 0.8rem;">Englisch</MudText>
+            </MudRadio>
+        </MudCardContent>
+        <MudCardContent>
+            <MudRadio Color="Color.Primary" Value="true">
+                <MudText Style="font-size: 0.8rem;">Polnisch</MudText>
+            </MudRadio>
+        </MudCardContent>
+    </MudCard>
+
+</MudContainer>
+
+
+@code {
+string username = "detrax";
+string passwort = "*************";
+bool Label_Switch1 = false;
+
+}

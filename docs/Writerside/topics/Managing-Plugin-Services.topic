@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       id="Managing-Plugin-Services" title="Managing Plugin Services">
+
+    <title>
+        Managing Plugin Services
+    </title>
+    <chapter title="Introduction" id="introduction">
+        <p>All Services are divided into two parts:</p>
+        <list>
+            <li>
+                <control>Core Services</control>:
+                These are provided by the backend out of the box and can't be modified
+                from the plugin stage
+            </li>
+            <li>
+                <control>Plugin Services</control>:
+                These are provided by the plugins and can be modified from the plugin.
+                They also offer a way for plugin to communicate with each other.
+            </li>
+        </list>
+    </chapter>
+
+    <chapter title="Logging" id="logging">
+        <p>
+            The core application and plugin modules use two separate loggers.
+            For development purposes, all logs are uniformly output to the same console.
+            On disk, you will find a log directory with the following files:
+        </p>
+        <list>
+            <li>
+                <path>backend.log</path>:
+                Contains all logs from the core application layer
+            </li>
+            <li>
+                <path>error.log</path>:
+                Contains all errors from the core application layer
+            </li>
+            <li>
+                <path>plugin.log</path>:
+                Contains all logs from the plugin modules
+            </li>
+            <li>
+                <path>plugin-error.log</path>:
+                Contains all errors from the plugin modules
+            </li>
+        </list>
+        <p>
+            These log files use a plain text in UTF-8 format and use the following layout:
+            <br/>
+            <code>
+                Date Time Timezone [LEVEL] Message
+            </code>
+            <br/>
+            For example:
+            <br/>
+            <code>
+                2024-11-04 07:55:17.633 +01:00 [INF] Starting Mpm-Smart
+            </code>
+        </p>
+        <p>
+            The logging system uses the default Microsoft.Extensions.Logging base library
+            together with serilog for the backend and plugin modules. To use the logger,
+            inject the <code>ILogger&lt;T&gt;</code> interface into your service.
+        </p>
+        <p>
+            Since there logs can also be exported as structured logs, make use of the
+            message templating instead of using string interpolation and pass down the full
+            exception instance where applicable.
+        </p>
+        <compare first-title="Bad" second-title="Good" type="top-bottom">
+            <code-block lang="c#">
+                logger.LogInformation($"Received request {request}");
+            </code-block>
+            <code-block lang="c#">
+                logger.LogInformation("Received request {Request}", request);
+            </code-block>
+        </compare>
+        <compare first-title="Bad" second-title="Good" type="top-bottom">
+            <code-block lang="c#">
+                logger.LogInformation("An error occurred");
+            </code-block>
+            <code-block lang="c#">
+                logger.LogError(exception, "An error occurred");
+            </code-block>
+        </compare>
+    </chapter>
+
+    <chapter title="Database Management" id="database-management">
+        <p>
+            The core application layer uses Entity Framework Core to manage its databases.
+            You can also use your own custom database models in your plugins, but using
+            Entity Framework Core with SQLite is the only first party supported option.
+            When registering a Database Context in your plugin service collection,
+            its provided migrations will automatically be picked up by the <code>DbInitializer</code>
+            and applied to the database on startup. If the database is not present, it will be created.
+        </p>
+        <tip title="Migrations">
+            <p>
+                When using migrations, make sure to specify the correct migration assembly in a
+                way that is independent of the hosting environment or the startup project.
+            </p>
+        </tip>
+        <tip title="Seeding">
+            <p>
+                A system to automatically seed plugin databases is not yet implemented.
+                See Project plan for open issue.
+            </p>
+        </tip>
+        <p>
+            Plugins can also access the <code>SystemDbContext</code> by using the application service
+            provider provided on initialization of the plugin instance.
+        </p>
+    </chapter>
+</topic>

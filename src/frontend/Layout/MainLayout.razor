@@ -3,12 +3,12 @@
 
 <MudLayout Class="pt-3">
     <Header/>
-    <MudMainContent Class="d-flex flex-row justify-space-evenly">
-        <MudContainer Class="pl-0" MaxWidth="MaxWidth.ExtraSmall">
+    <MudMainContent Class="d-flex flex-row">
+        <MudContainer Class="pl-0 ml-0 mr-0" Style="max-width: 300px">
             <NavBar/>
         </MudContainer>
         
-        <MudPaper Class="pl-3 pt-3 overflow-scroll overflow-x-hidden" Height="90vh">
+        <MudPaper Class="pl-3 pt-3 overflow-scroll overflow-x-hidden" Height="90vh" Width="100%">
             @Body
         </MudPaper>
     </MudMainContent>

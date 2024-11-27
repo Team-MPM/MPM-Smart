@@ -1,10 +1,84 @@
 ﻿@page "/Devices/Device02"
-<h3>Device02</h3>
+@inject IDialogService DialogService
 
-@code {
-public string TextValue { get; set; }
+@if(ShowAlertUpdateSuccessful) {
+    <MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Right"
+              Elevation="80" ShowCloseIcon="true" CloseIconClicked="(() => ShowAlertUpdateSuccessful = false)">
+        Successfully updated @DeviceName
+    </MudAlert>
 }
 
+<h2>Device 2</h2>
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="justify-end d-flex">
+    <MudButton OnClick="@(() => OpenDialogAsync())" Class="mr-3 mud-theme-primary" Variant="Variant.Filled">Update</MudButton>
+</MudContainer>
+
+<MudContainer Class="flex-row d-flex pl-0 pt-3">
+    <MudContainer Style="height: 600px" MaxWidth="MaxWidth.ExtraSmall">
+        <MudContainer Style="height: 300px" Class="d-flex flex-column gap-8">
+            <div>
+                <MudText>CPU:</MudText>
+                <MudProgressLinear Color="Color.Primary" Size="Size.Large" Value="75"/>
+            </div>
+            <div>
+                <MudText>RAM:</MudText>
+                <MudProgressLinear Color="Color.Primary" Size="Size.Large" Value="40"/>
+            </div>
+            <div>
+                <MudText>Uptime:</MudText>
+                <MudText>@time</MudText>
+            </div>
+            <div>
+                <MudText>Unkreativität:</MudText>
+                <MudProgressLinear Color="Color.Primary" Size="Size.Large" Value="100"/>
+            </div>
+
+        </MudContainer>
+        <MudContainer Style="height: 300px"  Class="flex-column justify-space-around d-flex mt-10 ml-0">
+            <MudText>Name: @TextValue</MudText>
+            <MudText>IP-Address: @TextValue</MudText>
+            <MudText>Status: @TextValue</MudText>
+            <MudText>Type: @TextValue</MudText>
+            <MudText>...: @TextValue</MudText>
+        </MudContainer>
+    </MudContainer>
+
+
+    <MudContainer Style="width: 60%" Class="d-flex">
+        <MudCardContent Class="d-flex justify-space-between align-center flex-column">
+            <MudChart ChartType="ChartType.Line" XAxisLabels="XAxisLabels" ChartSeries="Series" Height="250px" Width="500px"/>
+            <MudChart ChartType="ChartType.Line" XAxisLabels="XAxisLabels" ChartSeries="Series" Height="250px" Width="500px"/>
+        </MudCardContent>
+    </MudContainer>
+</MudContainer>
+
+
 @code {
+    string DeviceName = "Device 2";
+    private string TextValue { get; set; } = "This Property is like Vinis balondor it does not exist";
+    private string[] XAxisLabels = new string[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+
+    private List<ChartSeries> Series = new List<ChartSeries>
+    {
+        new ChartSeries { Name = "Series 1", Data = new double[] { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120 } },
+        new ChartSeries { Name = "Series 2", Data = new double[] { 120, 110, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10 } }
+    };
+
+    private TimeOnly time = new TimeOnly(12, 34, 56);
+
+    public bool ShowAlertUpdateSuccessful { get; set; } = false;
     
+    private Task OpenDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+
+        var parameters = new DialogParameters<UpdateDialog>
+        {
+            { x => x.Page, this }
+        };
+        return DialogService.ShowAsync<UpdateDialog>("Update Device", parameters, options); 
+
+    }
+}
+
 }

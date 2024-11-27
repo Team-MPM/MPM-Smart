@@ -47,11 +47,7 @@ builder.Services.AddHostedService(sp => sp.GetRequiredService<DbInitializer>());
 
 // ------------------------ Identity ------------------------------
 
-builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
+builder.Services.AddAuthentication()
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -81,6 +77,7 @@ builder.Services.AddIdentity<SystemUser, IdentityRole>(options =>
         options.Password.RequiredLength = 4;
         options.Password.RequireNonAlphanumeric = false;
         options.Password.RequireUppercase = false;
+        options.Lockout.AllowedForNewUsers = false;
         options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     })
     .AddEntityFrameworkStores<SystemDbContext>();

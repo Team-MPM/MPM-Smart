@@ -1,0 +1,14 @@
+﻿@page "/Settings/User-Management"
+<h3>UserManagement</h3>
+@if (IsAdmin)
+{
+    <p>W</p>
+}
+else
+{
+    <p>Access denied! Suppn!</p>
+}
+
+@code {
+    bool IsAdmin = true;
+}

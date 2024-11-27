@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       id="Creating-your-first-Plugin" title="Creating your first Plugin">
+
+    <title>
+        Creating your first Plugin
+    </title>
+    <chapter title="Introduction" id="introduction">
+        <p>
+            Create an empty C# dotnet 9.0 class library and adapt the
+            <path>Plugin.csproj</path> file to the following:
+        </p>
+
+        <code-block lang="xml">
+&lt;Project Sdk=&quot;Microsoft.NET.Sdk&quot;&gt;
+
+    &lt;PropertyGroup&gt;
+        &lt;TargetFramework&gt;net9.0&lt;/TargetFramework&gt;
+        &lt;ImplicitUsings&gt;enable&lt;/ImplicitUsings&gt;
+        &lt;Nullable&gt;enable&lt;/Nullable&gt;
+    &lt;/PropertyGroup&gt;
+
+    &lt;PropertyGroup&gt;
+        &lt;OutputPath&gt;your/plugin/output/path&lt;/OutputPath&gt;
+        &lt;AppendTargetFrameworkToOutputPath&gt;false&lt;/AppendTargetFrameworkToOutputPath&gt;
+    &lt;/PropertyGroup&gt;
+
+    &lt;ItemGroup&gt;
+        &lt;ProjectReference Include=&quot;..\plugin_base\PluginBase.csproj&quot; Private=&quot;False&quot;/&gt;
+        &lt;ProjectReference Include=&quot;..\..\Shared\Shared.csproj&quot; Private=&quot;False&quot;/&gt;
+    &lt;/ItemGroup&gt;
+
+    &lt;ItemGroup&gt;
+        &lt;FrameworkReference Include=&quot;Microsoft.AspNetCore.App&quot;/&gt;
+    &lt;/ItemGroup&gt;
+
+    &lt;ItemGroup&gt;
+        &lt;None Update=&quot;plugin.json&quot;&gt;
+            &lt;CopyToOutputDirectory&gt;Always&lt;/CopyToOutputDirectory&gt;
+        &lt;/None&gt;
+    &lt;/ItemGroup&gt;
+
+&lt;/Project&gt;
+</code-block>
+        <p>
+            Note: In the future, the PluginBase and Shared references will be
+            replaced by NuGet packages.
+        </p>
+
+        <p>The <path>plugin.json</path> metadata file is a simple JSON file that contains
+            some general information about the plugin.
+            It should look like this:
+        </p>
+
+        <code-block lang="json">
+{
+    &quot;name&quot;: &quot;Test Plugin&quot;,
+    &quot;version&quot;: &quot;1.0.0&quot;,
+    &quot;description&quot;: &quot;This is a test plugin&quot;,
+    &quot;author&quot;: &quot;Your Name&quot;,
+    &quot;dependencies&quot;: []
+}
+</code-block>
+    </chapter>
+
+    <chapter title="Plugin Class" id="plugin-class">
+        <p>Create a new class that implements the <code>IPlugin</code> interface.
+            Alternatively, one can also make use of the <code>PluginBase</code> class that provides some default
+            implementations.</p>
+
+        <code-block lang="c#">
+public class TestPluginClass : PluginBase&lt;TestPluginClass&gt;
+{
+    protected override void Initialize()
+    {
+        
+    }
+
+    protected override void BuildEndpoints(IEndpointRouteBuilder routeBuilder)
+    {
+    
+    }
+
+    protected override void ConfigureServices(IServiceCollection services)
+    {
+    
+    }
+
+    protected override void SystemStart()
+    {
+        
+    }
+}
+    </code-block>
+    </chapter>
+    <chapter title="Additional Considerations" id="additional-considerations">
+        <list>
+            <li>Make sure to include all static assets in the output folder of the plugin.</li>
+            <li>Make sure there are now overlapping .dll file dependencies with the backend application for shared
+                types.
+            </li>
+            <li>Make sure to include all necessary files in the .csproj file.</li>
+            <li>Make sure to include all necessary dependencies in the <code>plugin.json</code> file.</li>
+        </list>
+    </chapter>
+</topic>

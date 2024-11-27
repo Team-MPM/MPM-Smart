@@ -1,0 +1,15 @@
+﻿@page "/"
+@using Server.UI.Layout
+
+asdasdsad
+
+@code {
+
+    [CascadingParameter] public required MainLayout MainLayout { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        MainLayout.Title = "Home";
+    }
+
+}
