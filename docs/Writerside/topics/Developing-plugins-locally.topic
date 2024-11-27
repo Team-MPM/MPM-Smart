@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Developing plugins locally" id="Developing-plugins-locally">
+
+    <chapter title="Building the plugin" id="building_the_plugin">
+        <p>
+            To build a plugin, you need to have the following prerequisites:
+        </p>
+        <list>
+            <li>.NET 9 SDK</li>
+            <li>A source build of the Mpm-Smart Controller</li>
+            <li>The current version of the <code>PluginBase.dll</code> and <code>Shared.dll</code> libraries</li>
+        </list>
+    </chapter>
+</topic>

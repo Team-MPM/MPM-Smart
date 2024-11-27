@@ -1,7 +1,23 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-csharp.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-json.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-markup.min.js"></script><style>
         .article {
             position: relative;
             padding-bottom: 24px;
+        }
+        
+
+        .code-block {
+            overflow: hidden;
+            position: relative;
+            padding: 0;
+            border-radius: 8px;
+            font-variant-ligatures: none;
+            background-color: rgba(25, 25, 28, .05);
+            word-break: break-all;
         }
         
 
@@ -12,7 +28,19 @@
         }
         
 
-        .header-row {
+        .filepath {
+            color: #19191c;
+            font-size: 15px;
+            font-weight: 700;
+            line-height: inherit;
+        }
+        
+
+        .inline-code {
+            border-radius: 4px;
+            display: inline;
+            padding: 2px 1px;
+            font-family: JetBrains Sans,monospace;
             background: #e6e6e6;
         }
         
@@ -38,6 +66,16 @@
             margin-block-start: 0;
             margin-block-end: 0;
         }
+        
+
+        .prism {
+            page-break-inside: avoid;
+        }
+        
+        /* PrismJS 1.29.0
+https://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript+abap+abnf+actionscript+ada+agda+al+antlr4+apacheconf+apex+apl+applescript+aql+arduino+arff+armasm+arturo+asciidoc+aspnet+asm6502+asmatmel+autohotkey+autoit+avisynth+avro-idl+awk+bash+basic+batch+bbcode+bbj+bicep+birb+bison+bnf+bqn+brainfuck+brightscript+bro+bsl+c+csharp+cpp+cfscript+chaiscript+cil+cilkc+cilkcpp+clojure+cmake+cobol+coffeescript+concurnas+csp+cooklang+coq+crystal+css-extras+csv+cue+cypher+d+dart+dataweave+dax+dhall+diff+django+dns-zone-file+docker+dot+ebnf+editorconfig+eiffel+ejs+elixir+elm+etlua+erb+erlang+excel-formula+fsharp+factor+false+firestore-security-rules+flow+fortran+ftl+gml+gap+gcode+gdscript+gedcom+gettext+gherkin+git+glsl+gn+linker-script+go+go-module+gradle+graphql+groovy+haml+handlebars+haskell+haxe+hcl+hlsl+hoon+http+hpkp+hsts+ichigojam+icon+icu-message-format+idris+ignore+inform7+ini+io+j+java+javadoc+javadoclike+javastacktrace+jexl+jolie+jq+jsdoc+js-extras+json+json5+jsonp+jsstacktrace+js-templates+julia+keepalived+keyman+kotlin+kumir+kusto+latex+latte+less+lilypond+liquid+lisp+livescript+llvm+log+lolcode+lua+magma+makefile+markdown+markup-templating+mata+matlab+maxscript+mel+mermaid+metafont+mizar+mongodb+monkey+moonscript+n1ql+n4js+nand2tetris-hdl+naniscript+nasm+neon+nevod+nginx+nim+nix+nsis+objectivec+ocaml+odin+opencl+openqasm+oz+parigp+parser+pascal+pascaligo+psl+pcaxis+peoplecode+perl+php+phpdoc+php-extras+plant-uml+plsql+powerquery+powershell+processing+prolog+promql+properties+protobuf+pug+puppet+pure+purebasic+purescript+python+qsharp+q+qml+qore+r+racket+cshtml+jsx+tsx+reason+regex+rego+renpy+rescript+rest+rip+roboconf+robotframework+ruby+rust+sas+sass+scss+scala+scheme+shell-session+smali+smalltalk+smarty+sml+solidity+solution-file+soy+sparql+splunk-spl+sqf+sql+squirrel+stan+stata+iecst+stylus+supercollider+swift+systemd+t4-templating+t4-cs+t4-vb+tap+tcl+tt2+textile+toml+tremor+turtle+twig+typescript+typoscript+unrealscript+uorazor+uri+v+vala+vbnet+velocity+verilog+vhdl+vim+visual-basic+warpscript+wasm+web-idl+wgsl+wiki+wolfram+wren+xeora+xml-doc+xojo+xquery+yaml+yang+zig&plugins=highlight-keywords */
+code[class*=language-],pre[class*=language-]{color:#000;background:0 0;text-shadow:0 1px #fff;font-family:Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;font-size:1em;text-align:left;white-space:pre-wrap;word-spacing:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}code[class*=language-] ::-moz-selection,code[class*=language-]::-moz-selection,pre[class*=language-] ::-moz-selection,pre[class*=language-]::-moz-selection{text-shadow:none;background:#b3d4fc}code[class*=language-] ::selection,code[class*=language-]::selection,pre[class*=language-] ::selection,pre[class*=language-]::selection{text-shadow:none;background:#b3d4fc}@media print{code[class*=language-],pre[class*=language-]{text-shadow:none}}pre[class*=language-]{padding:16px;margin:0;overflow:auto}:not(pre)>code[class*=language-],pre[class*=language-]{background:#f5f2f0}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal}.token.cdata,.token.comment,.token.doctype,.token.prolog{color:#708090}.token.punctuation{color:#999}.token.namespace{opacity:.7}.token.boolean,.token.constant,.token.deleted,.token.number,.token.property,.token.symbol,.token.tag{color:#905}.token.attr-name,.token.builtin,.token.char,.token.inserted,.token.selector,.token.string{color:#690}.language-css .token.string,.style .token.string,.token.entity,.token.operator,.token.url{color:#9a6e3a;background:hsla(0,0%,100%,.5)}.token.atrule,.token.attr-value,.token.keyword{color:#07a}.token.class-name,.token.function{color:#dd4a68}.token.important,.token.regex,.token.variable{color:#e90}.token.bold,.token.important{font-weight:700}.token.italic{font-style:italic}.token.entity{cursor:help}
+
         
 
         :root {
@@ -180,14 +218,62 @@
         }
         
 
-        .table-wrapper {
-            overflow: hidden;
-            box-sizing: border-box;
-            font: inherit;
-        }
-        
-
         .topic {
             page-break-before: always;
         }
-        </style><title>pdfSourceIN</title></head><body><div><section class="topic"><div><article class="article"><h1 class="main-title">Table of Contents</h1><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#2255103">Home</a></div><div class="page">2</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#80697703">Common Terms</a></div><div class="page">3</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-1838751110">User Guide</a></div><div class="page">6</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-472489356">Initial Setup</a></div><div class="page">7</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#184864645">User Management</a></div><div class="page">8</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-440975196">Devices Integration</a></div><div class="page">9</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-1443814627">Plugin Management</a></div><div class="page">10</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-2026317385">Developer Documentation</a></div><div class="page">11</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#1189023616">Plugins</a></div><div class="page">12</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-877782410">Creating your first Plugin</a></div><div class="page">13</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-2092318995">Managing Plugin Services</a></div><div class="page">14</div></div></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="2255103">Home</h1><section><h2 id="2255103#the-team" data-toc="the-team#Home.topic-the-team">The Team</h2><ul class="list" id="2255103#-tic29n_5" start="1"><li class="list-item" id="2255103#-tic29n_6"><p>Plazinski Olaf (Team Lead)</p></li><li class="list-item" id="2255103#-tic29n_7"><p>Martin Gabriel (Tech)</p></li><li class="list-item" id="2255103#-tic29n_8"><p>Mayer Julian (UI)</p></li><li class="list-item" id="2255103#-tic29n_9"><p>Toifl Jacob (UI)</p></li></ul></section><section><h2 id="2255103#the-idea" data-toc="the-idea#Home.topic-the-idea">The idea</h2><p id="2255103#-tic29n_10">Creating a fully wireless smart-home / IOT automation system with a central management controller. We implement an open standard built on plugins and an extensible architecture. The entire Project is fully open source and contributions from the community are highly welcome. We collect metrics and telemetry from multiple sources and display them in custom configurable dashboards. We also plan to support actor devices than can be controlled via the dashboard in real time or automatically controlled via dynamic workflows.</p></section></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="80697703">Common Terms</h1><div class="table-wrapper detached"><table id="80697703#-2uxbnl_3"><tr class="header-row" id="80697703#-2uxbnl_4"><th id="80697703#-2uxbnl_29"><p>Term</p></th><th id="80697703#-2uxbnl_30"><p>Description</p></th></tr><tr class="" id="80697703#-2uxbnl_5"><td id="80697703#-2uxbnl_31"><p>Controller</p></td><td id="80697703#-2uxbnl_32"><p>Zentralisierte Verwaltungseinheit</p></td></tr><tr class="" id="80697703#-2uxbnl_6"><td id="80697703#-2uxbnl_33"><p>Sensor</p></td><td id="80697703#-2uxbnl_34"><p>Ger&auml;t zur Sammlung von Daten</p></td></tr><tr class="" id="80697703#-2uxbnl_7"><td id="80697703#-2uxbnl_35"><p>ESP32</p></td><td id="80697703#-2uxbnl_36"><p>Mikrocontroller</p></td></tr><tr class="" id="80697703#-2uxbnl_8"><td id="80697703#-2uxbnl_37"><p>Blazor</p></td><td id="80697703#-2uxbnl_38"><p>Webframework</p></td></tr><tr class="" id="80697703#-2uxbnl_9"><td id="80697703#-2uxbnl_39"><p>CI</p></td><td id="80697703#-2uxbnl_40"><p>Continuous Integration</p></td></tr><tr class="" id="80697703#-2uxbnl_10"><td id="80697703#-2uxbnl_41"><p>CD</p></td><td id="80697703#-2uxbnl_42"><p>Continuous Delivery</p></td></tr><tr class="" id="80697703#-2uxbnl_11"><td id="80697703#-2uxbnl_43"><p>Docker</p></td><td id="80697703#-2uxbnl_44"><p>Container Engine</p></td></tr><tr class="" id="80697703#-2uxbnl_12"><td id="80697703#-2uxbnl_45"><p>Raspberry PI</p></td><td id="80697703#-2uxbnl_46"><p>Linux SOC</p></td></tr><tr class="" id="80697703#-2uxbnl_13"><td id="80697703#-2uxbnl_47"><p>SOC</p></td><td id="80697703#-2uxbnl_48"><p>System on a Chip</p></td></tr><tr class="" id="80697703#-2uxbnl_14"><td id="80697703#-2uxbnl_49"><p>IDE</p></td><td id="80697703#-2uxbnl_50"><p>Integrated Development Environment</p></td></tr><tr class="" id="80697703#-2uxbnl_15"><td id="80697703#-2uxbnl_51"><p>OS</p></td><td id="80697703#-2uxbnl_52"><p>Operating System</p></td></tr><tr class="" id="80697703#-2uxbnl_16"><td id="80697703#-2uxbnl_53"><p>API</p></td><td id="80697703#-2uxbnl_54"><p>Application Programming Interface</p></td></tr><tr class="" id="80697703#-2uxbnl_17"><td id="80697703#-2uxbnl_55"><p>EF</p></td><td id="80697703#-2uxbnl_56"><p>Entity Framework</p></td></tr><tr class="" id="80697703#-2uxbnl_18"><td id="80697703#-2uxbnl_57"><p>IF</p></td><td id="80697703#-2uxbnl_58"><p>Identity Framework</p></td></tr><tr class="" id="80697703#-2uxbnl_19"><td id="80697703#-2uxbnl_59"><p>ORM</p></td><td id="80697703#-2uxbnl_60"><p>Object Relational Mapper</p></td></tr><tr class="" id="80697703#-2uxbnl_20"><td id="80697703#-2uxbnl_61"><p>FreeRTOS</p></td><td id="80697703#-2uxbnl_62"><p>Freies lightweight Realtime OS</p></td></tr><tr class="" id="80697703#-2uxbnl_21"><td id="80697703#-2uxbnl_63"><p>Git</p></td><td id="80697703#-2uxbnl_64"><p>Freies VCS</p></td></tr><tr class="" id="80697703#-2uxbnl_22"><td id="80697703#-2uxbnl_65"><p>VCS</p></td><td id="80697703#-2uxbnl_66"><p>Version Control System</p></td></tr><tr class="" id="80697703#-2uxbnl_23"><td id="80697703#-2uxbnl_67"><p>ASP.NET</p></td><td id="80697703#-2uxbnl_68"><p>.NET (C#) Webframework</p></td></tr><tr class="" id="80697703#-2uxbnl_24"><td id="80697703#-2uxbnl_69"><p>SQLite</p></td><td id="80697703#-2uxbnl_70"><p>Lightweight relational database</p></td></tr><tr class="" id="80697703#-2uxbnl_25"><td id="80697703#-2uxbnl_71"><p>TLDP</p></td><td id="80697703#-2uxbnl_72"><p>The Linux documentation platform</p></td></tr><tr class="" id="80697703#-2uxbnl_26"><td id="80697703#-2uxbnl_73"><p>MSDN</p></td><td id="80697703#-2uxbnl_74"><p>Microsoft Software Developer Network</p></td></tr><tr class="" id="80697703#-2uxbnl_27"><td id="80697703#-2uxbnl_75"><p>VPN</p></td><td id="80697703#-2uxbnl_76"><p>Virtual Private Network</p></td></tr><tr class="" id="80697703#-2uxbnl_28"><td id="80697703#-2uxbnl_77"><p>SSH</p></td><td id="80697703#-2uxbnl_78"><p>Secure Shell</p></td></tr></table></div></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-1838751110">User Guide</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-472489356">Initial Setup</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="184864645">User Management</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-440975196">Devices Integration</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-1443814627">Plugin Management</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-2026317385">Developer Documentation</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="1189023616">Plugins</h1><p id="1189023616#y5p0hy_3">Start typing here...</p></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-877782410">Creating your first Plugin</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-2092318995">Managing Plugin Services</h1></article></div></section></div></body></html>
+        </style><title>pdfSourceIN</title></head><body><div><section class="topic"><div><article class="article"><h1 class="main-title">Table of Contents</h1><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#2255103">Home</a></div><div class="page">2</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-1838751110">User Guide</a></div><div class="page">3</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-472489356">Initial Setup</a></div><div class="page">4</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#184864645">User Management</a></div><div class="page">5</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-440975196">Devices Integration</a></div><div class="page">6</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-1443814627">Plugin Management</a></div><div class="page">7</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-2026317385">Developer Documentation</a></div><div class="page">8</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#1189023616">Plugins</a></div><div class="page">9</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-877782410">Creating your first Plugin</a></div><div class="page">10</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-2092318995">Managing Plugin Services</a></div><div class="page">13</div></div></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="2255103">Home</h1><section><h2 id="2255103#the-team" data-toc="the-team#Home.topic-the-team">The Team</h2><ul class="list" id="2255103#ria8yo_5" start="1"><li class="list-item" id="2255103#ria8yo_6"><p>Plazinski Olaf (Team Lead)</p></li><li class="list-item" id="2255103#ria8yo_7"><p>Martin Gabriel (Tech)</p></li><li class="list-item" id="2255103#ria8yo_8"><p>Mayer Julian (UI)</p></li><li class="list-item" id="2255103#ria8yo_9"><p>Toifl Jacob (UI)</p></li></ul></section><section><h2 id="2255103#the-idea" data-toc="the-idea#Home.topic-the-idea">The idea</h2><p id="2255103#ria8yo_10">Creating a fully wireless smart-home/<span id="2255103#ria8yo_11">IOT</span> automation system with a central management controller. We implement an open standard built on plugins and an extensible architecture. The entire Project is fully open source, and contributions from the community are highly welcome. We collect metrics and telemetry from multiple sources and display them in custom configurable dashboards. We also plan to support actor devices that can be controlled via the dashboard in real time or automatically controlled via dynamic workflows.</p></section></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-1838751110">User Guide</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-472489356">Initial Setup</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="184864645">User Management</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-440975196">Devices Integration</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-1443814627">Plugin Management</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-2026317385">Developer Documentation</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="1189023616">Plugins</h1><section><h2 id="1189023616#overview" data-toc="overview#Plugins.topic-overview">Overview</h2><p id="1189023616#z8313hd_5">Plugins are a way to extend the functionality of the Core Application Layer provided by the Mpm-Smart ecosystem. Plugins are usually provided by a Plugin Server or loaded from a local directory on the controller. Plugins are exclusive to the backend layer. In the UI, all plugins can implement a set of options and views providing user interactivity for plugin-specific settings and exposed data.</p></section><section><h2 id="1189023616#how-plugins-get-loaded" data-toc="how-plugins-get-loaded#Plugins.topic-how-plugins-get-loaded">How plugins get loaded</h2><p id="1189023616#z8313hd_6">Plugins are loaded by the Plugin Manager. The Plugin Manager is responsible for loading, unloading, and managing the lifecycle of plugins. All Plugins are loaded at startup and are initialized in no specific order. Currently, there is no way of reloading plugins while the backend service is running. In deployment, this update workflow is automated by the control process shipping with the backend.</p></section></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-877782410">Creating your first Plugin</h1><section><h2 id="-877782410#introduction" data-toc="introduction#Creating-your-first-Plugin.topic-introduction">Introduction</h2><p id="-877782410#ct20wn_6">Create an empty C# dotnet 9.0 class library and adapt the <span class="filepath" id="-877782410#ct20wn_11">Plugin.csproj</span> file to the following:</p><div class="detached code-block" id="-877782410#ct20wn_7"><pre><code class="language-markup">&lt;Project Sdk=&quot;Microsoft.NET.Sdk&quot;&gt;
+
+    &lt;PropertyGroup&gt;
+        &lt;TargetFramework&gt;net9.0&lt;/TargetFramework&gt;
+        &lt;ImplicitUsings&gt;enable&lt;/ImplicitUsings&gt;
+        &lt;Nullable&gt;enable&lt;/Nullable&gt;
+    &lt;/PropertyGroup&gt;
+
+    &lt;PropertyGroup&gt;
+        &lt;OutputPath&gt;your/plugin/output/path&lt;/OutputPath&gt;
+        &lt;AppendTargetFrameworkToOutputPath&gt;false&lt;/AppendTargetFrameworkToOutputPath&gt;
+    &lt;/PropertyGroup&gt;
+
+    &lt;ItemGroup&gt;
+        &lt;ProjectReference Include=&quot;..\plugin_base\PluginBase.csproj&quot; Private=&quot;False&quot;/&gt;
+        &lt;ProjectReference Include=&quot;..\..\Shared\Shared.csproj&quot; Private=&quot;False&quot;/&gt;
+    &lt;/ItemGroup&gt;
+
+    &lt;ItemGroup&gt;
+        &lt;FrameworkReference Include=&quot;Microsoft.AspNetCore.App&quot;/&gt;
+    &lt;/ItemGroup&gt;
+
+    &lt;ItemGroup&gt;
+        &lt;None Update=&quot;plugin.json&quot;&gt;
+            &lt;CopyToOutputDirectory&gt;Always&lt;/CopyToOutputDirectory&gt;
+        &lt;/None&gt;
+    &lt;/ItemGroup&gt;
+
+&lt;/Project&gt;</code></pre></div><p id="-877782410#ct20wn_8">Note: In the future, the PluginBase and Shared references will be replaced by NuGet packages.</p><p id="-877782410#ct20wn_9">The <span class="filepath" id="-877782410#ct20wn_12">plugin.json</span> metadata file is a simple JSON file that contains some general information about the plugin. It should look like this:</p><div class="detached code-block" id="-877782410#ct20wn_10"><pre><code class="language-json">{
+    &quot;name&quot;: &quot;Test Plugin&quot;,
+    &quot;version&quot;: &quot;1.0.0&quot;,
+    &quot;description&quot;: &quot;This is a test plugin&quot;,
+    &quot;author&quot;: &quot;Your Name&quot;,
+    &quot;dependencies&quot;: []
+}</code></pre></div></section><section><h2 id="-877782410#plugin-class" data-toc="plugin-class#Creating-your-first-Plugin.topic-plugin-class">Plugin Class</h2><p id="-877782410#ct20wn_13">Create a new class that implements the <span class="inline-code" id="-877782410#ct20wn_15">IPlugin</span> interface. Alternatively, one can also make use of the <span class="inline-code" id="-877782410#ct20wn_16">PluginBase</span> class that provides some default implementations.</p><div class="detached code-block" id="-877782410#ct20wn_14"><pre><code class="language-csharp">public class TestPluginClass : PluginBase&lt;TestPluginClass&gt;
+{
+    protected override void Initialize()
+    {
+        
+    }
+
+    protected override void BuildEndpoints(IEndpointRouteBuilder routeBuilder)
+    {
+    
+    }
+
+    protected override void ConfigureServices(IServiceCollection services)
+    {
+    
+    }
+
+    protected override void SystemStart()
+    {
+        
+    }
+}</code></pre></div></section><section><h2 id="-877782410#additional-considerations" data-toc="additional-considerations#Creating-your-first-Plugin.topic-additional-considerations">Additional Considerations</h2><ul class="list" id="-877782410#ct20wn_17" start="1"><li class="list-item" id="-877782410#ct20wn_18"><p>Make sure to include all static assets in the output folder of the plugin.</p></li><li class="list-item" id="-877782410#ct20wn_19"><p>Make sure there are now overlapping .dll file dependencies with the backend application for shared types.</p></li><li class="list-item" id="-877782410#ct20wn_20"><p>Make sure to include all necessary files in the .csproj file.</p></li><li class="list-item" id="-877782410#ct20wn_21"><p>Make sure to include all necessary dependencies in the <span class="inline-code" id="-877782410#ct20wn_22">plugin.json</span> file.</p></li></ul></section></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-2092318995">Managing Plugin Services</h1></article></div></section></div></body></html>

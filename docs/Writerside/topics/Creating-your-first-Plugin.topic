@@ -64,6 +64,7 @@
 }
 </code-block>
     </chapter>
+
     <chapter title="Plugin Class" id="plugin-class">
         <p>Create a new class that implements the <code>IPlugin</code> interface.
             Alternatively, one can also make use of the <code>PluginBase</code> class that provides some default
