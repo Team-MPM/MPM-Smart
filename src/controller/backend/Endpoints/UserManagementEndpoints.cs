@@ -13,7 +13,7 @@ public static class UserManagementEndpoints
 {
     public static void MapUserManagementEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        var group = endpoints.MapGroup("/api/usermanagement");
+        var group = endpoints.MapGroup("/api/user");
 
         group.MapGet("/username", async (
             HttpContext context,
@@ -38,7 +38,7 @@ public static class UserManagementEndpoints
                 return Results.Unauthorized();
 
             if(user.UserName == "admin")
-                return Results.BadRequest("Username for the \"admin\" user cannot be changed");
+                return Results.BadRequest("Username for the \"admin\" user cannot be changed"); //TODO
 
             if (string.IsNullOrWhiteSpace(model.Username))
                 return Results.BadRequest();
@@ -57,9 +57,6 @@ public static class UserManagementEndpoints
             var user = userManager.GetUserAsync(context.User).Result;
             if (user is null)
                 return Results.Unauthorized();
-
-            if(model.NewPassword != model.ConfirmPassword)
-                return Results.BadRequest("Passwords do not match");
 
             var result = await userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
 

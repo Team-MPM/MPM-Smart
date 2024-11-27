@@ -11,7 +11,7 @@ public class SystemConfiguration
     public int TimeBetweenDataUpdatesSeconds { get; set; } = 5;
 }
 
-public enum TimeZones
+public enum TimeZones // TODO add more time zones
 {
     UTC = 0,
     CET = 1,

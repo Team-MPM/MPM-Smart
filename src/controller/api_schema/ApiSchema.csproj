@@ -5,12 +5,4 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
-
-    <ItemGroup>
-      <Folder Include="Board\" />
-      <Folder Include="Dataquery\" />
-      <Folder Include="Devicemanagement\" />
-      <Folder Include="Log\" />
-    </ItemGroup>
-
 </Project>

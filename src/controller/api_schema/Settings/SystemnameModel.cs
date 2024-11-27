@@ -1,6 +1,6 @@
 ﻿namespace ApiSchema.Settings;
 
-public class SystemnameModel
+public class SystemNameModel
 {
-    public string Systemname { get; set; }
+    public required string SystemName { get; set; }
 }
