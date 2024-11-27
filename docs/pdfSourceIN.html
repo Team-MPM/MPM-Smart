@@ -10,6 +10,13 @@
         }
         
 
+        .bordered-element-rounded {
+            border: 1px solid #c4c4c4;
+            border-radius: 7px;
+            overflow: hidden;
+        }
+        
+
         .code-block {
             overflow: hidden;
             position: relative;
@@ -18,6 +25,13 @@
             font-variant-ligatures: none;
             background-color: rgba(25, 25, 28, .05);
             word-break: break-all;
+        }
+        
+
+        .control {
+            color: #19191c;
+            font-size: 16px;
+            font-weight: 670;
         }
         
 
@@ -33,6 +47,11 @@
             font-size: 15px;
             font-weight: 700;
             line-height: inherit;
+        }
+        
+
+        .flex {
+            display: flex;
         }
         
 
@@ -76,6 +95,49 @@
 https://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript+abap+abnf+actionscript+ada+agda+al+antlr4+apacheconf+apex+apl+applescript+aql+arduino+arff+armasm+arturo+asciidoc+aspnet+asm6502+asmatmel+autohotkey+autoit+avisynth+avro-idl+awk+bash+basic+batch+bbcode+bbj+bicep+birb+bison+bnf+bqn+brainfuck+brightscript+bro+bsl+c+csharp+cpp+cfscript+chaiscript+cil+cilkc+cilkcpp+clojure+cmake+cobol+coffeescript+concurnas+csp+cooklang+coq+crystal+css-extras+csv+cue+cypher+d+dart+dataweave+dax+dhall+diff+django+dns-zone-file+docker+dot+ebnf+editorconfig+eiffel+ejs+elixir+elm+etlua+erb+erlang+excel-formula+fsharp+factor+false+firestore-security-rules+flow+fortran+ftl+gml+gap+gcode+gdscript+gedcom+gettext+gherkin+git+glsl+gn+linker-script+go+go-module+gradle+graphql+groovy+haml+handlebars+haskell+haxe+hcl+hlsl+hoon+http+hpkp+hsts+ichigojam+icon+icu-message-format+idris+ignore+inform7+ini+io+j+java+javadoc+javadoclike+javastacktrace+jexl+jolie+jq+jsdoc+js-extras+json+json5+jsonp+jsstacktrace+js-templates+julia+keepalived+keyman+kotlin+kumir+kusto+latex+latte+less+lilypond+liquid+lisp+livescript+llvm+log+lolcode+lua+magma+makefile+markdown+markup-templating+mata+matlab+maxscript+mel+mermaid+metafont+mizar+mongodb+monkey+moonscript+n1ql+n4js+nand2tetris-hdl+naniscript+nasm+neon+nevod+nginx+nim+nix+nsis+objectivec+ocaml+odin+opencl+openqasm+oz+parigp+parser+pascal+pascaligo+psl+pcaxis+peoplecode+perl+php+phpdoc+php-extras+plant-uml+plsql+powerquery+powershell+processing+prolog+promql+properties+protobuf+pug+puppet+pure+purebasic+purescript+python+qsharp+q+qml+qore+r+racket+cshtml+jsx+tsx+reason+regex+rego+renpy+rescript+rest+rip+roboconf+robotframework+ruby+rust+sas+sass+scss+scala+scheme+shell-session+smali+smalltalk+smarty+sml+solidity+solution-file+soy+sparql+splunk-spl+sqf+sql+squirrel+stan+stata+iecst+stylus+supercollider+swift+systemd+t4-templating+t4-cs+t4-vb+tap+tcl+tt2+textile+toml+tremor+turtle+twig+typescript+typoscript+unrealscript+uorazor+uri+v+vala+vbnet+velocity+verilog+vhdl+vim+visual-basic+warpscript+wasm+web-idl+wgsl+wiki+wolfram+wren+xeora+xml-doc+xojo+xquery+yaml+yang+zig&plugins=highlight-keywords */
 code[class*=language-],pre[class*=language-]{color:#000;background:0 0;text-shadow:0 1px #fff;font-family:Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;font-size:1em;text-align:left;white-space:pre-wrap;word-spacing:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}code[class*=language-] ::-moz-selection,code[class*=language-]::-moz-selection,pre[class*=language-] ::-moz-selection,pre[class*=language-]::-moz-selection{text-shadow:none;background:#b3d4fc}code[class*=language-] ::selection,code[class*=language-]::selection,pre[class*=language-] ::selection,pre[class*=language-]::selection{text-shadow:none;background:#b3d4fc}@media print{code[class*=language-],pre[class*=language-]{text-shadow:none}}pre[class*=language-]{padding:16px;margin:0;overflow:auto}:not(pre)>code[class*=language-],pre[class*=language-]{background:#f5f2f0}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal}.token.cdata,.token.comment,.token.doctype,.token.prolog{color:#708090}.token.punctuation{color:#999}.token.namespace{opacity:.7}.token.boolean,.token.constant,.token.deleted,.token.number,.token.property,.token.symbol,.token.tag{color:#905}.token.attr-name,.token.builtin,.token.char,.token.inserted,.token.selector,.token.string{color:#690}.language-css .token.string,.style .token.string,.token.entity,.token.operator,.token.url{color:#9a6e3a;background:hsla(0,0%,100%,.5)}.token.atrule,.token.attr-value,.token.keyword{color:#07a}.token.class-name,.token.function{color:#dd4a68}.token.important,.token.regex,.token.variable{color:#e90}.token.bold,.token.important{font-weight:700}.token.italic{font-style:italic}.token.entity{cursor:help}
 
+        
+
+        .prompt {
+            flex-direction: row;
+            letter-spacing: .0015em;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 24px;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        
+
+        .prompt-content {
+            padding: 15px;
+            overflow: hidden;
+            flex: 1 1 auto;
+        }
+        
+
+        .prompt-content-p p {
+            margin-block-start: 0;
+            margin-block-end: 0;
+        }
+        
+
+        .prompt-icon {
+            flex: 0 0 auto;
+            margin-left: 15px;
+            margin-top: 15px;
+            fill: currentcolor;
+            width: 24px;
+            height: 24px;
+        }
+        
+
+        .prompt-title {
+            font-size: 17px;
+            font-weight: 600;
+            line-height: 24px;
+            margin-bottom: 5px;
+            color: inherit;
+        }
         
 
         :root {
@@ -218,10 +280,15 @@ code[class*=language-],pre[class*=language-]{color:#000;background:0 0;text-shad
         }
         
 
+        .tip {
+            background-color: rgba(25, 25, 28, .05);
+        }
+        
+
         .topic {
             page-break-before: always;
         }
-        </style><title>pdfSourceIN</title></head><body><div><section class="topic"><div><article class="article"><h1 class="main-title">Table of Contents</h1><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#2255103">Home</a></div><div class="page">2</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-1838751110">User Guide</a></div><div class="page">3</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-472489356">Initial Setup</a></div><div class="page">4</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#184864645">User Management</a></div><div class="page">5</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-440975196">Devices Integration</a></div><div class="page">6</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-1443814627">Plugin Management</a></div><div class="page">7</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-2026317385">Developer Documentation</a></div><div class="page">8</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#1189023616">Plugins</a></div><div class="page">9</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-877782410">Creating your first Plugin</a></div><div class="page">10</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-2092318995">Managing Plugin Services</a></div><div class="page">13</div></div></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="2255103">Home</h1><section><h2 id="2255103#the-team" data-toc="the-team#Home.topic-the-team">The Team</h2><ul class="list" id="2255103#ria8yo_5" start="1"><li class="list-item" id="2255103#ria8yo_6"><p>Plazinski Olaf (Team Lead)</p></li><li class="list-item" id="2255103#ria8yo_7"><p>Martin Gabriel (Tech)</p></li><li class="list-item" id="2255103#ria8yo_8"><p>Mayer Julian (UI)</p></li><li class="list-item" id="2255103#ria8yo_9"><p>Toifl Jacob (UI)</p></li></ul></section><section><h2 id="2255103#the-idea" data-toc="the-idea#Home.topic-the-idea">The idea</h2><p id="2255103#ria8yo_10">Creating a fully wireless smart-home/<span id="2255103#ria8yo_11">IOT</span> automation system with a central management controller. We implement an open standard built on plugins and an extensible architecture. The entire Project is fully open source, and contributions from the community are highly welcome. We collect metrics and telemetry from multiple sources and display them in custom configurable dashboards. We also plan to support actor devices that can be controlled via the dashboard in real time or automatically controlled via dynamic workflows.</p></section></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-1838751110">User Guide</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-472489356">Initial Setup</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="184864645">User Management</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-440975196">Devices Integration</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-1443814627">Plugin Management</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-2026317385">Developer Documentation</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="1189023616">Plugins</h1><section><h2 id="1189023616#overview" data-toc="overview#Plugins.topic-overview">Overview</h2><p id="1189023616#z8313hd_5">Plugins are a way to extend the functionality of the Core Application Layer provided by the Mpm-Smart ecosystem. Plugins are usually provided by a Plugin Server or loaded from a local directory on the controller. Plugins are exclusive to the backend layer. In the UI, all plugins can implement a set of options and views providing user interactivity for plugin-specific settings and exposed data.</p></section><section><h2 id="1189023616#how-plugins-get-loaded" data-toc="how-plugins-get-loaded#Plugins.topic-how-plugins-get-loaded">How plugins get loaded</h2><p id="1189023616#z8313hd_6">Plugins are loaded by the Plugin Manager. The Plugin Manager is responsible for loading, unloading, and managing the lifecycle of plugins. All Plugins are loaded at startup and are initialized in no specific order. Currently, there is no way of reloading plugins while the backend service is running. In deployment, this update workflow is automated by the control process shipping with the backend.</p></section></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-877782410">Creating your first Plugin</h1><section><h2 id="-877782410#introduction" data-toc="introduction#Creating-your-first-Plugin.topic-introduction">Introduction</h2><p id="-877782410#ct20wn_6">Create an empty C# dotnet 9.0 class library and adapt the <span class="filepath" id="-877782410#ct20wn_11">Plugin.csproj</span> file to the following:</p><div class="detached code-block" id="-877782410#ct20wn_7"><pre><code class="language-markup">&lt;Project Sdk=&quot;Microsoft.NET.Sdk&quot;&gt;
+        </style><title>pdfSourceIN</title></head><body><div><section class="topic"><div><article class="article"><h1 class="main-title">Table of Contents</h1><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#2255103">Home</a></div><div class="page">2</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-1838751110">User Guide</a></div><div class="page">3</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-472489356">Initial Setup</a></div><div class="page">4</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#184864645">User Management</a></div><div class="page">5</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-440975196">Devices Integration</a></div><div class="page">6</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-1443814627">Plugin Management</a></div><div class="page">7</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-2026317385">Developer Documentation</a></div><div class="page">8</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#1189023616">Plugins</a></div><div class="page">9</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-877782410">Creating your first Plugin</a></div><div class="page">10</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#1005571011">Developing plugins locally</a></div><div class="page">13</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-2092318995">Managing Plugin Services</a></div><div class="page">14</div></div></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="2255103">Home</h1><section><h2 id="2255103#the-team" data-toc="the-team#Home.topic-the-team">The Team</h2><ul class="list" id="2255103#-1cxo2e_5" start="1"><li class="list-item" id="2255103#-1cxo2e_6"><p>Plazinski Olaf (Team Lead)</p></li><li class="list-item" id="2255103#-1cxo2e_7"><p>Martin Gabriel (Tech)</p></li><li class="list-item" id="2255103#-1cxo2e_8"><p>Mayer Julian (UI)</p></li><li class="list-item" id="2255103#-1cxo2e_9"><p>Toifl Jacob (UI)</p></li></ul></section><section><h2 id="2255103#the-idea" data-toc="the-idea#Home.topic-the-idea">The idea</h2><p id="2255103#-1cxo2e_10">Creating a fully wireless smart-home/<span id="2255103#-1cxo2e_11">IOT</span> automation system with a central management controller. We implement an open standard built on plugins and an extensible architecture. The entire Project is fully open source, and contributions from the community are highly welcome. We collect metrics and telemetry from multiple sources and display them in custom configurable dashboards. We also plan to support actor devices that can be controlled via the dashboard in real time or automatically controlled via dynamic workflows.</p></section></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-1838751110">User Guide</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-472489356">Initial Setup</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="184864645">User Management</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-440975196">Devices Integration</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-1443814627">Plugin Management</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-2026317385">Developer Documentation</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="1189023616">Plugins</h1><section><h2 id="1189023616#overview" data-toc="overview#Plugins.topic-overview">Overview</h2><p id="1189023616#-4389yh_5">Plugins are a way to extend the functionality of the Core Application Layer provided by the Mpm-Smart ecosystem. Plugins are usually provided by a Plugin Server or loaded from a local directory on the controller. Plugins are exclusive to the backend layer. In the UI, all plugins can implement a set of options and views providing user interactivity for plugin-specific settings and exposed data.</p></section><section><h2 id="1189023616#how-plugins-get-loaded" data-toc="how-plugins-get-loaded#Plugins.topic-how-plugins-get-loaded">How plugins get loaded</h2><p id="1189023616#-4389yh_6">Plugins are loaded by the Plugin Manager. The Plugin Manager is responsible for loading, unloading, and managing the lifecycle of plugins. All Plugins are loaded at startup and are initialized in no specific order. Currently, there is no way of reloading plugins while the backend service is running. In deployment, this update workflow is automated by the control process shipping with the backend.</p></section></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-877782410">Creating your first Plugin</h1><section><h2 id="-877782410#introduction" data-toc="introduction#Creating-your-first-Plugin.topic-introduction">Introduction</h2><p id="-877782410#e38bs1_6">Create an empty C# dotnet 9.0 class library and adapt the <span class="filepath" id="-877782410#e38bs1_11">Plugin.csproj</span> file to the following:</p><div class="detached code-block" id="-877782410#e38bs1_7"><pre><code class="language-markup">&lt;Project Sdk=&quot;Microsoft.NET.Sdk&quot;&gt;
 
     &lt;PropertyGroup&gt;
         &lt;TargetFramework&gt;net9.0&lt;/TargetFramework&gt;
@@ -249,13 +316,13 @@ code[class*=language-],pre[class*=language-]{color:#000;background:0 0;text-shad
         &lt;/None&gt;
     &lt;/ItemGroup&gt;
 
-&lt;/Project&gt;</code></pre></div><p id="-877782410#ct20wn_8">Note: In the future, the PluginBase and Shared references will be replaced by NuGet packages.</p><p id="-877782410#ct20wn_9">The <span class="filepath" id="-877782410#ct20wn_12">plugin.json</span> metadata file is a simple JSON file that contains some general information about the plugin. It should look like this:</p><div class="detached code-block" id="-877782410#ct20wn_10"><pre><code class="language-json">{
+&lt;/Project&gt;</code></pre></div><p id="-877782410#e38bs1_8">Note: In the future, the PluginBase and Shared references will be replaced by NuGet packages.</p><p id="-877782410#e38bs1_9">The <span class="filepath" id="-877782410#e38bs1_12">plugin.json</span> metadata file is a simple JSON file that contains some general information about the plugin. It should look like this:</p><div class="detached code-block" id="-877782410#e38bs1_10"><pre><code class="language-json">{
     &quot;name&quot;: &quot;Test Plugin&quot;,
     &quot;version&quot;: &quot;1.0.0&quot;,
     &quot;description&quot;: &quot;This is a test plugin&quot;,
     &quot;author&quot;: &quot;Your Name&quot;,
     &quot;dependencies&quot;: []
-}</code></pre></div></section><section><h2 id="-877782410#plugin-class" data-toc="plugin-class#Creating-your-first-Plugin.topic-plugin-class">Plugin Class</h2><p id="-877782410#ct20wn_13">Create a new class that implements the <span class="inline-code" id="-877782410#ct20wn_15">IPlugin</span> interface. Alternatively, one can also make use of the <span class="inline-code" id="-877782410#ct20wn_16">PluginBase</span> class that provides some default implementations.</p><div class="detached code-block" id="-877782410#ct20wn_14"><pre><code class="language-csharp">public class TestPluginClass : PluginBase&lt;TestPluginClass&gt;
+}</code></pre></div></section><section><h2 id="-877782410#plugin-class" data-toc="plugin-class#Creating-your-first-Plugin.topic-plugin-class">Plugin Class</h2><p id="-877782410#e38bs1_13">Create a new class that implements the <span class="inline-code" id="-877782410#e38bs1_15">IPlugin</span> interface. Alternatively, one can also make use of the <span class="inline-code" id="-877782410#e38bs1_16">PluginBase</span> class that provides some default implementations.</p><div class="detached code-block" id="-877782410#e38bs1_14"><pre><code class="language-csharp">public class TestPluginClass : PluginBase&lt;TestPluginClass&gt;
 {
     protected override void Initialize()
     {
@@ -276,4 +343,20 @@ code[class*=language-],pre[class*=language-]{color:#000;background:0 0;text-shad
     {
         
     }
-}</code></pre></div></section><section><h2 id="-877782410#additional-considerations" data-toc="additional-considerations#Creating-your-first-Plugin.topic-additional-considerations">Additional Considerations</h2><ul class="list" id="-877782410#ct20wn_17" start="1"><li class="list-item" id="-877782410#ct20wn_18"><p>Make sure to include all static assets in the output folder of the plugin.</p></li><li class="list-item" id="-877782410#ct20wn_19"><p>Make sure there are now overlapping .dll file dependencies with the backend application for shared types.</p></li><li class="list-item" id="-877782410#ct20wn_20"><p>Make sure to include all necessary files in the .csproj file.</p></li><li class="list-item" id="-877782410#ct20wn_21"><p>Make sure to include all necessary dependencies in the <span class="inline-code" id="-877782410#ct20wn_22">plugin.json</span> file.</p></li></ul></section></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-2092318995">Managing Plugin Services</h1></article></div></section></div></body></html>
+}</code></pre></div></section><section><h2 id="-877782410#additional-considerations" data-toc="additional-considerations#Creating-your-first-Plugin.topic-additional-considerations">Additional Considerations</h2><ul class="list" id="-877782410#e38bs1_17" start="1"><li class="list-item" id="-877782410#e38bs1_18"><p>Make sure to include all static assets in the output folder of the plugin.</p></li><li class="list-item" id="-877782410#e38bs1_19"><p>Make sure there are now overlapping .dll file dependencies with the backend application for shared types.</p></li><li class="list-item" id="-877782410#e38bs1_20"><p>Make sure to include all necessary files in the .csproj file.</p></li><li class="list-item" id="-877782410#e38bs1_21"><p>Make sure to include all necessary dependencies in the <span class="inline-code" id="-877782410#e38bs1_22">plugin.json</span> file.</p></li></ul></section></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="1005571011">Developing plugins locally</h1><section><h2 id="1005571011#building_the_plugin" data-toc="building_the_plugin#Developing-plugins-locally.topic-building_the_plugin">Building the plugin</h2><p id="1005571011#-fybvte_3">To build a plugin, you need to have the following prerequisites:</p><ul class="list" id="1005571011#-fybvte_4" start="1"><li class="list-item" id="1005571011#-fybvte_5"><p>.NET 9 SDK</p></li><li class="list-item" id="1005571011#-fybvte_6"><p>A source build of the Mpm-Smart Controller</p></li><li class="list-item" id="1005571011#-fybvte_7"><p>The current version of the <span class="inline-code" id="1005571011#-fybvte_8">PluginBase.dll</span> and <span class="inline-code" id="1005571011#-fybvte_9">Shared.dll</span> libraries</p></li></ul></section></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-2092318995">Managing Plugin Services</h1><section><h2 id="-2092318995#introduction" data-toc="introduction#Managing-Plugin-Services.topic-introduction">Introduction</h2><p id="-2092318995#-yg8ey0_6">All Services are divided into two parts:</p><ul class="list" id="-2092318995#-yg8ey0_7" start="1"><li class="list-item" id="-2092318995#-yg8ey0_8"><p><span class="control" id="-2092318995#-yg8ey0_10">Core Services</span>: These are provided by the backend out of the box and can't be modified from the plugin stage</p></li><li class="list-item" id="-2092318995#-yg8ey0_9"><p><span class="control" id="-2092318995#-yg8ey0_11">Plugin Services</span>: These are provided by the plugins and can be modified from the plugin. They also offer a way for plugin to communicate with each other.</p></li></ul></section><section><h2 id="-2092318995#logging" data-toc="logging#Managing-Plugin-Services.topic-logging">Logging</h2><p id="-2092318995#-yg8ey0_12">The core application and plugin modules use two separate loggers. For development purposes, all logs are uniformly output to the same console. On disk, you will find a log directory with the following files:</p><ul class="list" id="-2092318995#-yg8ey0_13" start="1"><li class="list-item" id="-2092318995#-yg8ey0_19"><p><span class="filepath" id="-2092318995#-yg8ey0_23">backend.log</span>: Contains all logs from the core application layer</p></li><li class="list-item" id="-2092318995#-yg8ey0_20"><p><span class="filepath" id="-2092318995#-yg8ey0_24">error.log</span>: Contains all errors from the core application layer</p></li><li class="list-item" id="-2092318995#-yg8ey0_21"><p><span class="filepath" id="-2092318995#-yg8ey0_25">plugin.log</span>: Contains all logs from the plugin modules</p></li><li class="list-item" id="-2092318995#-yg8ey0_22"><p><span class="filepath" id="-2092318995#-yg8ey0_26">plugin-error.log</span>: Contains all errors from the plugin modules</p></li></ul><p id="-2092318995#-yg8ey0_14">These log files use a plain text in UTF-8 format and use the following layout:  <span class="inline-code" id="-2092318995#-yg8ey0_28">                 Date Time Timezone [LEVEL] Message             </span> For example:  <span class="inline-code" id="-2092318995#-yg8ey0_31">                 2024-11-04 07:55:17.633 +01:00 [INF] Starting Mpm-Smart             </span></p><p id="-2092318995#-yg8ey0_15">The logging system uses the default Microsoft.Extensions.Logging base library together with serilog for the backend and plugin modules. To use the logger, inject the <span class="inline-code" id="-2092318995#-yg8ey0_32">ILogger&lt;T&gt;</span> interface into your service.</p><p id="-2092318995#-yg8ey0_16">Since there logs can also be exported as structured logs, make use of the message templating instead of using string interpolation and pass down the full exception instance where applicable.</p></section><section><h2 id="-2092318995#database-management" data-toc="database-management#Managing-Plugin-Services.topic-database-management">Database Management</h2><p id="-2092318995#-yg8ey0_37">The core application layer uses Entity Framework Core to manage its databases. You can also use your own custom database models in your plugins, but using Entity Framework Core with SQLite is the only first party supported option. When registering a Database Context in your plugin service collection, its provided migrations will automatically be picked up by the <span class="inline-code" id="-2092318995#-yg8ey0_41">DbInitializer</span> and applied to the database on startup. If the database is not present, it will be created.</p><blockquote class="prompt flex bordered-element-rounded tip detached">
+  <svg xmlns="http://www.w3.org/2000/svg" class="prompt-icon">
+    <path d="M12.946 3.552L21.52 18.4c.424.735.33 1.6-.519 1.6H3.855c-.85 0-1.817-.865-1.392-1.6l8.573-14.848a1.103 1.103 0 0 1 1.91 0zm.545 12.948a1.5 1.5 0 1 0-1.5 1.5 1.5 1.5 0 0 0 1.5-1.5zM13 8h-2v5h2z"></path>
+  </svg>
+  <div class="prompt-content prompt-content-p">
+    <div class="prompt-title">Migrations</div>
+<p id="-2092318995#-yg8ey0_42">When using migrations, make sure to specify the correct migration assembly in a way that is independent of the hosting environment or the startup project.</p>  </div>
+</blockquote>
+<blockquote class="prompt flex bordered-element-rounded tip detached">
+  <svg xmlns="http://www.w3.org/2000/svg" class="prompt-icon">
+    <path d="M12.946 3.552L21.52 18.4c.424.735.33 1.6-.519 1.6H3.855c-.85 0-1.817-.865-1.392-1.6l8.573-14.848a1.103 1.103 0 0 1 1.91 0zm.545 12.948a1.5 1.5 0 1 0-1.5 1.5 1.5 1.5 0 0 0 1.5-1.5zM13 8h-2v5h2z"></path>
+  </svg>
+  <div class="prompt-content prompt-content-p">
+    <div class="prompt-title">Seeding</div>
+<p id="-2092318995#-yg8ey0_43">A system to automatically seed plugin databases is not yet implemented. See Project plan for open issue.</p>  </div>
+</blockquote>
+<p id="-2092318995#-yg8ey0_40">Plugins can also access the <span class="inline-code" id="-2092318995#-yg8ey0_44">SystemDbContext</span> by using the application service provider provided on initialization of the plugin instance.</p></section></article></div></section></div></body></html>
