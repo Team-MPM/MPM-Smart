@@ -6,6 +6,14 @@ namespace Data.System;
 public record UserProfile
 {
     public bool UseDarkMode { get; set; } = false;
+    public Language Language { get; set; } = 0;
+}
+
+public enum Language
+{
+    English = 0,
+    German,
+    Polish
 }
 
 public record UserProfileEntity : UserProfile
@@ -17,6 +25,8 @@ public class UserProfileEntityConfiguration : IEntityTypeConfiguration<UserProfi
 {
     public void Configure(EntityTypeBuilder<UserProfileEntity> builder)
     {
+        builder.Property(s => s.Language).HasConversion<string>();
+
         builder.ToTable("UserProfiles");
         builder.HasKey(e => e.Id);
         builder.Property(e => e.UseDarkMode).IsRequired();

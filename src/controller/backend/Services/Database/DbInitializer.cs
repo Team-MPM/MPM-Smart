@@ -111,6 +111,30 @@ public class DbInitializer(
             }
         }
 
+        // Guess user
+
+        if (await m_UserManager.FindByNameAsync("visitor") is null)
+        {
+            var result = await m_UserManager.CreateAsync(new SystemUser()
+            {
+                UserName = "Visitor",
+                UserProfile = new UserProfileEntity()
+            });
+        }
+
+        // System Configuration
+
+        if(!await m_DbContext.SystemConfiguration.AnyAsync(cancellationToken))
+        {
+            await m_DbContext.SystemConfiguration.AddAsync(new SystemConfiguration()
+            {
+                SystemName = "Controller",
+                TimeZone = TimeZones.UTC,
+                TimeBetweenDataUpdatesSeconds = 5
+            }, cancellationToken);
+            logger.LogInformation("System Configuration seeded");
+        }
+
         if (env.IsDevelopment())
         {
             
