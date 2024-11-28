@@ -16,6 +16,7 @@
     </toc-element>
     <toc-element topic="Developer-Documentation.md">
         <toc-element topic="Architecture.md"/>
+        <toc-element topic="Build-Instructions.md"/>
         <toc-element topic="Plugins.topic">
             <toc-element topic="Creating-your-first-Plugin.topic"/>
             <toc-element topic="Developing-plugins-locally.topic"/>

@@ -14,5 +14,10 @@
             <li>A source build of the Mpm-Smart Controller</li>
             <li>The current version of the <code>PluginBase.dll</code> and <code>Shared.dll</code> libraries</li>
         </list>
+        <p>
+            Put your plugin dll output in the plugin directory of the controller application.
+            Hot reloads aren't supported, so you have to restart the backend every time you rebuild the
+            plugin.
+        </p>
     </chapter>
 </topic>
