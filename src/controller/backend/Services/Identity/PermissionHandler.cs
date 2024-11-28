@@ -1,22 +1,8 @@
-﻿using SQLitePCL;
-
-namespace Backend.Services.Identity;
+﻿namespace Backend.Services.Identity;
 
 using Microsoft.AspNetCore.Authorization;
 using System.Linq;
 using System.Threading.Tasks;
-public class PermissionRequirement : IAuthorizationRequirement
-{
-    public string Permission { get; }
-
-    public PermissionRequirement(string permission)
-    {
-        Permission = permission;
-    }
-}
-
-
-
 
 public class PermissionHandler : AuthorizationHandler<PermissionRequirement>
 {
@@ -27,11 +13,16 @@ public class PermissionHandler : AuthorizationHandler<PermissionRequirement>
             return Task.CompletedTask;
         }
 
-        var userPermissions = context.User.FindAll(c => c.Type == "Permissions").Select(s => s.Value).ToList();
-        if (!userPermissions.Any())
+        var userPermissions = context.User
+            .FindAll(c => c.Type == "Permissions")
+            .Select(s => s.Value)
+            .ToList();
+        
+        if (userPermissions.Count == 0)
         {
             return Task.CompletedTask;
         }
+        
         var requiredPermissionTypes = requirement.Permission.Split('.');
 
         foreach (var permission in userPermissions)
