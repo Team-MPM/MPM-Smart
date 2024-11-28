@@ -1,9 +1,11 @@
 ﻿using System.Reflection.Metadata.Ecma335;
+using System.Security.Claims;
 using ApiSchema.Identity;
 using ApiSchema.Settings;
 using ApiSchema.Usermanagement;
 using Backend.Extensions;
 using Data.System;
+using LanguageExt;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -82,6 +84,31 @@ public static class UserManagementEndpoints
             var userProfile = await dbContext.UserProfiles.FindAsync(user.UserProfileId);
             return Results.Ok(userProfile!.Language.ToString());
 
+        }).RequirePermission(UserClaims.ViewProfile);
+
+        group.MapGet("/permissions", async (
+            HttpContext context,
+            UserManager<SystemUser> userManager,
+            RoleManager<IdentityRole> roleManager) =>
+        {
+            var user = userManager.GetUserAsync(context.User).Result;
+            if (user is null)
+                return Results.Unauthorized();
+            var userPermissions = await userManager.GetClaimsAsync(user);
+
+            var roles = await userManager.GetRolesAsync(user);
+            Dictionary<string, IEnumerable<string>> roleClaims = new();
+            foreach (var role in roles)
+            {
+                var claimlist = await roleManager.GetClaimsAsync(await roleManager.FindByNameAsync(role));
+                roleClaims.Add(role, claimlist.Select(c => c.Value));
+            }
+
+            return Results.Ok(new PermissionsModel()
+            {
+                UserPermissions = userPermissions.Select(s => s.Value),
+                RolePermissions = roleClaims
+            });
         }).RequirePermission(UserClaims.ViewProfile);
 
         group.MapPost("/language", async (

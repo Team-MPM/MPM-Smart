@@ -114,9 +114,15 @@ public class DbInitializer(
             
             result = await m_UserManager.AddToRoleAsync(adminUser!, admin);
             // await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.AllPermissions)); //TODO change this later
+
             await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.AllOnUser));
+            await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.AllPermissions));
+            await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.AllOnProfile));
             await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.ViewSettings));
-            
+            await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.ChangeHostName));
+            await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.ChangeProfilePicture));
+            await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.EditProfile));
+
             if (!result.Succeeded)
             {
                 logger.LogError("Failed to add admin user to admin role: {@Error}", result.Errors);

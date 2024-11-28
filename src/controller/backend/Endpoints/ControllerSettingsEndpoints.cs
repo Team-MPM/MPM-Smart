@@ -14,6 +14,11 @@ public static class ControllerSettingsEndpoints
     {
         var group = endpoints.MapGroup("/api/settings");
 
+        group.MapGet("/admin", async () =>
+        {
+            return "Hello, Admin!";
+        }).RequirePermission(UserClaims.AllPermissions);
+
         group.MapGet("/systemname", async (
                 SystemDbContext dbContext) =>
             {

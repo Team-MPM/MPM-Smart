@@ -19,7 +19,7 @@ public static class IdentityEndpoints
         group.MapPost("/login", async (
             [FromBody] LoginModel model,
             [FromServices] UserManager<SystemUser> userManager,
-            HttpContext context) =>
+            [FromServices] RoleManager<IdentityRole> roleManager) =>
         {
             const string errorMessage = "Invalid username or password";
             
@@ -38,10 +38,27 @@ public static class IdentityEndpoints
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(ClaimTypes.Name, user.UserName!)
             ]);
-            foreach (var claim in await userManager.GetClaimsAsync(user))
+
+            // Permissions
+            var userClaimsString = userManager.GetClaimsAsync(user).Result.Select(s => s.Value);
+            var userRoles = await userManager.GetRolesAsync(user);
+            var roleClaims = userRoles.SelectMany(s => roleManager.GetClaimsAsync(roleManager.FindByNameAsync(s).Result).Result).Select(s => s.Value);
+            var allClaims = userClaimsString.Union(roleClaims);
+            IEnumerable<string> filteredClaims = new List<string>();
+
+            foreach (var claim in allClaims)
             {
-                claims.AddClaim(claim);
+                var splittedClaim = claim.Split('.');
+                foreach (var part in splittedClaim)
+                {
+                    if (part == "*")
+                        allClaims = allClaims.Where(s => !s.Contains(claim.Replace("*", "")) || s == claim);
+                }
             }
+
+            foreach (var claim in allClaims)
+                claims.AddClaim(new Claim("Permissions", claim));
+
             var token = handler.CreateToken(new SecurityTokenDescriptor
             {
                 Subject = claims,
@@ -50,7 +67,6 @@ public static class IdentityEndpoints
             });
             
             var tokenString = handler.WriteToken(token);
-            
             return Results.Ok(tokenString);
         });
 
