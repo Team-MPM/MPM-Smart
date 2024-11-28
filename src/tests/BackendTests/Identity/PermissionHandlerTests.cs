@@ -62,4 +62,24 @@ public class PermissionHandlerTests
         // Assert
         context.HasSucceeded.Should().BeFalse();
     }
+    
+    [Fact]
+    public void HandleRequirement_Fails_WhenUserHasNoPermissions()
+    {
+        // Arrange
+        var user = new ClaimsPrincipal(new ClaimsIdentity());
+        
+        var context = new AuthorizationHandlerContext(
+            [new PermissionRequirement("permission")],
+            user,
+            null);
+
+        var handler = new PermissionHandler();
+
+        // Act
+        handler.HandleAsync(context);
+
+        // Assert
+        context.HasSucceeded.Should().BeFalse();
+    }
 }
