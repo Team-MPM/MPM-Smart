@@ -6,51 +6,47 @@ using System.Threading.Tasks;
 
 public class PermissionHandler : AuthorizationHandler<PermissionRequirement>
 {
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
+    protected override Task HandleRequirementAsync(
+        AuthorizationHandlerContext context,
+        PermissionRequirement requirement)
     {
-        if (context.User == null)
-        {
-            return Task.CompletedTask;
-        }
-
         var userPermissions = context.User
             .FindAll(c => c.Type == "Permissions")
-            .Select(s => s.Value)
-            .ToList();
-        
-        if (userPermissions.Count == 0)
-        {
-            return Task.CompletedTask;
-        }
-        
-        var requiredPermissionTypes = requirement.Permission.Split('.');
+            .Select(s => s.Value);
+
+        var requiredPermissionParts = requirement.Permission.AsSpan().Split('.');
 
         foreach (var permission in userPermissions)
         {
-            if(permission == requirement.Permission)
+            // Check for the exact match
+            if (permission == requirement.Permission)
             {
                 context.Succeed(requirement);
                 return Task.CompletedTask;
             }
 
+            // Check for wildcard match
             if (!permission.Contains('*'))
                 continue;
 
-            for (var i = 0; i < requiredPermissionTypes.Length; i++)
+            var permissionSpan = permission.AsSpan();
+            foreach (var requiredPermissionPart in requiredPermissionParts)
             {
-                var permissionParts = permission.Split('.');
-                if (permissionParts[i] == "*")
+                if (permissionSpan.StartsWith('*'))
                 {
                     context.Succeed(requirement);
                     return Task.CompletedTask;
                 }
+                
+                var requirementPermissionPart = requirement.Permission.AsSpan(requiredPermissionPart);
 
-                if (permissionParts[i] != requiredPermissionTypes[i])
+                if (!permissionSpan.StartsWith(requirementPermissionPart))
                     break;
+                
+                permissionSpan = permissionSpan[(requirementPermissionPart.Length + 1)..];
             }
         }
 
         return Task.CompletedTask;
     }
 }
-
