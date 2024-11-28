@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using ApiSchema.Identity;
+using Backend.Extensions;
 using Data.System;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -31,13 +32,19 @@ public static class IdentityEndpoints
                 return Results.BadRequest(errorMessage);
             
             var handler = new JwtSecurityTokenHandler();
+
+            ClaimsIdentity claims = new ClaimsIdentity(
+            [
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.Name, user.UserName!)
+            ]);
+            foreach (var claim in await userManager.GetClaimsAsync(user))
+            {
+                claims.AddClaim(claim);
+            }
             var token = handler.CreateToken(new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity([
-                    new Claim(ClaimTypes.NameIdentifier, user.Id),
-                    new Claim(ClaimTypes.Name, user.UserName!),
-                    //new Claim("role", user)
-                ]),
+                Subject = claims,
                 Expires = DateTime.UtcNow.AddDays(1),
                 SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.RsaSha256)
             });
@@ -64,7 +71,7 @@ public static class IdentityEndpoints
                 User = user.UserName,
                 Profile = profile as UserProfile
             });
-        }).RequireAuthorization("token");
+        }).RequirePermission(UserClaims.ViewProfile);
 
 
         // TODO OPTIONAL

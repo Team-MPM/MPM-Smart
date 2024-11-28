@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.Security.Claims;
+using ApiSchema.Identity;
 using Backend.Services.Plugins;
 using Data.System;
 using Microsoft.AspNetCore.Identity;
@@ -83,6 +85,13 @@ public class DbInitializer(
             {
                 logger.LogError("Failed to create admin role: {@Error}", result.Errors);
             }
+
+            var role = await m_RoleManager.FindByNameAsync("admin");
+            if (role is not null)
+            {
+                await m_RoleManager.AddClaimAsync(role, new Claim("Permissions", UserClaims.AllOnUser));
+                await m_RoleManager.AddClaimAsync(role, new Claim("Permissions", UserClaims.ViewSettings));
+            }
         }
         
         var adminUser = await m_UserManager.FindByNameAsync(admin);
@@ -104,6 +113,9 @@ public class DbInitializer(
             adminUser = await m_UserManager.FindByNameAsync(admin);
             
             result = await m_UserManager.AddToRoleAsync(adminUser!, admin);
+            // await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.AllPermissions)); //TODO change this later
+            await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.AllOnUser));
+            await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.ViewSettings));
             
             if (!result.Succeeded)
             {

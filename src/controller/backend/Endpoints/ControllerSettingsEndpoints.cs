@@ -1,7 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Reflection.Metadata.Ecma335;
+using ApiSchema.Identity;
 using ApiSchema.Settings;
+using Backend.Extensions;
 using Data.System;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Endpoints;
 
@@ -12,16 +15,16 @@ public static class ControllerSettingsEndpoints
         var group = endpoints.MapGroup("/api/settings");
 
         group.MapGet("/systemname", async (
-             SystemDbContext dbContext) =>
-        {
-            var configuration = dbContext.SystemConfiguration.FirstOrDefault();
+                SystemDbContext dbContext) =>
+            {
+                var configuration = dbContext.SystemConfiguration.FirstOrDefault();
 
-            if (configuration is null)
-                return Results.InternalServerError();
+                if (configuration is null)
+                    return Results.InternalServerError();
 
-            return Results.Ok(configuration.SystemName);
+                return Results.Ok(configuration.SystemName);
 
-        }).RequireAuthorization("token");
+            }).RequirePermission(UserClaims.ViewSettings);
 
         group.MapPost("/systemname", async (
             SystemDbContext dbContext,
@@ -32,7 +35,7 @@ public static class ControllerSettingsEndpoints
             if (configuration is null)
                 return Results.InternalServerError();
 
-            if(string.IsNullOrWhiteSpace(model.SystemName))
+            if (string.IsNullOrWhiteSpace(model.SystemName))
                 return Results.BadRequest("System name cannot be empty");
 
             configuration.SystemName = model.SystemName;
@@ -40,7 +43,8 @@ public static class ControllerSettingsEndpoints
 
             return Results.Ok();
 
-        }).RequireAuthorization("token");
+        }).RequirePermission(UserClaims.ChangeHostName);
+
 
         group.MapGet("/systemtime", async (
             SystemDbContext dbContext) =>
@@ -51,7 +55,7 @@ public static class ControllerSettingsEndpoints
                 return Results.InternalServerError();
 
             return Results.Ok(configuration.TimeZone.ToString());
-        });
+        }).RequirePermission(UserClaims.ViewSettings);
 
         group.MapPost("/systemtime", async (
             SystemDbContext dbContext,
@@ -69,7 +73,7 @@ public static class ControllerSettingsEndpoints
             await dbContext.SaveChangesAsync();
 
             return Results.Ok();
-        }).RequireAuthorization("token");
+        }).RequirePermission(UserClaims.ChangeSystemTime);
 
         group.MapGet("/timebetweenupdates", async (
             SystemDbContext dbContext) =>
@@ -80,11 +84,11 @@ public static class ControllerSettingsEndpoints
                 return Results.InternalServerError();
 
             return Results.Ok(configuration.TimeBetweenDataUpdatesSeconds);
-        });
+        }).RequirePermission(UserClaims.ViewSettings);
 
         group.MapPost("/timebetweenupdates", async (
             SystemDbContext dbContext,
-            TimeBetweenUpdatesModel model) =>
+            [FromBody] TimeBetweenUpdatesModel model) =>
         {
             var configuration = dbContext.SystemConfiguration.FirstOrDefault();
 
@@ -98,6 +102,6 @@ public static class ControllerSettingsEndpoints
             await dbContext.SaveChangesAsync();
 
             return Results.Ok();
-        });
+        }).RequirePermission(UserClaims.ChangeTimeBetweenUpdates);
     }
 }
