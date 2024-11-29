@@ -11,22 +11,37 @@ public static class ClaimUtils
         SystemUser user,
         RoleManager<IdentityRole> roleManager)
     {
-        var userClaimsString = userManager.GetClaimsAsync(user).Result.Select(s => s.Value);
-        var userRoles = await userManager.GetRolesAsync(user);
-        var roleClaims = userRoles
-            .SelectMany(s => roleManager.GetClaimsAsync(roleManager.FindByNameAsync(s).Result!).Result)
-            .Select(s => s.Value);
-        var allClaims = userClaimsString.Union(roleClaims).ToList();
-        IEnumerable<string> filteredClaims = new List<string>();
+        var userClaimsTask = userManager.GetClaimsAsync(user);
+        var userRolesTask = userManager.GetRolesAsync(user);
 
-        foreach (var claim in from claim in allClaims
-                 let splittedClaim = claim.Split('.')
-                 from part in splittedClaim
-                 where part == "*" select claim)
+        await Task.WhenAll(userClaimsTask, userRolesTask);
+
+        var userClaims = userClaimsTask.Result;
+        var userRoles = userRolesTask.Result;
+
+        var roleTasks = userRoles.Select(roleManager.FindByNameAsync).ToArray();
+        await Task.WhenAll(roleTasks);
+
+        var roles = roleTasks
+            .Where(t => t.Result != null)
+            .Select(t => t.Result!);
+
+        var roleClaimsTasks = roles
+            .Select(roleManager.GetClaimsAsync)
+            .ToArray();
+
+        await Task.WhenAll(roleClaimsTasks);
+
+        var roleClaims = roleClaimsTasks
+            .SelectMany(t => t.Result);
+
+        var allClaims = userClaims.Select(c => c.Value).Union(roleClaims.Select(c => c.Value))
+            .ToHashSet();
+
+        foreach (var claim in allClaims.Where(c => c.Contains('*')).ToList())
         {
-            allClaims = allClaims
-                .Where(s => !s.Contains(claim.Replace("*", "")) || s == claim)
-                .ToList();
+            var prefix = claim.Replace("*", string.Empty);
+            allClaims.RemoveWhere(c => c != claim && c.StartsWith(prefix));
         }
 
         return allClaims.Select(c => new Claim("Permissions", c));
