@@ -1,7 +1,36 @@
-﻿namespace ApiSchema.Identity;
+﻿namespace Backend.Services.Identity;
 
 public static class UserClaims
 {
+    public static List<string> ExportPermissions()
+    {
+        return
+        [
+            AllPermissions,
+            AllOnUser,
+            ViewUsers,
+            AddUser,
+            EditUser,
+            RemoveUser,
+            ResetPassword,
+            ChangeUserUsername,
+            ChangeUserPassword,
+            ChangeUserRole,
+            ChangeUserPermissions,
+            AllOnSettings,
+            ViewSettings,
+            ChangeHostName,
+            ChangeSystemTime,
+            ChangeTimeBetweenUpdates,
+            AllOnProfile,
+            ViewProfile,
+            EditProfile,
+            ChangeProfilePicture,
+            ChangeUsername,
+            ChangePassword
+        ];
+    }
+
     // ------------------ ADMIN ------------------
     public const string AllPermissions = "Permissions.*";
 
@@ -32,5 +61,6 @@ public static class UserClaims
     public const string ChangeProfilePicture = "Permissions.Profile.ChangeProfilePicture";
     public const string ChangeUsername = "Permissions.User.ChangeUsername";
     public const string ChangePassword = "Permissions.User.ChangePassword";
+
 
 }

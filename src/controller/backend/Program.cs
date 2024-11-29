@@ -76,6 +76,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
+builder.Services.AddSingleton<AvailablePermissionProvider>();
 
 builder.Services.AddIdentity<SystemUser, IdentityRole>(options =>
     {
@@ -167,6 +168,7 @@ app.MapOpenApi();
 app.MapIdentityEndpoints(key);
 app.MapUserManagementEndpoints();
 app.MapSettingsEndpoints();
+app.MapPermissionEndpoints();
 
 app.MapGet("/", () => "Hello World!");
 
