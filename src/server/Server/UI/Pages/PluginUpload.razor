@@ -1,0 +1,22 @@
+﻿@page "/Plugin-Upload"
+@using Azure.Storage.Blobs
+@using Server.UI.Layout
+
+@inject BlobServiceClient BlobServiceClient
+
+<PageTitle>Plugin Upload</PageTitle>
+<h3>Plugin_Upload</h3>
+
+<p>@BlobServiceClient.Uri</p>
+
+@code {
+    [CascadingParameter] public required MainLayout MainLayout { get; set; }
+
+    protected override void OnInitialized()
+    {
+        MainLayout.Title = "Plugin Index";
+        
+        
+    }
+
+}

@@ -10,6 +10,8 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddMudServices();
 
+builder.AddAzureBlobClient("blobs");
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

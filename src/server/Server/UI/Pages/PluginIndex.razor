@@ -1,0 +1,68 @@
+﻿@page "/Plugin-Index"
+@using Azure.Storage.Blobs
+@using Azure.Storage.Blobs.Models
+@using Server.UI.Layout
+
+@inject BlobServiceClient BlobServiceClient
+
+<PageTitle>Plugin Index</PageTitle>
+<h3>PluginIndex</h3>
+
+<p>@BlobServiceClient.Uri</p>
+<p>@BlobServiceClient.AccountName</p>
+<p>@BlobServiceClient.CanGenerateAccountSasUri</p>
+
+<br>
+
+<div>
+    @foreach(var item in Data)
+    {
+        <p>@item</p>
+    }
+</div>
+
+<br>
+
+<div>
+    <InputFile OnChange="HandleFileSelected" />
+</div>
+
+@code {
+    [CascadingParameter] public required MainLayout MainLayout { get; set; }
+
+    public List<string> Data { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        MainLayout.Title = "Plugin Index";
+        
+        await foreach (var blobContainerItem in BlobServiceClient.GetBlobContainersAsync())
+        {
+            Data.Add("Container: " + blobContainerItem.Name);
+        }
+
+        var client = BlobServiceClient.GetBlobContainerClient("plugins");
+        
+        await foreach (var blobItem in client.GetBlobsAsync())
+        {
+            Data.Add("Blob: " + blobItem.Name);
+        }
+        
+        StateHasChanged();
+    }
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        var client = BlobServiceClient.GetBlobContainerClient("plugins");
+        var blobClient = client.GetBlobClient(file.Name);
+
+        await using (var stream = file.OpenReadStream())
+        {
+            await blobClient.UploadAsync(stream, true);
+        }
+
+        Data.Add("Uploaded: " + file.Name);
+        StateHasChanged();
+    }
+}
