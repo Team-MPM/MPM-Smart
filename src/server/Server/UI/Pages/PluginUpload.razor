@@ -9,6 +9,10 @@
 
 <p>@BlobServiceClient.Uri</p>
 
+<div>
+    <InputFile OnChange="HandleFileSelected" />
+</div>
+
 @code {
     [CascadingParameter] public required MainLayout MainLayout { get; set; }
 
@@ -19,4 +23,17 @@
         
     }
 
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        var client = BlobServiceClient.GetBlobContainerClient("plugins");
+        var blobClient = client.GetBlobClient(file.Name);
+
+        await using (var stream = file.OpenReadStream())
+        {
+            await blobClient.UploadAsync(stream, true);
+        }
+
+        StateHasChanged();
+    }
 }

@@ -15,54 +15,30 @@
 <br>
 
 <div>
-    @foreach(var item in Data)
+    @foreach(var item in Items)
     {
-        <p>@item</p>
+        var downloadUrl = $"/api/plugins/download/{item.Name}";
+        <div>
+            <span>@item.Name</span>
+            <a target="_blank" href="@downloadUrl">Download</a>
+        </div>
     }
-</div>
-
-<br>
-
-<div>
-    <InputFile OnChange="HandleFileSelected" />
 </div>
 
 @code {
     [CascadingParameter] public required MainLayout MainLayout { get; set; }
 
-    public List<string> Data { get; set; } = [];
+    public List<BlobItem> Items { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
         MainLayout.Title = "Plugin Index";
-        
-        await foreach (var blobContainerItem in BlobServiceClient.GetBlobContainersAsync())
-        {
-            Data.Add("Container: " + blobContainerItem.Name);
-        }
 
         var client = BlobServiceClient.GetBlobContainerClient("plugins");
         
         await foreach (var blobItem in client.GetBlobsAsync())
         {
-            Data.Add("Blob: " + blobItem.Name);
+            Items.Add(blobItem);
         }
-        
-        StateHasChanged();
-    }
-
-    private async Task HandleFileSelected(InputFileChangeEventArgs e)
-    {
-        var file = e.File;
-        var client = BlobServiceClient.GetBlobContainerClient("plugins");
-        var blobClient = client.GetBlobClient(file.Name);
-
-        await using (var stream = file.OpenReadStream())
-        {
-            await blobClient.UploadAsync(stream, true);
-        }
-
-        Data.Add("Uploaded: " + file.Name);
-        StateHasChanged();
     }
 }

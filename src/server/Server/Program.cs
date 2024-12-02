@@ -1,4 +1,6 @@
 using MudBlazor.Services;
+using Server.Endpoints;
+using Server.Services;
 using Server.UI.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +13,9 @@ builder.Services.AddRazorComponents()
 builder.Services.AddMudServices();
 
 builder.AddAzureBlobClient("blobs");
+
+builder.Services.AddSingleton<BlobInitializer>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<BlobInitializer>());
 
 var app = builder.Build();
 
@@ -28,6 +33,6 @@ app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-app.MapGet("/hello", () => "Hello, World!");
+app.MapPluginEndpoints();
 
 app.Run();
