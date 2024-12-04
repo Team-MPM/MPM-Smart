@@ -14,6 +14,9 @@ builder.Services.AddMudServices();
 
 builder.AddAzureBlobClient("blobs");
 
+builder.AddRedisOutputCache("cache");
+
+builder.Services.AddSingleton<PluginIndexService>();
 builder.Services.AddSingleton<BlobInitializer>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<BlobInitializer>());
 
@@ -26,6 +29,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseAntiforgery();
+app.UseOutputCache();
 
 app.MapDefaultEndpoints();
 

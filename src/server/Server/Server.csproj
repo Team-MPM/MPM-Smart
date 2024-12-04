@@ -13,6 +13,9 @@
 
     <ItemGroup>
         <PackageReference Include="Aspire.Azure.Storage.Blobs" Version="9.0.0"/>
+        <PackageReference Include="Aspire.StackExchange.Redis" Version="9.0.0" />
+        <PackageReference Include="Aspire.StackExchange.Redis.DistributedCaching" Version="9.0.0" />
+        <PackageReference Include="Aspire.StackExchange.Redis.OutputCaching" Version="9.0.0" />
         <PackageReference Include="LanguageExt.Core" Version="4.4.9"/>
         <PackageReference Include="MudBlazor" Version="7.15.0"/>
     </ItemGroup>

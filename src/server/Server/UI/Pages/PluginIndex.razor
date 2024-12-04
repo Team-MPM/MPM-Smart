@@ -1,11 +1,14 @@
 ﻿@page "/Plugin-Index"
 @using Azure.Storage.Blobs
 @using Azure.Storage.Blobs.Models
+@using Microsoft.AspNetCore.OutputCaching
 @using Server.UI.Layout
 
 @rendermode InteractiveServer
+@attribute [OutputCache(Duration = 10)]
 
 @inject BlobServiceClient BlobServiceClient
+@inject NavigationManager NavigationManager
 
 <PageTitle>Plugin Index</PageTitle>
 
@@ -22,6 +25,7 @@
                       : Items.Where(i => i.Name.Contains(searchValue, StringComparison.OrdinalIgnoreCase)))
     {
         var downloadUrl = $"/api/plugins/download/{item.Name}";
+        var infoUrl = $"/plugin/{item.Name}";
         <MudDivider/>
         <div class="my-4">
             <MudPaper Elevation="25" Class="rounded-lg px-4">
@@ -35,7 +39,10 @@
                             </div>
                             <div>
                                 <div class="flex flex-row">
-                                    <MudText Typo="Typo.h4" Color="Color.Info">@item.Name</MudText>
+                                    <MudText Typo="Typo.h4" Color="Color.Info" Style="cursor: pointer"
+                                             @onclick="() => NavigationManager.NavigateTo(infoUrl)">
+                                        @item.Name
+                                    </MudText>
                                     <MudText Typo="Typo.body2">by: Gabriel Martin</MudText>
                                 </div>
                                 <div class="flex flex-row py-1">
@@ -54,7 +61,9 @@
                                 <MudText>Some stats</MudText>
                             </div>
                             <div style="bottom: 0; right: 0; position: absolute">
-                                <MudButton Color="Color.Primary">More Info</MudButton>
+                                <MudButton Color="Color.Primary" @onclick="() => NavigationManager.NavigateTo(infoUrl)">
+                                    More Info
+                                </MudButton>
                                 <MudButton Color="Color.Primary">
                                     <a target="_blank" href="@downloadUrl" style="color: inherit">Download</a>
                                 </MudButton>
