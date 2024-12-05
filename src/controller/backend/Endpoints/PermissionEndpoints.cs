@@ -1,9 +1,11 @@
 ﻿using System.Security.Claims;
 using ApiSchema.Identity;
+using ApiSchema.Permissions;
 using Backend.Extensions;
 using Backend.Services.Identity;
 using Data.System;
 using LanguageExt;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,20 +17,20 @@ public static class PermissionEndpoints
     {
         var group = endpoints.MapGroup("/api/permissions");
 
-        group.MapGet("allPermissions", ([FromServices] AvailablePermissionProvider provider) => provider.PermissionsList)
+        group.MapGet("/all", ([FromServices] AvailablePermissionProvider provider) => provider.PermissionsList)
             .RequireAuthorization("token");
 
-        group.MapGet("/permissions", async (
-            HttpContext context,
+        group.MapGet("/permissions/{user}", async (
+            [FromRoute] string user,
             UserManager<SystemUser> userManager,
             RoleManager<IdentityRole> roleManager) =>
         {
-            var user = userManager.GetUserAsync(context.User).Result;
-            if (user is null)
+            var IdUser = await userManager.FindByNameAsync(user);
+            if (IdUser is null)
                 return Results.Unauthorized();
-            var userPermissions = await userManager.GetClaimsAsync(user);
+            var userPermissions = await userManager.GetClaimsAsync(IdUser);
 
-            var roles = await userManager.GetRolesAsync(user);
+            var roles = await userManager.GetRolesAsync(IdUser);
             Dictionary<string, IEnumerable<string>> roleClaims = new();
             foreach (var role in roles)
             {
@@ -41,70 +43,99 @@ public static class PermissionEndpoints
                 UserPermissions = userPermissions.Select(s => s.Value),
                 RolePermissions = roleClaims
             });
-        }).RequirePermission(UserClaims.ViewProfile);
+        }).RequirePermission(UserClaims.ProfileViewProfile);
 
-        group.MapPost("/updateUserPermissions", async (
+        group.MapPost("/permissions/{user}", async (
+            [FromRoute] string user,
             UserManager<SystemUser>userManager,
             AddPermissionsModel model) =>
         {
-            var user = await userManager.FindByNameAsync(model.UserUsername);
-            if (user is null)
-                return Results.BadRequest("User not found");
+            var idUser = await userManager.FindByNameAsync(user);
+            if (idUser is null)
+                return Results.NotFound("User not found");
 
-            await userManager.RemoveClaimsAsync(user, await userManager.GetClaimsAsync(user));
+            await userManager.RemoveClaimsAsync(idUser, await userManager.GetClaimsAsync(idUser));
 
             foreach (var claim in model.Permissions)
             {
-                await userManager.AddClaimAsync(user, new Claim("Permissions", claim));
+                await userManager.AddClaimAsync(idUser, new Claim("Permissions", claim));
             }
 
             return Results.Ok();
-        }).RequirePermission(UserClaims.ChangeUserPermissions);
+        }).RequirePermission(UserClaims.PermissionsChangeUserPermissions);
 
-        group.MapPost("/addPermissionsToUser", async (
-            UserManager<SystemUser> userManager,
-            [FromBody] AddPermissionsModel model) =>
+
+        group.MapGet("/rolepermissions/{role}", async (
+            [FromRoute] string role,
+            RoleManager<IdentityRole> roleManager) =>
         {
-            var user = await userManager.FindByNameAsync(model.UserUsername);
-            if (user is null)
-                return Results.BadRequest("User not found");
+            var idRole = await roleManager.FindByNameAsync(role);
+            if (idRole is null)
+                return Results.NotFound("Role not found");
+            var roles = await roleManager.GetClaimsAsync(idRole);
+            return Results.Ok(roles.Select(s => s.Value));
+        }).RequirePermission(UserClaims.PermissionsViewRolePermissions);
 
-            var userClaims = await userManager.GetClaimsAsync(user);
-            var claims = userClaims.Select(s => s.Value).ToList();
-
-            claims = claims.Union(model.Permissions).ToList();
-            foreach (var claim in claims)
-            {
-                if (userClaims.Any(s => s.Value == claim))
-                    continue;
-                await userManager.AddClaimAsync(user, new Claim("Permissions", claim));
-            }
-
-            return Results.Ok();
-
-        }).RequirePermission(UserClaims.ChangeUserPermissions);
-
-        group.MapPost("/removePermissionsForUser", async (
-            UserManager<SystemUser> userManager,
-            [FromBody] AddPermissionsModel model) =>
+        group.MapPost("/rolepermissions/{role}", async (
+            [FromRoute] string role,
+            RoleManager<IdentityRole> roleManager,
+            [FromBody] AddRolePermissions model) =>
         {
-            var user = await userManager.FindByNameAsync(model.UserUsername);
-            if (user is null)
-                return Results.BadRequest("User not found");
-
-            var userClaims = await userManager.GetClaimsAsync(user);
-            var claims = userClaims.Select(s => s.Value).ToList();
-
-            claims = claims.Except(model.Permissions).ToList();
-            foreach (var claim in claims)
-            {
-                if (!userClaims.Any(s => s.Value == claim))
-                    continue;
-                await userManager.RemoveClaimAsync(user, new Claim("Permissions", claim));
-            }
-
+            var idRole = await roleManager.FindByNameAsync(role);
+            if (idRole is null)
+                return Results.NotFound("Role not found");
+            foreach (var claim in await roleManager.GetClaimsAsync(idRole))
+                await roleManager.RemoveClaimAsync(idRole, claim);
+            foreach (var claim in model.Permissions)
+                await roleManager.AddClaimAsync(idRole, new Claim("Permissions", claim));
             return Results.Ok();
-        }).RequirePermission(UserClaims.ChangeUserPermissions);
+        }).RequirePermission(UserClaims.PermissionsChangeRolePermissions);
+
+        // NOT needed, in case we actually need them, they need to be adjusted!
+        // group.MapPost("/addPermissionsToUser", async (
+        //     UserManager<SystemUser> userManager,
+        //     [FromBody] AddPermissionsModel model) =>
+        // {
+        //     var user = await userManager.FindByNameAsync(model.UserUsername);
+        //     if (user is null)
+        //         return Results.NotFound("User not found");
+        //
+        //     var userClaims = await userManager.GetClaimsAsync(user);
+        //     var claims = userClaims.Select(s => s.Value).ToList();
+        //
+        //     claims = claims.Union(model.Permissions).ToList();
+        //     foreach (var claim in claims)
+        //     {
+        //         if (userClaims.Any(s => s.Value == claim))
+        //             continue;
+        //         await userManager.AddClaimAsync(user, new Claim("Permissions", claim));
+        //     }
+        //
+        //     return Results.Ok();
+        //
+        // }).RequirePermission(UserClaims.PermissionsChangeUserPermissions);
+        //
+        // group.MapPost("/removePermissionsForUser", async (
+        //     UserManager<SystemUser> userManager,
+        //     [FromBody] AddPermissionsModel model) =>
+        // {
+        //     var user = await userManager.FindByNameAsync(model.UserUsername);
+        //     if (user is null)
+        //         return Results.NotFound("User not found");
+        //
+        //     var userClaims = await userManager.GetClaimsAsync(user);
+        //     var claims = userClaims.Select(s => s.Value).ToList();
+        //
+        //     claims = claims.Except(model.Permissions).ToList();
+        //     foreach (var claim in claims)
+        //     {
+        //         if (!userClaims.Any(s => s.Value == claim))
+        //             continue;
+        //         await userManager.RemoveClaimAsync(user, new Claim("Permissions", claim));
+        //     }
+        //
+        //     return Results.Ok();
+        // }).RequirePermission(UserClaims.PermissionsChangeUserPermissions);
 
         return endpoints;
     }

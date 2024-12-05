@@ -30,7 +30,7 @@ public static class ControllerSettingsEndpoints
 
                 return Results.Ok(configuration.SystemName);
 
-            }).RequirePermission(UserClaims.ViewSettings);
+            }).RequirePermission(UserClaims.SettingsViewSettings);
 
         group.MapPost("/systemname", async (
             SystemDbContext dbContext,
@@ -49,7 +49,7 @@ public static class ControllerSettingsEndpoints
 
             return Results.Ok();
 
-        }).RequirePermission(UserClaims.ChangeHostName);
+        }).RequirePermission(UserClaims.SettingsChangeHostName);
 
 
         group.MapGet("/systemtime", async (
@@ -61,7 +61,7 @@ public static class ControllerSettingsEndpoints
                 return Results.InternalServerError();
 
             return Results.Ok(configuration.TimeZone);
-        }).RequirePermission(UserClaims.ViewSettings);
+        }).RequirePermission(UserClaims.SettingsViewSettings);
 
         group.MapPost("/systemtime", async (
             SystemDbContext dbContext,
@@ -78,7 +78,7 @@ public static class ControllerSettingsEndpoints
             await dbContext.SaveChangesAsync();
 
             return Results.Ok();
-        }).RequirePermission(UserClaims.ChangeSystemTime);
+        }).RequirePermission(UserClaims.SettingsChangeSystemTime);
 
         group.MapGet("/timebetweenupdates", async (
             SystemDbContext dbContext) =>
@@ -89,7 +89,7 @@ public static class ControllerSettingsEndpoints
                 return Results.InternalServerError();
 
             return Results.Ok(configuration.TimeBetweenDataUpdatesSeconds);
-        }).RequirePermission(UserClaims.ViewSettings);
+        }).RequirePermission(UserClaims.SettingsViewSettings);
 
         group.MapPost("/timebetweenupdates", async (
             SystemDbContext dbContext,
@@ -107,6 +107,6 @@ public static class ControllerSettingsEndpoints
             await dbContext.SaveChangesAsync();
 
             return Results.Ok();
-        }).RequirePermission(UserClaims.ChangeTimeBetweenUpdates);
+        }).RequirePermission(UserClaims.SettingsChangeTimeBetweenUpdates);
     }
 }

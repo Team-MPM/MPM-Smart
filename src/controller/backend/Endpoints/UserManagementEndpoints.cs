@@ -31,7 +31,7 @@ public static class UserManagementEndpoints
 
             return Results.Ok(user.UserName!);
 
-        }).RequirePermission(UserClaims.ViewProfile);
+        }).RequirePermission(UserClaims.ProfileViewProfile);
 
         group.MapPost("/username", async (
             HttpContext context,
@@ -43,7 +43,7 @@ public static class UserManagementEndpoints
                 return Results.Unauthorized();
 
             if(!user.CanChangeUsername)
-                return Results.BadRequest("Username for the \"admin\" user cannot be changed");
+                return Results.BadRequest($"Username for the '{user.UserName}' user cannot be changed");
 
             if (string.IsNullOrWhiteSpace(model.Username))
                 return Results.BadRequest();
@@ -52,7 +52,7 @@ public static class UserManagementEndpoints
 
             return result.Succeeded ? Results.Ok() : Results.BadRequest(result.Errors);
 
-        }).RequirePermission(UserClaims.ChangeUsername);
+        }).RequirePermission(UserClaims.ProfileChangeUsername);
 
         group.MapPost("/password", async (
             HttpContext context,
@@ -67,7 +67,7 @@ public static class UserManagementEndpoints
 
             return result == IdentityResult.Success ? Results.Ok() : Results.BadRequest(result.Errors);
 
-        }).RequirePermission(UserClaims.ChangePassword);
+        }).RequirePermission(UserClaims.ProfileChangePassword);
 
         group.MapGet("/backup", () =>
         {
@@ -85,7 +85,7 @@ public static class UserManagementEndpoints
             var userProfile = await dbContext.UserProfiles.FindAsync(user.UserProfileId);
             return Results.Ok(userProfile!.Language.ToString());
 
-        }).RequirePermission(UserClaims.ViewProfile);
+        }).RequirePermission(UserClaims.ProfileViewProfile);
 
         group.MapGet("/permissions", async (
             HttpContext context,
@@ -110,7 +110,7 @@ public static class UserManagementEndpoints
                 UserPermissions = userPermissions.Select(s => s.Value),
                 RolePermissions = roleClaims
             });
-        }).RequirePermission(UserClaims.ViewProfile);
+        }).RequirePermission(UserClaims.ProfileViewProfile);
 
         group.MapPost("/language", async (
             HttpContext context,
@@ -128,9 +128,9 @@ public static class UserManagementEndpoints
             userProfile!.Language = (Language) model.Language;
             await dbContext.SaveChangesAsync();
             return Results.Ok();
-        }).RequirePermission(UserClaims.EditProfile);
+        }).RequirePermission(UserClaims.ProfileEditProfile);
 
-        group.MapGet("/getUsers", async (
+        group.MapGet("/users", async (
                 HttpContext context,
                 UserManager<SystemUser> userManager) =>
             {
@@ -146,9 +146,9 @@ public static class UserManagementEndpoints
                     UseDarkMode = u.UserProfile.UseDarkMode,
                     IsAdmin = usersInAdmin.Contains(u)
                 }));
-            }).RequirePermission(UserClaims.ViewUsers);
+            }).RequirePermission(UserClaims.UserViewUsers);
 
-        group.MapPost("/addUser", async (
+        group.MapPost("/users", async (
             HttpContext context,
             [FromBody] AddUserModel model,
             UserManager<SystemUser> userManager,
@@ -174,9 +174,9 @@ public static class UserManagementEndpoints
                 return Results.InternalServerError();
 
             return Results.Created();
-        }).RequirePermission(UserClaims.AddUser);
+        }).RequirePermission(UserClaims.UserAddUser);
 
-        group.MapDelete("/removeUser", async (
+        group.MapDelete("/users", async (
             HttpContext context,
             UserManager<SystemUser> userManager,
             [FromBody] RemoveUserModel model) =>
@@ -193,6 +193,6 @@ public static class UserManagementEndpoints
                 return Results.NotFound();
             var result = await userManager.DeleteAsync(userToRemove);
             return result.Succeeded ? Results.Ok() : Results.InternalServerError();
-        }).RequirePermission(UserClaims.RemoveUser);
+        }).RequirePermission(UserClaims.UserRemoveUser);
     }
 }

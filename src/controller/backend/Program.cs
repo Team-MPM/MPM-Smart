@@ -169,6 +169,7 @@ app.MapIdentityEndpoints(key);
 app.MapUserManagementEndpoints();
 app.MapSettingsEndpoints();
 app.MapPermissionEndpoints();
+app.MapRoleManagementEndpoint();
 
 app.MapGet("/", () => "Hello World!");
 

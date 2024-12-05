@@ -71,7 +71,7 @@ public static class IdentityEndpoints
                 User = user.UserName,
                 Profile = profile as UserProfile
             });
-        }).RequirePermission(UserClaims.ViewProfile);
+        }).RequirePermission(UserClaims.ProfileViewProfile);
 
 
         // TODO OPTIONAL
