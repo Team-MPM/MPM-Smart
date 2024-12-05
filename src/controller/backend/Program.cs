@@ -1,10 +1,12 @@
 using System.IO.Abstractions;
 using Backend.Endpoints;
 using Backend.Services.Database;
+using Backend.Services.Identity;
 using Backend.Services.Plugins;
 using Backend.Utils;
 using Data.System;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -67,7 +69,14 @@ builder.Services.AddAuthorization(options =>
         policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
         policy.RequireAuthenticatedUser();
     });
+    options.AddPolicy("Permission", policy =>
+    {
+        policy.Requirements.Add(new PermissionRequirement(""));
+    });
 });
+
+builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
+builder.Services.AddSingleton<AvailablePermissionProvider>();
 
 builder.Services.AddIdentity<SystemUser, IdentityRole>(options =>
     {
@@ -159,6 +168,7 @@ app.MapOpenApi();
 app.MapIdentityEndpoints(key);
 app.MapUserManagementEndpoints();
 app.MapSettingsEndpoints();
+app.MapPermissionEndpoints();
 
 app.MapGet("/", () => "Hello World!");
 

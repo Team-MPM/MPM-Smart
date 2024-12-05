@@ -1,4 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Security.Claims;
+using ApiSchema.Identity;
+using Backend.Services.Identity;
 using Backend.Services.Plugins;
 using Data.System;
 using Microsoft.AspNetCore.Identity;
@@ -83,6 +86,13 @@ public class DbInitializer(
             {
                 logger.LogError("Failed to create admin role: {@Error}", result.Errors);
             }
+
+            var role = await m_RoleManager.FindByNameAsync("admin");
+            if (role is not null)
+            {
+                await m_RoleManager.AddClaimAsync(role, new Claim("Permissions", UserClaims.AllOnUser));
+                await m_RoleManager.AddClaimAsync(role, new Claim("Permissions", UserClaims.ViewSettings));
+            }
         }
         
         var adminUser = await m_UserManager.FindByNameAsync(admin);
@@ -104,7 +114,16 @@ public class DbInitializer(
             adminUser = await m_UserManager.FindByNameAsync(admin);
             
             result = await m_UserManager.AddToRoleAsync(adminUser!, admin);
-            
+            // await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.AllPermissions)); //TODO change this later
+
+            await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.AllOnUser));
+            await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.AllPermissions));
+            await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.AllOnProfile));
+            await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.ViewSettings));
+            await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.ChangeHostName));
+            await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.ChangeProfilePicture));
+            await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.EditProfile));
+
             if (!result.Succeeded)
             {
                 logger.LogError("Failed to add admin user to admin role: {@Error}", result.Errors);
@@ -129,7 +148,7 @@ public class DbInitializer(
             await m_DbContext.SystemConfiguration.AddAsync(new SystemConfiguration()
             {
                 SystemName = "Controller",
-                TimeZone = TimeZones.UTC,
+                TimeZone = "UTC",
                 TimeBetweenDataUpdatesSeconds = 5
             }, cancellationToken);
             logger.LogInformation("System Configuration seeded");

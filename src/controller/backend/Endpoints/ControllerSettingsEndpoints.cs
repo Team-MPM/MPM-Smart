@@ -1,7 +1,11 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Reflection.Metadata.Ecma335;
+using ApiSchema.Identity;
 using ApiSchema.Settings;
+using Backend.Services.Identity;
+using Backend.Extensions;
 using Data.System;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Endpoints;
 
@@ -11,17 +15,22 @@ public static class ControllerSettingsEndpoints
     {
         var group = endpoints.MapGroup("/api/settings");
 
-        group.MapGet("/systemname", async (
-             SystemDbContext dbContext) =>
+        group.MapGet("/admin", async () =>
         {
-            var configuration = dbContext.SystemConfiguration.FirstOrDefault();
+            return "Hello, Admin!";
+        }).RequirePermission(UserClaims.AllPermissions);
 
-            if (configuration is null)
-                return Results.InternalServerError();
+        group.MapGet("/systemname", async (
+                SystemDbContext dbContext) =>
+            {
+                var configuration = dbContext.SystemConfiguration.FirstOrDefault();
 
-            return Results.Ok(configuration.SystemName);
+                if (configuration is null)
+                    return Results.InternalServerError();
 
-        }).RequireAuthorization("token");
+                return Results.Ok(configuration.SystemName);
+
+            }).RequirePermission(UserClaims.ViewSettings);
 
         group.MapPost("/systemname", async (
             SystemDbContext dbContext,
@@ -32,7 +41,7 @@ public static class ControllerSettingsEndpoints
             if (configuration is null)
                 return Results.InternalServerError();
 
-            if(string.IsNullOrWhiteSpace(model.SystemName))
+            if (string.IsNullOrWhiteSpace(model.SystemName))
                 return Results.BadRequest("System name cannot be empty");
 
             configuration.SystemName = model.SystemName;
@@ -40,7 +49,8 @@ public static class ControllerSettingsEndpoints
 
             return Results.Ok();
 
-        }).RequireAuthorization("token");
+        }).RequirePermission(UserClaims.ChangeHostName);
+
 
         group.MapGet("/systemtime", async (
             SystemDbContext dbContext) =>
@@ -50,8 +60,8 @@ public static class ControllerSettingsEndpoints
             if (configuration is null)
                 return Results.InternalServerError();
 
-            return Results.Ok(configuration.TimeZone.ToString());
-        });
+            return Results.Ok(configuration.TimeZone);
+        }).RequirePermission(UserClaims.ViewSettings);
 
         group.MapPost("/systemtime", async (
             SystemDbContext dbContext,
@@ -61,15 +71,14 @@ public static class ControllerSettingsEndpoints
 
             if (configuration is null)
                 return Results.InternalServerError();
-
-            if (!Enum.IsDefined(typeof(TimeZones), model.SystemTimeUtcOffset))
+            if(!TimeZoneList.TimeZones.Any(s => s.Code == model.TimeZoneCode))
                 return Results.BadRequest("Invalid time zone");
 
-            configuration.TimeZone = (TimeZones) model.SystemTimeUtcOffset;
+            configuration.TimeZone = model.TimeZoneCode;
             await dbContext.SaveChangesAsync();
 
             return Results.Ok();
-        }).RequireAuthorization("token");
+        }).RequirePermission(UserClaims.ChangeSystemTime);
 
         group.MapGet("/timebetweenupdates", async (
             SystemDbContext dbContext) =>
@@ -80,11 +89,11 @@ public static class ControllerSettingsEndpoints
                 return Results.InternalServerError();
 
             return Results.Ok(configuration.TimeBetweenDataUpdatesSeconds);
-        });
+        }).RequirePermission(UserClaims.ViewSettings);
 
         group.MapPost("/timebetweenupdates", async (
             SystemDbContext dbContext,
-            TimeBetweenUpdatesModel model) =>
+            [FromBody] TimeBetweenUpdatesModel model) =>
         {
             var configuration = dbContext.SystemConfiguration.FirstOrDefault();
 
@@ -98,6 +107,6 @@ public static class ControllerSettingsEndpoints
             await dbContext.SaveChangesAsync();
 
             return Results.Ok();
-        });
+        }).RequirePermission(UserClaims.ChangeTimeBetweenUpdates);
     }
 }
