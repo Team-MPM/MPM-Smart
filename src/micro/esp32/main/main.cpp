@@ -1,8 +1,12 @@
+#include <freertos/FreeRTOS.h>
+#include <FreeRTOSConfig.h>
+#include <freertos/task.h>
 #include <esp_chip_info.h>
-#include <stdio.h>
+#include <portmacro.h>
+#include <cstdio>
 #include "esp_system.h"
 
-void app_main(void) {
+extern "C" [[noreturn]] void app_main(void) {
     printf("ESP32 System Information:\n");
     printf("Chip Model: %s\n", esp_get_idf_version());
 
@@ -14,4 +18,8 @@ void app_main(void) {
            (chip_info.features & CHIP_FEATURE_BT) ? "/BT" : "",
            (chip_info.features & CHIP_FEATURE_BLE) ? "/BLE" : "");
     printf("Silicon Revision: %d\n", chip_info.revision);
+
+    while (true) {
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+    }
 }
