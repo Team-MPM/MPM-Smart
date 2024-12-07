@@ -6,6 +6,9 @@
 #include <cstdio>
 #include "esp_system.h"
 
+void test1();
+void test2();
+
 extern "C" [[noreturn]] void app_main(void) {
     printf("ESP32 System Information:\n");
     printf("Chip Model: %s\n", esp_get_idf_version());
@@ -21,5 +24,12 @@ extern "C" [[noreturn]] void app_main(void) {
 
     while (true) {
         vTaskDelay(100 / portTICK_PERIOD_MS);
+
+#if CONFIG_COMPONENT1
+        test1();
+#endif
+#if CONFIG_COMPONENT2
+        test2();
+#endif
     }
 }

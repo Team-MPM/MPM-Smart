@@ -1,0 +1,5 @@
+menuconfig COMPONENT1
+    bool "Component 1"
+    default n
+    help
+      Enable component 1
