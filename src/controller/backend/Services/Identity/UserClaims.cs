@@ -6,6 +6,7 @@ public static class UserClaims
     {
         return
         [
+            ProfileViewInfo,
             AllPermissions,
             AllOnUser,
             UserViewUsers,
@@ -37,6 +38,9 @@ public static class UserClaims
     }
 
     // ------------------ ADMIN ------------------
+    public const string Admin = "*";
+
+    // ------------------ AllPermissions ------------------
     public const string AllPermissions = "Permissions.*";
 
     // ------------------ UserManagement ------------------
@@ -50,6 +54,12 @@ public static class UserClaims
     public const string UserChangeUserPassword = "Permissions.User.ChangeUserPassword";
     public const string UserChangeUserRole = "Permissions.User.ChangeUserRole";
     public const string UserViewOwnPermissions = "Permissions.User.ViewOwnPermissions";
+
+    // ------------------ RoleManagement ------------------
+    public const string AllOnRole = "Permissions.Role.*";
+    public const string RoleViewRoles = "Permissions.Role.ViewRoles";
+    public const string RoleManageRoles = "Permissions.Role.AddRole";
+    public const string RoleAssignUsers = "Permissions.Role.AssignUsers";
 
     // ------------------ PermissionManagement ------------------
     public const string AllOnPermissionManagement = "Permissions.PermMng.*";
@@ -68,6 +78,7 @@ public static class UserClaims
     // ------------------ Profile ------------------
 
     public const string AllOnProfile = "Permissions.Profile.*";
+    public const string ProfileViewInfo = "Permissions.Profile.ViewInfo";
     public const string ProfileViewProfile = "Permissions.Profile.ViewProfile";
     public const string ProfileEditProfile = "Permissions.Profile.EditProfile";
     public const string ProfileChangeProfilePicture = "Permissions.Profile.ChangeProfilePicture";

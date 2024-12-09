@@ -18,7 +18,7 @@ public static class ControllerSettingsEndpoints
         group.MapGet("/admin", async () =>
         {
             return "Hello, Admin!";
-        }).RequirePermission(UserClaims.AllPermissions);
+        }).RequirePermission(UserClaims.Admin);
 
         group.MapGet("/systemname", async (
                 SystemDbContext dbContext) =>

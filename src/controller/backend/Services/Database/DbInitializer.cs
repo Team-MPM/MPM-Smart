@@ -90,7 +90,7 @@ public class DbInitializer(
             var role = await m_RoleManager.FindByNameAsync("admin");
             if (role is not null)
             {
-                await m_RoleManager.AddClaimAsync(role, new Claim("Permissions", UserClaims.AllOnUser));
+                await m_RoleManager.AddClaimAsync(role, new Claim("Permissions", UserClaims.Admin));
                 await m_RoleManager.AddClaimAsync(role, new Claim("Permissions", UserClaims.SettingsViewSettings));
             }
         }
@@ -116,7 +116,7 @@ public class DbInitializer(
             result = await m_UserManager.AddToRoleAsync(adminUser!, admin);
             // await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.AllPermissions)); //TODO change this later
 
-            await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.AllOnUser));
+            await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.Admin));
             await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.AllPermissions));
             await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.AllOnProfile));
             await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.SettingsViewSettings));

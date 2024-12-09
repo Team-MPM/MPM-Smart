@@ -20,7 +20,7 @@ public static class PermissionEndpoints
         group.MapGet("/all", ([FromServices] AvailablePermissionProvider provider) => provider.PermissionsList)
             .RequireAuthorization("token");
 
-        group.MapGet("/permissions/{user}", async (
+        group.MapGet("/user/{user}", async (
             [FromRoute] string user,
             UserManager<SystemUser> userManager,
             RoleManager<IdentityRole> roleManager) =>
@@ -45,7 +45,7 @@ public static class PermissionEndpoints
             });
         }).RequirePermission(UserClaims.ProfileViewProfile);
 
-        group.MapPost("/permissions/{user}", async (
+        group.MapPost("/user/{user}", async (
             [FromRoute] string user,
             UserManager<SystemUser>userManager,
             AddPermissionsModel model) =>
@@ -65,7 +65,7 @@ public static class PermissionEndpoints
         }).RequirePermission(UserClaims.PermissionsChangeUserPermissions);
 
 
-        group.MapGet("/rolepermissions/{role}", async (
+        group.MapGet("/role/{role}", async (
             [FromRoute] string role,
             RoleManager<IdentityRole> roleManager) =>
         {
@@ -76,7 +76,7 @@ public static class PermissionEndpoints
             return Results.Ok(roles.Select(s => s.Value));
         }).RequirePermission(UserClaims.PermissionsViewRolePermissions);
 
-        group.MapPost("/rolepermissions/{role}", async (
+        group.MapPost("/role/{role}", async (
             [FromRoute] string role,
             RoleManager<IdentityRole> roleManager,
             [FromBody] AddRolePermissions model) =>

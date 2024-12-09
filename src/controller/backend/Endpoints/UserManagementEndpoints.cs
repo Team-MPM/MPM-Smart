@@ -20,6 +20,43 @@ public static class UserManagementEndpoints
     {
         var group = endpoints.MapGroup("/api/user");
 
+        group.MapGet("/info", async (
+            HttpContext context,
+            UserManager<SystemUser> userManager,
+            RoleManager<IdentityRole> roleManager) =>
+        {
+            var user =  await userManager.Users.
+                Include(u => u.UserProfile)
+                .FirstOrDefaultAsync(s => s.UserName == context.User.Identity!.Name);
+            if(user is null)
+                return Results.Unauthorized();
+            var userPermissions = await userManager.GetClaimsAsync(user);
+            var roles = await userManager.GetRolesAsync(user);
+            Dictionary<string, List<string>> roleClaims = new();
+            foreach (var role in roles)
+            {
+                var roleItem = await roleManager.FindByNameAsync(role);
+                if (roleItem is not null)
+                {
+                    var claims = await roleManager.GetClaimsAsync(roleItem);
+                    var claimStrings = claims.Select(s => s.Value).ToList();
+                    roleClaims.Add(role, claimStrings.ToList());
+                }
+
+            }
+
+            return Results.Ok(new
+            {
+                Username = user.UserName,
+                Language = user.UserProfile!.Language,
+                UseDarkMode = user.UserProfile.UseDarkMode,
+                Permissions = userPermissions.Select(s => s.Value),
+                Roles = roles,
+                RolePermissions = roleClaims
+            });
+
+        }).RequirePermission(UserClaims.ProfileViewInfo);
+
         group.MapGet("/username", async (
             HttpContext context,
             UserManager<SystemUser> userManager) =>
