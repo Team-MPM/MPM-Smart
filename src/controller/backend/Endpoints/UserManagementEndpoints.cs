@@ -124,6 +124,24 @@ public static class UserManagementEndpoints
 
         }).RequirePermission(UserClaims.ProfileViewProfile);
 
+        group.MapPost("/language", async (
+            HttpContext context,
+            UserManager<SystemUser> userManager,
+            SystemDbContext dbContext,
+            [FromBody] LanguageModel model) =>
+        {
+            var user = await userManager.GetUserAsync(context.User);
+            if (user is null)
+                return Results.Unauthorized();
+            if(!Enum.IsDefined(typeof(Language), model.Language))
+                return Results.BadRequest("Invalid language");
+
+            var userProfile = await dbContext.UserProfiles.FindAsync(user.UserProfileId);
+            userProfile!.Language = (Language) model.Language;
+            await dbContext.SaveChangesAsync();
+            return Results.Ok();
+        }).RequirePermission(UserClaims.ProfileEditProfile);
+
         group.MapGet("/permissions", async (
             HttpContext context,
             UserManager<SystemUser> userManager,
@@ -148,24 +166,6 @@ public static class UserManagementEndpoints
                 RolePermissions = roleClaims
             });
         }).RequirePermission(UserClaims.ProfileViewProfile);
-
-        group.MapPost("/language", async (
-            HttpContext context,
-            UserManager<SystemUser> userManager,
-            SystemDbContext dbContext,
-            [FromBody] LanguageModel model) =>
-        {
-            var user = await userManager.GetUserAsync(context.User);
-            if (user is null)
-                return Results.Unauthorized();
-            if(!Enum.IsDefined(typeof(Language), model.Language))
-                return Results.BadRequest("Invalid language");
-
-            var userProfile = await dbContext.UserProfiles.FindAsync(user.UserProfileId);
-            userProfile!.Language = (Language) model.Language;
-            await dbContext.SaveChangesAsync();
-            return Results.Ok();
-        }).RequirePermission(UserClaims.ProfileEditProfile);
 
         group.MapGet("/users", async (
                 HttpContext context,

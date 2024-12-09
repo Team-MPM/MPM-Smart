@@ -47,7 +47,7 @@ public static class RoleManagementEndpoints
                 return Results.BadRequest("Role already exists");
             var result = await roleManager.CreateAsync(new IdentityRole(name));
             return result.Succeeded ? Results.Ok() : Results.BadRequest(result.Errors);
-        });
+        }).RequirePermission(UserClaims.RoleManageRoles);
 
         group.MapDelete("/role/{name}", async (
             [FromRoute] string name,

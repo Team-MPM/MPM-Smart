@@ -6,8 +6,13 @@ public static class UserClaims
     {
         return
         [
-            ProfileViewInfo,
+            // Admin
+            Admin,
+
+            // All Permissions
             AllPermissions,
+
+            // UserManagement
             AllOnUser,
             UserViewUsers,
             UserAddUser,
@@ -17,23 +22,36 @@ public static class UserClaims
             UserChangeUserUsername,
             UserChangeUserPassword,
             UserChangeUserRole,
+            UserViewOwnPermissions,
+
+            // RoleManagement
+            AllOnRole,
+            RoleViewRoles,
+            RoleManageRoles,
+            RoleAssignUsers,
+
+            // PermissionManagement
+            AllOnPermissionManagement,
+            PermissionsViewUserPermissions,
             PermissionsChangeUserPermissions,
+            PermissionsViewRolePermissions,
+            PermissionsChangeRolePermissions,
+
+            // Settings
             AllOnSettings,
             SettingsViewSettings,
             SettingsChangeHostName,
             SettingsChangeSystemTime,
             SettingsChangeTimeBetweenUpdates,
+
+            // Profile
             AllOnProfile,
+            ProfileViewInfo,
             ProfileViewProfile,
             ProfileEditProfile,
             ProfileChangeProfilePicture,
             ProfileChangeUsername,
-            ProfileChangePassword,
-            UserViewOwnPermissions,
-            AllOnPermissionManagement,
-            PermissionsViewUserPermissions,
-            PermissionsViewRolePermissions,
-            PermissionsChangeRolePermissions
+            ProfileChangePassword
         ];
     }
 
@@ -58,7 +76,7 @@ public static class UserClaims
     // ------------------ RoleManagement ------------------
     public const string AllOnRole = "Permissions.Role.*";
     public const string RoleViewRoles = "Permissions.Role.ViewRoles";
-    public const string RoleManageRoles = "Permissions.Role.ManageRole";
+    public const string RoleManageRoles = "Permissions.Role.ManageRoles";
     public const string RoleAssignUsers = "Permissions.Role.AssignUsers";
 
     // ------------------ PermissionManagement ------------------
