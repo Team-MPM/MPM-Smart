@@ -71,3 +71,105 @@ POST /api/settings/timebetweenupdates
 - Content: `object {int TimeBetweenUpdatesSeconds}`
 - Returns: StatusCode
 
+## Profile 
+
+### info
+
+```http
+GET /api/user/info
+```
+- Permissions: `Permissions.Profile.ViewProfile`
+  - Returns: `object {string Username, string Language, bool UseDarkMode, List<string> Permissions, List<string> Roles, Dictionary<string, List<string>> RolePermissions}`
+
+### UserName
+
+```http
+GET /api/user/username
+```
+- Permissions: `Permissions.Profile.ViewProfile`
+- Returns: `object {string username}`
+
+```http
+POST /api/user/username
+```
+- Permissions: `Permissions.User.ChangeUsername`
+- Content: `object {string username}`
+- Returns: StatusCode
+
+### Password
+
+```http
+POST /api/user/password
+```
+- Permissions: `Permissions.User.ChangePassword`
+- Content: `object {string oldPassword, string newPassword}`
+- Returns: StatusCode
+
+### Language
+
+```http
+GET /api/user/language
+```
+- Permissions: `Permissions.Profile.ViewProfile`
+- Returns: `object {string language}`
+
+```http
+POST /api/user/language
+```
+- Permissions: `Permissions.User.EditProfile`
+- Content: `object {string language}`
+- Returns: StatusCode
+
+### Permissions
+
+```http
+GET /api/user/permissions
+```
+- Permissions: `Permissions.Profile.ViewProfile`
+- Returns: `object {List<string> UserPermissions , Dictionary<string, array string> RolePermieeions}`
+
+### UserManagement
+
+```http
+GET /api/user/users
+```
+- Permissions: `Permissions.User.Viewusers`
+- Returns: `List<object> {string username, string Language, bool useDarkMode, bool isAdmin}`
+
+```http
+POST /api/user/users
+```
+- Permissions: `Permissions.User.AddUser`
+- Content: `object {string username, string password}`
+- Returns: StatusCode
+- 
+```http
+DELETE /api/user/users
+```
+- Permissions: `Permissions.User.RemoveUser`
+- Content: `object {string username}`
+- Returns: StatusCode
+
+## Roles
+
+```http
+GET /api/roles/
+```
+- Permissions: `Permissions.Role.ViewRoles`
+- Returns: `List<object> {int id, string name, List<string> Permissions}`
+
+```http
+POST /api/roles/{name}
+```
+- RouteParams: `string name`
+- Permissions: `Permissions.Role.ManageRole`
+- Returns: StatusCode
+-
+```http
+DELETE /api/roles/{name}
+```
+- RouteParams: `string name`
+- Permissions: `Permissions.Role.ManageRole`
+- Returns: StatusCode
+
+
