@@ -58,7 +58,7 @@ public static class UserClaims
     // ------------------ RoleManagement ------------------
     public const string AllOnRole = "Permissions.Role.*";
     public const string RoleViewRoles = "Permissions.Role.ViewRoles";
-    public const string RoleManageRoles = "Permissions.Role.AddRole";
+    public const string RoleManageRoles = "Permissions.Role.ManageRole";
     public const string RoleAssignUsers = "Permissions.Role.AssignUsers";
 
     // ------------------ PermissionManagement ------------------
