@@ -40,7 +40,7 @@ POST /api/settings/systemname
 - Permissions: `Permissions.Settings.ChangeHostName`
 - Content: `object {string SystemName}`
 - Returns: StatusCode
-- 
+
 ### Systemtime
 
 ```http
@@ -79,7 +79,7 @@ POST /api/settings/timebetweenupdates
 GET /api/user/info
 ```
 - Permissions: `Permissions.Profile.ViewProfile`
-  - Returns: `object {string Username, string Language, bool UseDarkMode, List<string> Permissions, List<string> Roles, Dictionary<string, List<string>> RolePermissions}`
+- Returns: `object {string Username, string Language, bool UseDarkMode, List<string> Permissions, List<string> Roles, Dictionary<string, List<string>> RolePermissions}`
 
 ### UserName
 
@@ -142,7 +142,7 @@ POST /api/user/users
 - Permissions: `Permissions.User.AddUser`
 - Content: `object {string username, string password}`
 - Returns: StatusCode
-- 
+
 ```http
 DELETE /api/user/users
 ```
@@ -164,7 +164,7 @@ POST /api/roles/{name}
 - RouteParams: `string name`
 - Permissions: `Permissions.Role.ManageRoles`
 - Returns: StatusCode
--
+
 ```http
 DELETE /api/roles/{name}
 ```
