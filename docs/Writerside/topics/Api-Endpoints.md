@@ -162,14 +162,14 @@ GET /api/roles/
 POST /api/roles/{name}
 ```
 - RouteParams: `string name`
-- Permissions: `Permissions.Role.ManageRole`
+- Permissions: `Permissions.Role.ManageRoles`
 - Returns: StatusCode
 -
 ```http
 DELETE /api/roles/{name}
 ```
 - RouteParams: `string name`
-- Permissions: `Permissions.Role.ManageRole`
+- Permissions: `Permissions.Role.ManageRoles`
 - Returns: StatusCode
 
 
