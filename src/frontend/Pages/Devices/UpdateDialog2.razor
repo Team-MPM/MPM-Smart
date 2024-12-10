@@ -1,4 +1,4 @@
-﻿
+﻿@using System.ComponentModel.DataAnnotations
 <MudDialog >
     <TitleContent>
         Device Settings
@@ -16,17 +16,19 @@
 
 @code {
     [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
+    private MudDialogInstance? MudDialog { get; set; }
     
 
     private void Submit()
     {
-        MudDialog.Close(DialogResult.Ok(true));
+        if(MudDialog is not null)
+            MudDialog.Close(DialogResult.Ok(true));
     }
 
     private void Cancel()
     {
-        MudDialog.Cancel();
+        if(MudDialog is not null)
+            MudDialog.Cancel();
     }
 
 }

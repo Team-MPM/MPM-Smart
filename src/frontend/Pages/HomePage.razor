@@ -1,6 +1,7 @@
 ﻿@page "/HomePage"
 @layout HomePageLayout 
 
+@using System.ComponentModel.DataAnnotations
 @using System.Runtime.InteropServices
 @using MudBlazor
 
@@ -38,7 +39,7 @@
 
 @code {
     [Inject]
-    private NavigationManager NavigationManager { get; set; }
+    private NavigationManager? NavigationManager { get; set; }
 
     private void NavigateToLogin()
     {

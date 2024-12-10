@@ -30,4 +30,8 @@
       </ServiceWorker>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Pages\Dashboards\" />
+    </ItemGroup>
+
 </Project>
