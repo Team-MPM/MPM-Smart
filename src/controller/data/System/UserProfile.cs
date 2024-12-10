@@ -1,3 +1,4 @@
+using ApiSchema.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,12 +10,6 @@ public record UserProfile
     public Language Language { get; set; } = 0;
 }
 
-public enum Language
-{
-    English = 0,
-    German,
-    Polish
-}
 
 public record UserProfileEntity : UserProfile
 {

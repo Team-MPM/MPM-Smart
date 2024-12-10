@@ -30,7 +30,7 @@ namespace Data.SystemMigrations
                     b.Property<int>("TimeBetweenDataUpdatesSeconds")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("TimeZone")
+                    b.Property<string>("TimeZoneCode")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

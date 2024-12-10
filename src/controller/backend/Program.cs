@@ -166,7 +166,8 @@ await app.StartPluginSystemAsync();
 app.MapOpenApi();
 
 app.MapIdentityEndpoints(key);
-app.MapUserManagementEndpoints();
+app.MapUserProfileEndpoints();
+app.MapUserManagementEndpoint();
 app.MapSettingsEndpoints();
 app.MapPermissionEndpoints();
 app.MapRoleManagementEndpoint();
