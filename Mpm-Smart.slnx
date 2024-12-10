@@ -7,12 +7,21 @@
     <Project Path="src\controller\backend\Backend.csproj" Type="Classic C#" />
     <Project Path="src\controller\control_process\ControlProcess.csproj" Type="Classic C#" />
     <Project Path="src\controller\data\Data.csproj" Type="Classic C#" />
+    <Project Path="src\controller\Shared\Shared.csproj" Type="Classic C#" />
   </Folder>
   <Folder Name="/Src/Controller/Plugins/">
+    <Project Path="src\controller\plugins\MigrationHost\MigrationHost.csproj" Type="Classic C#" />
     <Project Path="src\controller\plugins\plugin_base\PluginBase.csproj" Type="Classic C#" />
+    <Project Path="src\controller\plugins\TelemetryPlugin\TelemetryPlugin.csproj" Type="Classic C#" />
     <Project Path="src\controller\plugins\test_plugin\TestPlugin.csproj" Type="Classic C#" />
   </Folder>
+  <Folder Name="/Src/Server/">
+    <Project Path="src\server\ServerHost\ServerHost.csproj" Type="Classic C#" />
+    <Project Path="src\server\ServerServiceDefaults\ServerServiceDefaults.csproj" Type="Classic C#" />
+    <Project Path="src\server\Server\Server.csproj" Type="Classic C#" />
+  </Folder>
   <Folder Name="/Src/Tests/">
+    <Project Path="src\tests\BackendTests\BackendTests.csproj" Type="Classic C#" />
     <Project Path="src\tests\ControllerTests\ControllerTests.csproj" Type="Classic C#" />
     <Project Path="src\tests\ControlProcessTests\ControlProcessTests.csproj" Type="Classic C#" />
     <Project Path="src\tests\PluginTests\PluginTests.csproj" Type="Classic C#" />

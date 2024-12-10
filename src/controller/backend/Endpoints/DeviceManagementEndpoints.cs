@@ -7,7 +7,7 @@ public static class DeviceManagementEndpoints
 {
     public static void MapDeviceManagementEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        var group = endpoints.MapGroup("/api/usermanagement");
+        var group = endpoints.MapGroup("/api/device");
 
         // group.MapGet("/discover", async () =>
         // {

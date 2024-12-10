@@ -2,5 +2,5 @@
 
 public class SystemTimeModel
 {
-    public int SystemTimeUtcOffset { get; set; }
+    public string TimeZoneCode { get; set; }
 }

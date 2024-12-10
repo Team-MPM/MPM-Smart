@@ -1,7 +1,12 @@
 ﻿using System.Reflection.Metadata.Ecma335;
+using System.Security.Claims;
+using ApiSchema.Identity;
 using ApiSchema.Settings;
 using ApiSchema.Usermanagement;
+using Backend.Extensions;
+using Backend.Services.Identity;
 using Data.System;
+using LanguageExt;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +20,43 @@ public static class UserManagementEndpoints
     {
         var group = endpoints.MapGroup("/api/user");
 
+        group.MapGet("/info", async (
+            HttpContext context,
+            UserManager<SystemUser> userManager,
+            RoleManager<IdentityRole> roleManager) =>
+        {
+            var user =  await userManager.Users.
+                Include(u => u.UserProfile)
+                .FirstOrDefaultAsync(s => s.UserName == context.User.Identity!.Name);
+            if(user is null)
+                return Results.Unauthorized();
+            var userPermissions = await userManager.GetClaimsAsync(user);
+            var roles = await userManager.GetRolesAsync(user);
+            Dictionary<string, List<string>> roleClaims = new();
+            foreach (var role in roles)
+            {
+                var roleItem = await roleManager.FindByNameAsync(role);
+                if (roleItem is not null)
+                {
+                    var claims = await roleManager.GetClaimsAsync(roleItem);
+                    var claimStrings = claims.Select(s => s.Value).ToList();
+                    roleClaims.Add(role, claimStrings.ToList());
+                }
+
+            }
+
+            return Results.Ok(new
+            {
+                Username = user.UserName,
+                Language = user.UserProfile!.Language,
+                UseDarkMode = user.UserProfile.UseDarkMode,
+                Permissions = userPermissions.Select(s => s.Value),
+                Roles = roles,
+                RolePermissions = roleClaims
+            });
+
+        }).RequirePermission(UserClaims.ProfileViewInfo);
+
         group.MapGet("/username", async (
             HttpContext context,
             UserManager<SystemUser> userManager) =>
@@ -26,7 +68,7 @@ public static class UserManagementEndpoints
 
             return Results.Ok(user.UserName!);
 
-        }).RequireAuthorization("token");
+        }).RequirePermission(UserClaims.ProfileViewProfile);
 
         group.MapPost("/username", async (
             HttpContext context,
@@ -38,7 +80,7 @@ public static class UserManagementEndpoints
                 return Results.Unauthorized();
 
             if(!user.CanChangeUsername)
-                return Results.BadRequest("Username for the \"admin\" user cannot be changed"); //TODO
+                return Results.BadRequest($"Username for the '{user.UserName}' user cannot be changed");
 
             if (string.IsNullOrWhiteSpace(model.Username))
                 return Results.BadRequest();
@@ -47,7 +89,7 @@ public static class UserManagementEndpoints
 
             return result.Succeeded ? Results.Ok() : Results.BadRequest(result.Errors);
 
-        }).RequireAuthorization("token");
+        }).RequirePermission(UserClaims.ProfileChangeUsername);
 
         group.MapPost("/password", async (
             HttpContext context,
@@ -62,7 +104,7 @@ public static class UserManagementEndpoints
 
             return result == IdentityResult.Success ? Results.Ok() : Results.BadRequest(result.Errors);
 
-        }).RequireAuthorization("token");
+        }).RequirePermission(UserClaims.ProfileChangePassword);
 
         group.MapGet("/backup", () =>
         {
@@ -80,7 +122,7 @@ public static class UserManagementEndpoints
             var userProfile = await dbContext.UserProfiles.FindAsync(user.UserProfileId);
             return Results.Ok(userProfile!.Language.ToString());
 
-        }).RequireAuthorization("token");
+        }).RequirePermission(UserClaims.ProfileViewProfile);
 
         group.MapPost("/language", async (
             HttpContext context,
@@ -98,40 +140,65 @@ public static class UserManagementEndpoints
             userProfile!.Language = (Language) model.Language;
             await dbContext.SaveChangesAsync();
             return Results.Ok();
-        }).RequireAuthorization("token");
+        }).RequirePermission(UserClaims.ProfileEditProfile);
 
-        group.MapGet("/getUsers", async (
+        group.MapGet("/permissions", async (
             HttpContext context,
-            UserManager<SystemUser> userManager) =>
+            UserManager<SystemUser> userManager,
+            RoleManager<IdentityRole> roleManager) =>
         {
-            var user = await userManager.GetUserAsync(context.User);
+            var user = userManager.GetUserAsync(context.User).Result;
             if (user is null)
                 return Results.Unauthorized();
-            var users = await userManager.Users.Include(s => s.UserProfile).ToListAsync();
-            var usersInAdmin = await userManager.GetUsersInRoleAsync("admin");
-            return Results.Ok(users.Select(u => new
-            {
-                Username=u.UserName,
-                Language=u.UserProfile!.Language,
-                UseDarkMode=u.UserProfile.UseDarkMode,
-                IsAdmin=usersInAdmin.Contains(u)
-            }));
-        }).RequireAuthorization("token");
+            var userPermissions = await userManager.GetClaimsAsync(user);
 
-        group.MapPost("/addUser", async (
+            var roles = await userManager.GetRolesAsync(user);
+            Dictionary<string, IEnumerable<string>> roleClaims = new();
+            foreach (var role in roles)
+            {
+                var claimlist = await roleManager.GetClaimsAsync(await roleManager.FindByNameAsync(role));
+                roleClaims.Add(role, claimlist.Select(c => c.Value));
+            }
+
+            return Results.Ok(new PermissionsModel()
+            {
+                UserPermissions = userPermissions.Select(s => s.Value),
+                RolePermissions = roleClaims
+            });
+        }).RequirePermission(UserClaims.ProfileViewProfile);
+
+        group.MapGet("/users", async (
+                HttpContext context,
+                UserManager<SystemUser> userManager) =>
+            {
+                var user = await userManager.GetUserAsync(context.User);
+                if (user is null)
+                    return Results.Unauthorized();
+                var users = await userManager.Users.Include(s => s.UserProfile).ToListAsync();
+                var usersInAdmin = await userManager.GetUsersInRoleAsync("admin");
+                return Results.Ok(users.Select(u => new
+                {
+                    Username = u.UserName,
+                    Language = u.UserProfile!.Language,
+                    UseDarkMode = u.UserProfile.UseDarkMode,
+                    IsAdmin = usersInAdmin.Contains(u)
+                }));
+            }).RequirePermission(UserClaims.UserViewUsers);
+
+        group.MapPost("/users", async (
             HttpContext context,
             [FromBody] AddUserModel model,
             UserManager<SystemUser> userManager,
             RoleManager<IdentityRole> roleManager) =>
         {
             var user = await userManager.GetUserAsync(context.User);
-            if(user is null)
+            if (user is null)
                 return Results.Unauthorized();
             var usersInAdmin = await userManager.GetUsersInRoleAsync("admin");
             if (!usersInAdmin.Contains(user))
                 return Results.Forbid();
             var newUser = await userManager.FindByNameAsync(model.Username);
-            if(newUser is not null)
+            if (newUser is not null)
                 return Results.BadRequest("User already exists");
 
             var result = await userManager.CreateAsync(new SystemUser()
@@ -144,25 +211,25 @@ public static class UserManagementEndpoints
                 return Results.InternalServerError();
 
             return Results.Created();
-        }).RequireAuthorization("token");
+        }).RequirePermission(UserClaims.UserAddUser);
 
-        group.MapDelete("/removeUser", async (
+        group.MapDelete("/users", async (
             HttpContext context,
             UserManager<SystemUser> userManager,
             [FromBody] RemoveUserModel model) =>
         {
             var user = await userManager.GetUserAsync(context.User);
-            if(user is null)
+            if (user is null)
                 return Results.Unauthorized();
             var usersInAdmin = await userManager.GetUsersInRoleAsync("admin");
             if (!usersInAdmin.Contains(user))
                 return Results.Forbid();
             var username = context.Request.Query["username"];
             var userToRemove = await userManager.FindByNameAsync(model.Username);
-            if(userToRemove is null)
+            if (userToRemove is null)
                 return Results.NotFound();
             var result = await userManager.DeleteAsync(userToRemove);
             return result.Succeeded ? Results.Ok() : Results.InternalServerError();
-        }).RequireAuthorization("token");
+        }).RequirePermission(UserClaims.UserRemoveUser);
     }
 }
