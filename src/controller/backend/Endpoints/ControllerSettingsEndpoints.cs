@@ -60,7 +60,7 @@ public static class ControllerSettingsEndpoints
             if (configuration is null)
                 return Results.InternalServerError();
 
-            return Results.Ok(configuration.TimeZone);
+            return Results.Ok(configuration.TimeZoneCode);
         }).RequirePermission(UserClaims.SettingsViewSettings);
 
         group.MapPost("/systemtime", async (
@@ -71,10 +71,10 @@ public static class ControllerSettingsEndpoints
 
             if (configuration is null)
                 return Results.InternalServerError();
-            if(!TimeZoneList.TimeZones.Any(s => s.Code == model.TimeZoneCode))
+            if(Enum.TryParse<TimeZoneCode>(model.TimeZoneCode, out var modelCode))
                 return Results.BadRequest("Invalid time zone");
 
-            configuration.TimeZone = model.TimeZoneCode;
+            configuration.TimeZoneCode = modelCode;
             await dbContext.SaveChangesAsync();
 
             return Results.Ok();

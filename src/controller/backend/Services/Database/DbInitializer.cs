@@ -148,7 +148,7 @@ public class DbInitializer(
             await m_DbContext.SystemConfiguration.AddAsync(new SystemConfiguration()
             {
                 SystemName = "Controller",
-                TimeZone = "UTC",
+                TimeZoneCode = TimeZoneCode.UTC,
                 TimeBetweenDataUpdatesSeconds = 5
             }, cancellationToken);
             logger.LogInformation("System Configuration seeded");
