@@ -1,5 +1,0 @@
-menuconfig COMPONENT2
-    bool "Component 2"
-    default n
-    help
-      Enable component 2
