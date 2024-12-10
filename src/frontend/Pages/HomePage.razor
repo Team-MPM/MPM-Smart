@@ -1,8 +1,10 @@
-﻿@page "/HomePage"
-@layout HomePageLayout 
+﻿@page "/"
+@layout HomePageLayout
+@inject IDialogService DialogService
 
 @using System.ComponentModel.DataAnnotations
 @using System.Runtime.InteropServices
+@using Frontend.Pages.Devices
 @using MudBlazor
 
 <MudContainer Class="card-container">
@@ -29,12 +31,16 @@
             <MudCard Class="card-style" Hover="true" @onclick="NavigateToLogin">
                 <MudCardMedia Image="https://via.placeholder.com/150" Alt="SmartHome Jacob" Class="card-media" />
                 <MudCardContent>
-                    <MudText Typo="Typo.h5" Class="card-title">Jacobs's Zuhause</MudText>
+                    <MudText Typo="Typo.h5" Class="card-title">Jacob's Zuhause</MudText>
                     <MudText Typo="Typo.body2" Class="card-description">SmartHome von Jacob</MudText>
                 </MudCardContent>
             </MudCard>
         </MudItem>
     </MudGrid>
+</MudContainer>
+
+<MudContainer>
+    <MudButton OnClick="@(() => OpenDialogAsync())" Class="mr-3 mud-theme-primary" Variant="Variant.Filled">Hinzufügen</MudButton>
 </MudContainer>
 
 @code {
@@ -44,6 +50,14 @@
     private void NavigateToLogin()
     {
         NavigationManager.NavigateTo("/Login"); 
+    }
+    
+    private Task OpenDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+
+        return DialogService.ShowAsync<AddDialog>("Sensor", options);
+
     }
 }
 
