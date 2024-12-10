@@ -5,6 +5,7 @@
 #include <esp_idf_version.h>
 #include <esp_log.h>
 #include <esp_spiffs.h>
+#include <SystemConfig.hpp>
 
 namespace Mpm {
     Application::Application() {
@@ -50,19 +51,8 @@ namespace Mpm {
             ESP_LOGE("SPIFFS", "Failed to get SPIFFS partition information");
         }
 
-
-
-        FILE *file = fopen("/spiffs/test.txt", "r");
-        if (file == NULL) {
-            ESP_LOGE("SPIFFS", "Failed to open file for reading");
-            return;
-        }
-
-        char buffer[128];
-        while (fgets(buffer, sizeof(buffer), file) != NULL) {
-            ESP_LOGI("SPIFFS", "Read: %s", buffer);
-        }
-        fclose(file);
+        // System Config
+        config = SystemConfig::FromFile("/spiffs/system.cfg");
     }
 
     void Application::Run() {
