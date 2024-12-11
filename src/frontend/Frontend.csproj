@@ -22,6 +22,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\controller\api_schema\ApiSchema.csproj"/>
+        <ProjectReference Include="..\controller\data\Data.csproj" />
     </ItemGroup>
 
     <ItemGroup>
