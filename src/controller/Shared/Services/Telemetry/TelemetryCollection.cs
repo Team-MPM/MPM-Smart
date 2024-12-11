@@ -4,7 +4,7 @@ namespace Shared.Services.Telemetry;
 
 public class TelemetryCollection<T> : ICollection<T>
 {
-    public event Func<T, Task> ItemsAdded;
+    public event Func<T, Task>? ItemsAdded;
 
     public IEnumerator<T> GetEnumerator()
     {
@@ -18,7 +18,7 @@ public class TelemetryCollection<T> : ICollection<T>
 
     public void Add(T item)
     {
-        ItemsAdded.Invoke(item).Wait();
+        ItemsAdded?.Invoke(item).Wait();
     }
 
     public void Clear()

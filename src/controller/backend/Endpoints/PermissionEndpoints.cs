@@ -34,8 +34,8 @@ public static class PermissionEndpoints
             Dictionary<string, IEnumerable<string>> roleClaims = new();
             foreach (var role in roles)
             {
-                var claimlist = await roleManager.GetClaimsAsync(await roleManager.FindByNameAsync(role));
-                roleClaims.Add(role, claimlist.Select(c => c.Value));
+                var claimList = await roleManager.GetClaimsAsync((await roleManager.FindByNameAsync(role))!);
+                roleClaims.Add(role, claimList.Select(c => c.Value));
             }
 
             return Results.Ok(new PermissionsModel()

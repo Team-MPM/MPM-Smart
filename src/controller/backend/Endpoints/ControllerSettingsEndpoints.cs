@@ -6,6 +6,7 @@ using Backend.Services.Identity;
 using Backend.Extensions;
 using Data.System;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Endpoints;
 
@@ -15,7 +16,7 @@ public static class ControllerSettingsEndpoints
     {
         var group = endpoints.MapGroup("/api/settings");
 
-        group.MapGet("/admin", async () =>
+        group.MapGet("/admin", () =>
         {
             return "Hello, Admin!";
         }).RequirePermission(UserClaims.Admin);
@@ -23,7 +24,7 @@ public static class ControllerSettingsEndpoints
         group.MapGet("/systemname", async (
                 SystemDbContext dbContext) =>
             {
-                var configuration = dbContext.SystemConfiguration.FirstOrDefault();
+                var configuration = await dbContext.SystemConfiguration.FirstOrDefaultAsync();
 
                 if (configuration is null)
                     return Results.InternalServerError();
@@ -55,7 +56,7 @@ public static class ControllerSettingsEndpoints
         group.MapGet("/systemtime", async (
             SystemDbContext dbContext) =>
         {
-            var configuration = dbContext.SystemConfiguration.FirstOrDefault();
+            var configuration = await dbContext.SystemConfiguration.FirstOrDefaultAsync();
 
             if (configuration is null)
                 return Results.InternalServerError();
@@ -83,7 +84,7 @@ public static class ControllerSettingsEndpoints
         group.MapGet("/timebetweenupdates", async (
             SystemDbContext dbContext) =>
         {
-            var configuration = dbContext.SystemConfiguration.FirstOrDefault();
+            var configuration = await dbContext.SystemConfiguration.FirstOrDefaultAsync();
 
             if (configuration is null)
                 return Results.InternalServerError();

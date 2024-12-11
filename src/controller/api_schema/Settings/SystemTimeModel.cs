@@ -2,5 +2,5 @@
 
 public class SystemTimeModel
 {
-    public string TimeZoneCode { get; set; }
+    public required string TimeZoneCode { get; set; }
 }

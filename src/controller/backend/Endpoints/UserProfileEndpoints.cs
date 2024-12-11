@@ -157,7 +157,7 @@ public static class UserProfileEndpoints
             Dictionary<string, IEnumerable<string>> roleClaims = new();
             foreach (var role in roles)
             {
-                var claimlist = await roleManager.GetClaimsAsync(await roleManager.FindByNameAsync(role));
+                var claimlist = await roleManager.GetClaimsAsync((await roleManager.FindByNameAsync(role))!);
                 roleClaims.Add(role, claimlist.Select(c => c.Value));
             }
 
