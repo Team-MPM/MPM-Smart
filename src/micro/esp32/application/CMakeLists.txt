@@ -4,4 +4,11 @@ idf_component_register(
             "SystemConfig.cpp"
             "File.cpp"
         INCLUDE_DIRS "include"
-        REQUIRES "spiffs")
+        REQUIRES
+            "spiffs"
+            "esp_wifi"
+            "esp_http_server"
+            "esp_https_ota"
+            "esp_https_server"
+            "esp_http_client"
+            "nvs_flash")

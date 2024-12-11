@@ -1,35 +1,26 @@
 #include "Application.hpp"
 
 #include <cstdio>
+#include <cstring>
 #include <esp_chip_info.h>
 #include <esp_idf_version.h>
 #include <esp_log.h>
 #include <esp_spiffs.h>
 #include <SystemConfig.hpp>
+#include <esp_wifi.h>
+#include <nvs_flash.h>
+
+#define TAG "Application"
 
 namespace Mpm {
-    Application::Application() {
-        // System Info
-        printf("ESP32 System Information:\n");
-        printf("Chip Model: %s\n", esp_get_idf_version());
+    constexpr esp_vfs_spiffs_conf_t conf = {
+        .base_path = "/spiffs",
+        .partition_label = nullptr,
+        .max_files = 5,
+        .format_if_mount_failed = true
+    };
 
-        esp_chip_info_t chip_info;
-        esp_chip_info(&chip_info);
-
-        printf("Chip Features: %d CPU cores, WiFi%s%s, ",
-               chip_info.cores,
-               (chip_info.features & CHIP_FEATURE_BT) ? "/BT" : "",
-               (chip_info.features & CHIP_FEATURE_BLE) ? "/BLE" : "");
-        printf("Silicon Revision: %d\n", chip_info.revision);
-
-        // SPIFFS Init
-        esp_vfs_spiffs_conf_t conf = {
-            .base_path = "/spiffs",
-            .partition_label = NULL,
-            .max_files = 5, // Max files that can be open at the same time
-            .format_if_mount_failed = true
-        };
-
+    void InitSPIFFS() {
         esp_err_t ret = esp_vfs_spiffs_register(&conf);
 
         if (ret != ESP_OK) {
@@ -44,19 +35,84 @@ namespace Mpm {
         }
 
         size_t total = 0, used = 0;
-        ret = esp_spiffs_info(NULL, &total, &used);
+        ret = esp_spiffs_info(nullptr, &total, &used);
         if (ret == ESP_OK) {
             ESP_LOGI("SPIFFS", "Partition size: total: %d, used: %d", total, used);
         } else {
             ESP_LOGE("SPIFFS", "Failed to get SPIFFS partition information");
         }
+    }
+
+    static void wifi_event_handler(void* arg, const esp_event_base_t event_base,
+                                   const int32_t event_id, void* event_data) {
+        if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
+            esp_wifi_connect();
+        } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
+            ESP_LOGI(TAG, "Disconnected, retrying...");
+            esp_wifi_connect();
+        } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
+            const auto* event = static_cast<ip_event_got_ip_t *>(event_data);
+            ESP_LOGI(TAG, "Got IP: " IPSTR, IP2STR(&event->ip_info.ip));
+        }
+    }
+
+    Application::Application()
+        : config({}), wifi_config({}) {
+        // System Info
+        printf("ESP32 System Information:\n");
+        printf("Chip Model: %s\n", esp_get_idf_version());
+
+        esp_chip_info_t chip_info;
+        esp_chip_info(&chip_info);
+
+        printf("Chip Features: %d CPU cores, WiFi%s%s, ",
+               chip_info.cores,
+               (chip_info.features & CHIP_FEATURE_BT) ? "/BT" : "",
+               (chip_info.features & CHIP_FEATURE_BLE) ? "/BLE" : "");
+        printf("Silicon Revision: %d\n", chip_info.revision);
+
+        // SPIFFS Init
+        InitSPIFFS();
 
         // System Config
         config = SystemConfig::FromFile("/spiffs/system.cfg");
+        config.Print();
+
+        // NVS
+        esp_err_t ret = nvs_flash_init();
+        if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+            // NVS partition was truncated and needs to be erased
+            ESP_ERROR_CHECK(nvs_flash_erase());
+            ret = nvs_flash_init();
+        }
+        ESP_ERROR_CHECK(ret);
+
+        // Wifi
+        ESP_ERROR_CHECK(esp_netif_init());
+        ESP_ERROR_CHECK(esp_event_loop_create_default());
+
+        esp_netif_create_default_wifi_sta();
+
+        wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+        ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+
+        ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, NULL));
+        ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &wifi_event_handler, NULL, NULL));
+
+        ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
+        ESP_ERROR_CHECK(esp_wifi_start());
+
+        strncpy(reinterpret_cast<char *>(wifi_config.sta.password), config.password, sizeof(wifi_config.sta.password) - 1);
+        strncpy(reinterpret_cast<char *>(wifi_config.sta.ssid), config.ssid, sizeof(wifi_config.sta.ssid) - 1);
+        wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;
+
+        ESP_LOGI(TAG, "Connecting to Wi-Fi SSID: %s", config.ssid);
+        ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
+        ESP_ERROR_CHECK(esp_wifi_connect());
     }
 
     void Application::Run() {
-
+        printf("Application is running...\n");
     }
 
 }
