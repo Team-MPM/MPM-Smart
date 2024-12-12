@@ -1,8 +1,8 @@
 idf_component_register(
         SRCS
-            "Application.cpp"
-            "SystemConfig.cpp"
-            "File.cpp"
+            "application.c"
+            "system_config.c"
+            "file.c"
         INCLUDE_DIRS "include"
         REQUIRES
             "spiffs"
