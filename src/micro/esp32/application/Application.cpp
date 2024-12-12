@@ -56,8 +56,7 @@ namespace Mpm {
         }
     }
 
-    Application::Application()
-        : config({}), wifi_config({}) {
+    Application::Application() {
         // System Info
         printf("ESP32 System Information:\n");
         printf("Chip Model: %s\n", esp_get_idf_version());
@@ -105,10 +104,17 @@ namespace Mpm {
         strncpy(reinterpret_cast<char *>(wifi_config.sta.password), config.password, sizeof(wifi_config.sta.password) - 1);
         strncpy(reinterpret_cast<char *>(wifi_config.sta.ssid), config.ssid, sizeof(wifi_config.sta.ssid) - 1);
         wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;
+        wifi_config.sta.threshold.rssi = -127;
+        wifi_config.sta.failure_retry_cnt = 5;
+        wifi_config.sta.pmf_cfg.capable = true;
+        wifi_config.sta.pmf_cfg.required = false;
+        wifi_config.sta.scan_method = WIFI_ALL_CHANNEL_SCAN;
+        wifi_config.sta.sort_method = WIFI_CONNECT_AP_BY_SIGNAL;
+        //wifi_config.sta.sae_pwe_h2e = WPA3_SAE_PWE_BOTH;
 
-        ESP_LOGI(TAG, "Connecting to Wi-Fi SSID: %s", config.ssid);
+        ESP_LOGI(TAG, "Connecting to Wi-Fi: %s %s", wifi_config.sta.ssid, wifi_config.sta.password);
         ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
-        ESP_ERROR_CHECK(esp_wifi_connect());
+        ESP_ERROR_CHECK(esp_wifi_start());
     }
 
     void Application::Run() {

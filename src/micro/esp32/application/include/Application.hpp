@@ -8,7 +8,7 @@ namespace Mpm {
         Application();
         void Run();
     private:
-        SystemConfig config;
-        wifi_config_t wifi_config;
+        SystemConfig config = {};
+        wifi_config_t wifi_config = {};
     };
 }
