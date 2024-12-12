@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\TelemetryPlugin\TelemetryPlugin.csproj" />
+      <ProjectReference Include="..\TemperatureDemoPlugin\TemperatureDemoPlugin.csproj" />
     </ItemGroup>
 
     <ItemGroup>

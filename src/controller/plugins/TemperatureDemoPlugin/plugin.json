@@ -1,0 +1,7 @@
+﻿{
+  "Name": "TemperatureDemo Plugin",
+  "RegistryName": "temperature-demo-plugin",
+  "Description": "TemperatureDemo",
+  "Author": "Me",
+  "Version": "0.0.1"
+}
