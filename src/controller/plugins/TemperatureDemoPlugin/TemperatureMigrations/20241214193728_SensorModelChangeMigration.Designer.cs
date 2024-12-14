@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TemperatureDemoPlugin.Data;
 
@@ -10,9 +11,11 @@ using TemperatureDemoPlugin.Data;
 namespace TemperatureDemoPlugin.TemperatureMigrations
 {
     [DbContext(typeof(TemperatureDemoContext))]
-    partial class TemperatureDemoContextModelSnapshot : ModelSnapshot
+    [Migration("20241214193728_SensorModelChangeMigration")]
+    partial class SensorModelChangeMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0");

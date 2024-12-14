@@ -11,6 +11,7 @@ public class Sensor
     public required string Name { get; set; }
     public required string Token { get; set; }
     public required DateTime LastUpdateDate { get; set; }
+    public required string IpAddress { get; set; }
 
     public List<DataEntry> DataEntries { get; set; } = new();
 }

@@ -1,5 +1,7 @@
 ﻿using Backend.Services.Identity;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using PluginBase;
 using Serilog;
 using Shared.Services.Permissions;
+using Shared.Services.Sensors.TempDemo;
 using TemperatureDemoPlugin.Data;
 using TemperatureDemoPlugin.Endpoints;
 using TemperatureDemoPlugin.Permissions;
@@ -24,7 +27,19 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
     {
         var group = routeBuilder.MapGroup("/api/temperature");
 
-        // group.MapGet("/sensors",  () => throw new NotImplementedException());
+        group.MapGet("/sensors", async () =>
+        {
+            var controller = Services!.GetRequiredService<TemperatureSensorController>();
+            return controller.GetSensors();
+        });
+
+        group.MapPost("/sensorentry", async (
+            HttpContext context,
+            [FromBody] AddDemoTempEntry model) =>
+        {
+            var controller = Services!.GetRequiredService<TemperatureSensorController>();
+            return await controller.AddSensorEntry(context, model);
+        });
     }
 
     protected override void ConfigureServices(IServiceCollection services)
@@ -35,18 +50,14 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
             options.EnableDetailedErrors();
         });
         services.AddHostedService<TemperatureDataFiller>();
-        services.AddSingleton<TemperatureSensorController>();
+        services.AddScoped<TemperatureSensorController>();
     }
 
     protected override void SystemStart()
     {
-        var permissionProvider =  ApplicationServices.GetRequiredService<AvailablePermissionProvider>();
-        var logger =  ApplicationServices.GetService<ILogger<TemperatureDemo>>();
-        if (permissionProvider is not null)
-            permissionProvider.AddRange("TemperatureDemo", TemperatureClaims.ExportPermissions());
-        else
-            if(logger is not null)
-                logger.LogError("Permission provider not found");
+        var permissionProvider = ApplicationServices.GetRequiredService<AvailablePermissionProvider>();
+        permissionProvider.AddRange("TemperatureDemo", TemperatureClaims.ExportPermissions());
+
     }
 
 }

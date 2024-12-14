@@ -23,9 +23,9 @@ public class TemperatureDataFiller(TemperatureDemoContext context, ILogger<Tempe
         {
             logger.LogInformation("No sensors found. Adding demo sensors");
             context.Sensors.AddRange(
-                new Sensor { Name = "Sensor 1", Token = "aaa", LastUpdateDate = DateTime.Now},
-                new Sensor { Name = "Sensor 2", Token = "bbb", LastUpdateDate = DateTime.Now },
-                new Sensor { Name = "Sensor 3", Token = "ccc", LastUpdateDate = DateTime.Now }
+                new Sensor { Name = "Sensor 1", IpAddress = "", Token = "aaa", LastUpdateDate = DateTime.Now},
+                new Sensor { Name = "Sensor 2", IpAddress = "", Token = "bbb", LastUpdateDate = DateTime.Now },
+                new Sensor { Name = "Sensor 3", IpAddress = "", Token = "ccc", LastUpdateDate = DateTime.Now }
             );
             await context.SaveChangesAsync(stoppingToken);
         }

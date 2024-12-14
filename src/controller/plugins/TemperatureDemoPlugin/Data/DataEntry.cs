@@ -8,7 +8,7 @@ public class DataEntry
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
-    public required int SensorId { get; set; }
+    public int SensorId { get; set; }
     public required Sensor Sensor { get; set; }
 
     public required DateTime CaptureTime { get; set; }
