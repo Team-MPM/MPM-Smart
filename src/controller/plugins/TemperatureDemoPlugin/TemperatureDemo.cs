@@ -1,13 +1,11 @@
-﻿using Backend.Services.Identity;
+﻿using Backend.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using PluginBase;
-using Serilog;
 using Shared.Services.Permissions;
 using Shared.Services.Sensors.TempDemo;
 using TemperatureDemoPlugin.Data;
@@ -30,8 +28,38 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
         group.MapGet("/sensors", async () =>
         {
             var controller = Services!.GetRequiredService<TemperatureSensorController>();
-            return controller.GetSensors();
+            return await controller.GetSensors();
         });
+
+        group.MapGet("/sensors/{id}", async (
+        [FromRoute] int id) =>
+        {
+            var controller = Services!.GetRequiredService<TemperatureSensorController>();
+            return await controller.GetSensor(id);
+        });
+
+
+        group.MapPost("/sensors", async (
+            HttpContext context) =>
+        {
+            var controller = Services!.GetRequiredService<TemperatureSensorController>();
+            return await controller.AddSensor(context);
+        });
+
+        group.MapGet("/sensorentry", async () =>
+        {
+            var controller = Services!.GetRequiredService<TemperatureSensorController>();
+            return await controller.GetSensorData();
+        }).RequirePermission(TemperatureClaims.ViewSensorData);
+
+        group.MapGet("/sensorentry/{id}", async (
+            [FromRoute] int id,
+            [FromQuery] int span = -1,
+            [FromQuery] string type = "any") =>
+        {
+            var controller = Services!.GetRequiredService<TemperatureSensorController>();
+            return await controller.GetSensorData(id, span, type);
+        }).RequirePermission(TemperatureClaims.ViewSensorData);
 
         group.MapPost("/sensorentry", async (
             HttpContext context,
@@ -40,6 +68,8 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
             var controller = Services!.GetRequiredService<TemperatureSensorController>();
             return await controller.AddSensorEntry(context, model);
         });
+
+
     }
 
     protected override void ConfigureServices(IServiceCollection services)
