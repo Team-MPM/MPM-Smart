@@ -1,7 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Reflection.Metadata.Ecma335;
+using ApiSchema.Identity;
 using ApiSchema.Settings;
+using Backend.Services.Identity;
+using Backend.Extensions;
 using Data.System;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Endpoints;
 
@@ -11,17 +16,22 @@ public static class ControllerSettingsEndpoints
     {
         var group = endpoints.MapGroup("/api/settings");
 
-        group.MapGet("/systemname", async (
-             SystemDbContext dbContext) =>
+        group.MapGet("/admin", () =>
         {
-            var configuration = dbContext.SystemConfiguration.FirstOrDefault();
+            return "Hello, Admin!";
+        }).RequirePermission(UserClaims.Admin);
 
-            if (configuration is null)
-                return Results.InternalServerError();
+        group.MapGet("/systemname", async (
+                SystemDbContext dbContext) =>
+            {
+                var configuration = await dbContext.SystemConfiguration.FirstOrDefaultAsync();
 
-            return Results.Ok(configuration.SystemName);
+                if (configuration is null)
+                    return Results.InternalServerError();
 
-        }).RequireAuthorization("token");
+                return Results.Ok(configuration.SystemName);
+
+            }).RequirePermission(UserClaims.SettingsViewSettings);
 
         group.MapPost("/systemname", async (
             SystemDbContext dbContext,
@@ -32,7 +42,7 @@ public static class ControllerSettingsEndpoints
             if (configuration is null)
                 return Results.InternalServerError();
 
-            if(string.IsNullOrWhiteSpace(model.SystemName))
+            if (string.IsNullOrWhiteSpace(model.SystemName))
                 return Results.BadRequest("System name cannot be empty");
 
             configuration.SystemName = model.SystemName;
@@ -40,18 +50,19 @@ public static class ControllerSettingsEndpoints
 
             return Results.Ok();
 
-        }).RequireAuthorization("token");
+        }).RequirePermission(UserClaims.SettingsChangeHostName);
+
 
         group.MapGet("/systemtime", async (
             SystemDbContext dbContext) =>
         {
-            var configuration = dbContext.SystemConfiguration.FirstOrDefault();
+            var configuration = await dbContext.SystemConfiguration.FirstOrDefaultAsync();
 
             if (configuration is null)
                 return Results.InternalServerError();
 
-            return Results.Ok(configuration.TimeZone.ToString());
-        });
+            return Results.Ok(configuration.TimeZoneCode);
+        }).RequirePermission(UserClaims.SettingsViewSettings);
 
         group.MapPost("/systemtime", async (
             SystemDbContext dbContext,
@@ -61,30 +72,29 @@ public static class ControllerSettingsEndpoints
 
             if (configuration is null)
                 return Results.InternalServerError();
-
-            if (!Enum.IsDefined(typeof(TimeZones), model.SystemTimeUtcOffset))
+            if(Enum.TryParse<TimeZoneCode>(model.TimeZoneCode, out var modelCode))
                 return Results.BadRequest("Invalid time zone");
 
-            configuration.TimeZone = (TimeZones) model.SystemTimeUtcOffset;
+            configuration.TimeZoneCode = modelCode;
             await dbContext.SaveChangesAsync();
 
             return Results.Ok();
-        }).RequireAuthorization("token");
+        }).RequirePermission(UserClaims.SettingsChangeSystemTime);
 
         group.MapGet("/timebetweenupdates", async (
             SystemDbContext dbContext) =>
         {
-            var configuration = dbContext.SystemConfiguration.FirstOrDefault();
+            var configuration = await dbContext.SystemConfiguration.FirstOrDefaultAsync();
 
             if (configuration is null)
                 return Results.InternalServerError();
 
             return Results.Ok(configuration.TimeBetweenDataUpdatesSeconds);
-        });
+        }).RequirePermission(UserClaims.SettingsViewSettings);
 
         group.MapPost("/timebetweenupdates", async (
             SystemDbContext dbContext,
-            TimeBetweenUpdatesModel model) =>
+            [FromBody] TimeBetweenUpdatesModel model) =>
         {
             var configuration = dbContext.SystemConfiguration.FirstOrDefault();
 
@@ -98,6 +108,6 @@ public static class ControllerSettingsEndpoints
             await dbContext.SaveChangesAsync();
 
             return Results.Ok();
-        });
+        }).RequirePermission(UserClaims.SettingsChangeTimeBetweenUpdates);
     }
 }
