@@ -6,7 +6,7 @@ set(EXTRA_COMPONENT_DIRS
     dht)
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
-project(esp_system_info)
+project(mpm_smart)
 
 idf_build_set_property(PARTITION_TABLE_CUSTOM_FILENAME partitions.csv)
 idf_build_set_property(PARTITION_TABLE_CUSTOM yes)

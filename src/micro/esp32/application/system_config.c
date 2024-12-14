@@ -20,7 +20,7 @@ system_config_t system_config_from_file(const char *path, char *buffer, const si
     config.controllerAddress = strtok(NULL, "\n");
     config.token = strtok(NULL, "\n");
     config.identity = strtok(NULL, "\n");
-    config.identity = strtok(NULL, "\n");
+    config.username = strtok(NULL, "\n");
 
     return config;
 }

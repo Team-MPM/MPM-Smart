@@ -9,6 +9,8 @@
 #include <nvs_flash.h>
 #include <string.h>
 
+#include "../../../../../../esp/esp-idf/components/wpa_supplicant/esp_supplicant/include/esp_eap_client.h"
+
 #define TAG "Application"
 
 esp_vfs_spiffs_conf_t conf = {
@@ -81,6 +83,14 @@ void setup_wifi(wifi_config_t* wifi_config, const system_config_t* config) {
 
     ESP_LOGI(TAG, "Connecting to Wi-Fi: %s %s", (char*)wifi_config->sta.ssid, (char*)wifi_config->sta.password);
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, wifi_config));
+
+    if (strcmp(config->username,  "None") == 0) {
+        ESP_ERROR_CHECK(esp_eap_client_set_username((uint8_t *)config->username, strlen(config->username)));
+        ESP_ERROR_CHECK(esp_eap_client_set_password((uint8_t *)config->password, strlen(config->password)));
+        wifi_config->sta.threshold.authmode = WIFI_AUTH_WPA2_ENTERPRISE;
+        ESP_ERROR_CHECK(esp_wifi_sta_enterprise_enable());
+    }
+
     ESP_ERROR_CHECK(esp_wifi_start());
 }
 
