@@ -1,0 +1,115 @@
+﻿@page "/Plugin-Upload"
+@using System.Formats.Tar
+@using System.IO.Compression
+@using System.Text.RegularExpressions
+@using Azure.Storage.Blobs
+@using Server.UI.Layout
+
+@inject BlobServiceClient BlobServiceClient
+
+<PageTitle>Plugin Upload</PageTitle>
+<h3>Plugin Upload</h3>
+
+<p>@BlobServiceClient.Uri</p>
+
+<div>
+    <InputFile OnChange="HandleFileSelected"/>
+</div>
+
+@code {
+    [CascadingParameter] public required MainLayout MainLayout { get; set; }
+
+    private static readonly List<string> RequiredFiles = ["plugin.json"];
+
+    protected override void OnInitialized()
+    {
+        MainLayout.Title = "Plugin Upload";
+    }
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+
+        if (!IsValidFileName(file.Name))
+        {
+            Console.WriteLine("Invalid file name");
+            // Show error
+            return;
+        }
+
+        if (file.Size > 100 * 1024 * 1024)
+        {
+            // Show error
+            return;
+        }
+
+        try
+        {
+            await using var stream = file.OpenReadStream(100 * 1024 * 1024); // Limit to 100MB
+            await using var gzipStream = new GZipStream(stream, CompressionMode.Decompress);
+            using var tarStream = new MemoryStream();
+            await gzipStream.CopyToAsync(tarStream);
+            tarStream.Position = 0;
+
+            var extractedFiles = new HashSet<string>();
+            await using var tarReader = new TarReader(tarStream);
+
+            long contentLenght = 0;
+
+            while (await tarReader.GetNextEntryAsync() is { } entry)
+            {
+                if (entry.EntryType != TarEntryType.RegularFile) continue;
+
+                extractedFiles.Add(entry.Name.Split('/').Last());
+                contentLenght += entry.Length;
+                if (contentLenght > 50 * 1024 * 1024) // Limit to 50MB
+                    return; // Show error
+            }
+
+            // Check if required files exist
+            var missingFiles = RequiredFiles.Except(extractedFiles);
+            if (missingFiles.Any())
+            {
+                Console.WriteLine("Missing file");
+                // Show error
+                return;
+            }
+
+            // Upload the file to Blob Storage
+            var client = BlobServiceClient.GetBlobContainerClient("plugins");
+            var blobClient = client.GetBlobClient(file.Name);
+
+            tarStream.Position = 0;
+            await blobClient.UploadAsync(tarStream, true);
+        }
+        catch (InvalidDataException ex)
+        {
+            Console.WriteLine(ex.Message);
+            Console.WriteLine(ex);
+            // Show error
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            Console.WriteLine(ex);
+            // Show error
+        }
+
+        // var client = BlobServiceClient.GetBlobContainerClient("plugins");
+        // var blobClient = client.GetBlobClient(file.Name);
+        //
+        // await using (var stream = file.OpenReadStream())
+        // {
+        //     await blobClient.UploadAsync(stream, true);
+        // }
+
+        StateHasChanged();
+    }
+
+    private static bool IsValidFileName(string fileName)
+    {
+        var regex = new Regex(@"^[a-zA-Z0-9_\-]+\.\d+\.\d+\.\d+\.tar\.gz$");
+        return regex.IsMatch(fileName);
+    }
+
+}

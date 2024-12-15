@@ -1,0 +1,100 @@
+﻿@page "/Plugin-Index"
+@using Azure.Storage.Blobs
+@using Azure.Storage.Blobs.Models
+@using Microsoft.AspNetCore.OutputCaching
+@using Server.UI.Layout
+
+@rendermode InteractiveServer
+@attribute [OutputCache(Duration = 10)]
+
+@inject BlobServiceClient BlobServiceClient
+@inject NavigationManager NavigationManager
+
+<PageTitle>Plugin Index</PageTitle>
+
+<h1>All Plugins</h1>
+
+<MudTextField T="string" Label="Search" Variant="Variant.Outlined"
+              @bind-Value="@searchValue" @onchange="StateHasChanged"/>
+
+<MudText Typo="Typo.h4" class="pb-4 pt-2">There are @Items.Count Plugins</MudText>
+
+<MudContainer>
+    @foreach (var item in string.IsNullOrWhiteSpace(searchValue)
+                      ? Items
+                      : Items.Where(i => i.Name.Contains(searchValue, StringComparison.OrdinalIgnoreCase)))
+    {
+        var downloadUrl = $"/api/plugins/download/{item.Name}";
+        var infoUrl = $"/plugin/{item.Name}";
+        <MudDivider/>
+        <div class="my-4">
+            <MudPaper Elevation="25" Class="rounded-lg px-4">
+                <MudGrid class="pb-4">
+                    <MudItem md="12" lg="6">
+                        <div class="flex flex-row">
+                            <div>
+                                <img
+                                    src="https://api.nuget.org/v3-flatcontainer/microsoft.extensions.dependencyinjection/9.0.0/icon"
+                                    alt="@(item.Name + "Plugin Icon")" width="24" class="rounded-lg"/>
+                            </div>
+                            <div>
+                                <div class="flex flex-row">
+                                    <MudText Typo="Typo.h4" Color="Color.Info" Style="cursor: pointer"
+                                             @onclick="() => NavigationManager.NavigateTo(infoUrl)">
+                                        @item.Name
+                                    </MudText>
+                                    <MudText Typo="Typo.body2">by: Gabriel Martin</MudText>
+                                </div>
+                                <div class="flex flex-row py-1">
+                                    <MudChip T="string" Variant="Variant.Text" Color="Color.Primary">Category 1</MudChip>
+                                    <MudChip T="string" Variant="Variant.Text" Color="Color.Secondary">Category 2</MudChip>
+                                    <MudChip T="string" Variant="Variant.Text" Color="Color.Info">Category 3</MudChip>
+                                    <MudChip T="string" Variant="Variant.Text" Color="Color.Success">Category 4</MudChip>
+                                </div>
+                                <MudText Typo="Typo.subtitle2">The best smart home plugin ever</MudText>
+                            </div>
+                        </div>
+                    </MudItem>
+                    <MudItem md="12" lg="6">
+                        <div style="position: relative; height: 100%">
+                            <div>
+                                <MudText>Some stats</MudText>
+                            </div>
+                            <div style="bottom: 0; right: 0; position: absolute">
+                                <MudButton Color="Color.Primary" @onclick="() => NavigationManager.NavigateTo(infoUrl)">
+                                    More Info
+                                </MudButton>
+                                <MudButton Color="Color.Primary">
+                                    <a target="_blank" href="@downloadUrl" style="color: inherit">Download</a>
+                                </MudButton>
+                            </div>
+                        </div>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </div>
+    }
+    <MudDivider/>
+</MudContainer>
+
+
+@code {
+    [CascadingParameter] public required MainLayout MainLayout { get; set; }
+
+    public List<BlobItem> Items { get; set; } = [];
+
+    string searchValue = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        MainLayout.Title = "Plugin Index";
+
+        var client = BlobServiceClient.GetBlobContainerClient("plugins");
+
+        await foreach (var blobItem in client.GetBlobsAsync())
+        {
+            Items.Add(blobItem);
+        }
+    }
+
+}
