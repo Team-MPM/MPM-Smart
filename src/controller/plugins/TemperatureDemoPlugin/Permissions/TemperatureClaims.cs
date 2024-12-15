@@ -9,7 +9,13 @@ public class TemperatureClaims
         return
         [
             AllOnTemperature,
+            AllOnManagement,
+            AddSensors,
+            ModifySensors,
             ViewSensors,
+            ViewSensorData,
+            ModifySensorData,
+            DeleteSensors
         ];
     }
 
