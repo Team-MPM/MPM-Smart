@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Connections;
+﻿using System.Reflection.Metadata.Ecma335;
+using ApiSchema.Sensors.DemoTempSensor;
+using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Shared.Services.Sensors.TempDemo;
@@ -40,7 +42,41 @@ public class TemperatureSensorController(TemperatureDemoContext dbContext)
         };
         dbContext.Sensors.Add(sensor);
         await dbContext.SaveChangesAsync();
-        return Results.Created($"/api/sensor/{sensor.Id}", sensor);
+        return Results.Created($"/api/temperature/sensor/{sensor.Id}", sensor);
+    }
+
+    public async Task<IResult> DeleteSensor(int id)
+    {
+        var sensor = await dbContext.Sensors.FirstOrDefaultAsync(s => s.Id == id);
+        if (sensor is null)
+            return Results.NotFound("Sensor not found");
+        dbContext.Sensors.Remove(sensor);
+        await dbContext.SaveChangesAsync();
+        return Results.Ok();
+    }
+
+    public async Task<IResult> GenerateNewToken(HttpContext context, RegenerateTokenModel model)
+    {
+        var sensor = await dbContext.Sensors.FirstOrDefaultAsync(s => s.Id == model.Id);
+        if (sensor is null)
+            return Results.NotFound("Sensor not found");
+        if(sensor.IpAddress != context.Connection.RemoteIpAddress!.ToString())
+            return Results.Unauthorized();
+        sensor.Token = Guid.NewGuid().ToString();
+        sensor.LastUpdateDate = DateTime.Now;
+        await dbContext.SaveChangesAsync();
+        return Results.Ok(sensor);
+    }
+
+    public async Task<IResult> UpdateSensorData(HttpContext context, UpdateSensorData model)
+    {
+        var sensor = await dbContext.Sensors.FirstOrDefaultAsync(s => s.Token == model.Token);
+        if (sensor is null)
+            return Results.NotFound("Sensor not found");
+        sensor.LastUpdateDate = DateTime.Now;
+        sensor.IpAddress = context.Connection.RemoteIpAddress!.ToString();
+        await dbContext.SaveChangesAsync();
+        return Results.Ok(sensor);
     }
 
 

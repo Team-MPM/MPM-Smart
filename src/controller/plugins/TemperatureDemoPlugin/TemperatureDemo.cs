@@ -1,4 +1,5 @@
-﻿using Backend.Extensions;
+﻿using ApiSchema.Sensors.DemoTempSensor;
+using Backend.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -45,6 +46,33 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
             var controller = Services!.GetRequiredService<TemperatureSensorController>();
             return await controller.AddSensor(context);
         });
+
+        group.MapDelete("/sensors/{id}", async (
+            [FromRoute] int id) =>
+        {
+            var controller = Services!.GetRequiredService<TemperatureSensorController>();
+            return await controller.DeleteSensor(id);
+        }).RequirePermission(TemperatureClaims.DeleteSensors);
+
+
+        group.MapPost("/update", async (
+            HttpContext context,
+            UpdateSensorData model) =>
+        {
+            var controller = Services!.GetRequiredService<TemperatureSensorController>();
+            return await controller.UpdateSensorData(context, model);
+        });
+
+        group.MapPost("/regenerateToken", async (
+            HttpContext context,
+            RegenerateTokenModel model) =>
+        {
+            var controller = Services!.GetRequiredService<TemperatureSensorController>();
+            return await controller.GenerateNewToken(context, model);
+        });
+
+
+
 
         group.MapGet("/sensorentry", async () =>
         {

@@ -1,7 +1,7 @@
-﻿namespace Shared.Services.Sensors.TempDemo;
+﻿namespace ApiSchema.Sensors.DemoTempSensor;
 
 public class AddDemoTempSensorEntry
 {
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
 }
