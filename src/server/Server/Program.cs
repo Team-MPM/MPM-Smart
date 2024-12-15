@@ -24,6 +24,8 @@ builder.Services.AddSingleton<BlobInitializer>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<BlobInitializer>());
 
 builder.AddSqlServerDbContext<ServerDbContext>("db");
+builder.Services.AddSingleton<DbInitializer>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<DbInitializer>());
 
 builder.Services.AddAuthentication(options =>
     {
@@ -39,7 +41,6 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
-
 
 builder.Services.AddIdentityCore<ServerUser>()
     .AddEntityFrameworkStores<ServerDbContext>()

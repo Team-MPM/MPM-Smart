@@ -1,6 +1,6 @@
 ﻿@page "/Plugin/{PluginName}"
 @using Microsoft.AspNetCore.OutputCaching
-@using MudBlazor.Utilities
+@using Server.Data
 @using Server.Services
 @using Server.UI.Layout
 
@@ -16,14 +16,14 @@
 }
 else if (PluginInfo is not null)
 {
-    var downloadUrl = $"/api/plugins/download/{PluginInfo.Name}";
-    <MudText Typo="Typo.h4">@PluginInfo.Name</MudText>
-    <MudText Typo="Typo.body2">by: @PluginInfo.Author</MudText>
+    var downloadUrl = $"/api/plugins/download/{PluginInfo.Entry.RegistryName}.{PluginInfo.Version}.tar.gz";
+    <MudText Typo="Typo.h4">@PluginInfo.Entry.Name</MudText>
+    <MudText Typo="Typo.body2">by: @PluginInfo.Entry.Author</MudText>
     <div class="flex flex-row py-1">
-        @for (var i = 0; i < PluginInfo.Tags.Count; i++)
+        @for (var i = 0; i < PluginInfo.Entry.Tags.Count; i++)
         {
-            var item = PluginInfo.Tags[i];
-            <MudChip T="string" Variant="Variant.Text" Color="Colors[i % 5]">@item</MudChip>
+            var item = PluginInfo.Entry.Tags[i];
+            <MudChip T="string" Variant="Variant.Text" Color="Colors[i % 5]">@item.Tag</MudChip>
         }
     </div>
     <MudText Typo="Typo.subtitle2">@PluginInfo.Description</MudText>
@@ -31,7 +31,7 @@ else if (PluginInfo is not null)
     <MudDivider class="py-2 mt-4"/>
 
     <MudField Label="Install" Variant="Variant.Outlined">
-        mpmcli install @PluginInfo.Name:@PluginInfo.Version
+        mpmcli install @PluginInfo.Entry.Name:@PluginInfo.Version
     </MudField>
 
     <MudButton Color="Color.Primary" Variant="Variant.Filled" class="mr-1">
@@ -89,11 +89,11 @@ else
 
     public PluginInfo? PluginInfo { get; set; }
 
-    public static Color[] Colors = [Color.Primary, Color.Secondary, Color.Info, Color.Success, Color.Warning];
+    public static readonly Color[] Colors = [Color.Primary, Color.Secondary, Color.Info, Color.Success, Color.Warning];
 
     protected override void OnInitialized()
     {
-        if (PluginIndexService.Plugins.FirstOrDefault(i => i.Name == PluginName) is { } plugin)
+        if (PluginIndexService.Plugins.FirstOrDefault(i => i.Entry.Name == PluginName) is { } plugin)
         {
             PluginInfo = plugin;
         }
@@ -106,7 +106,8 @@ else
     {
         if (PluginInfo is null) return;
 
-        var url = new Uri(NavigationManager.BaseUri + $"api/plugins/download/{PluginInfo.Name}");
+        var url = new Uri(NavigationManager.BaseUri
+            + $"api/plugins/download/{PluginInfo.Entry.RegistryName}.{PluginInfo.Version}.tar.gz");
         await JsRuntime.InvokeAsync<object>("navigator.clipboard.writeText", url);
     }
 

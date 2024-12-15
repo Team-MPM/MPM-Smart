@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Server.Data;
 
@@ -11,9 +12,11 @@ using Server.Data;
 namespace Server.Migrations
 {
     [DbContext(typeof(ServerDbContext))]
-    partial class ServerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241215132730_PluginInfoMigration")]
+    partial class PluginInfoMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -157,20 +160,20 @@ namespace Server.Migrations
 
             modelBuilder.Entity("PluginInfoTag", b =>
                 {
-                    b.Property<Guid>("PluginEntryId")
+                    b.Property<Guid>("PluginInfoId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("TagId")
                         .HasColumnType("nvarchar(30)");
 
-                    b.HasKey("PluginEntryId", "TagId");
+                    b.HasKey("PluginInfoId", "TagId");
 
                     b.HasIndex("TagId");
 
                     b.ToTable("PluginInfoTag");
                 });
 
-            modelBuilder.Entity("Server.Data.PluginEntry", b =>
+            modelBuilder.Entity("Server.Data.PluginInfo", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -180,15 +183,20 @@ namespace Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("RegistryName")
+                    b.Property<string>("Version")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
 
                     b.HasKey("Id");
 
@@ -326,9 +334,9 @@ namespace Server.Migrations
 
             modelBuilder.Entity("PluginInfoTag", b =>
                 {
-                    b.HasOne("Server.Data.PluginEntry", null)
+                    b.HasOne("Server.Data.PluginInfo", null)
                         .WithMany()
-                        .HasForeignKey("PluginEntryId")
+                        .HasForeignKey("PluginInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -339,7 +347,7 @@ namespace Server.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Server.Data.PluginEntry", b =>
+            modelBuilder.Entity("Server.Data.PluginInfo", b =>
                 {
                     b.HasOne("Server.Data.ServerUser", "Author")
                         .WithMany("Plugins")
