@@ -8,6 +8,7 @@ using LanguageExt;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Services.Permissions;
 
 namespace Backend.Endpoints;
 
