@@ -16,14 +16,13 @@ builder.Services.AddRazorComponents()
 builder.Services.AddMudServices();
 
 builder.AddAzureBlobClient("blobs");
-
 builder.AddRedisOutputCache("cache");
+builder.AddSqlServerDbContext<ServerDbContext>("db");
 
 builder.Services.AddSingleton<PluginIndexService>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<PluginIndexService>());
 builder.Services.AddSingleton<BlobInitializer>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<BlobInitializer>());
-
-builder.AddSqlServerDbContext<ServerDbContext>("db");
 builder.Services.AddSingleton<DbInitializer>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<DbInitializer>());
 
