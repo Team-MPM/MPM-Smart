@@ -91,7 +91,7 @@ public class DbInitializer(
             if (role is not null)
             {
                 await m_RoleManager.AddClaimAsync(role, new Claim("Permissions", UserClaims.Admin));
-                await m_RoleManager.AddClaimAsync(role, new Claim("Permissions", UserClaims.SettingsViewSettings));
+                await m_RoleManager.AddClaimAsync(role, new Claim("Permissions", UserClaims.AllPermissions));
             }
         }
         
@@ -118,11 +118,6 @@ public class DbInitializer(
 
             await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.Admin));
             await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.AllPermissions));
-            await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.AllOnProfile));
-            await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.SettingsViewSettings));
-            await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.SettingsChangeHostName));
-            await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.ProfileChangeProfilePicture));
-            await m_UserManager.AddClaimAsync(adminUser!, new Claim("Permissions", UserClaims.ProfileEditProfile));
 
             if (!result.Succeeded)
             {

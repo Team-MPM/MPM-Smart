@@ -1,4 +1,6 @@
-﻿namespace Backend.Services.Identity;
+﻿using PluginBase;
+
+namespace Backend.Services.Identity;
 
 public static class UserClaims
 {
@@ -51,9 +53,10 @@ public static class UserClaims
             ProfileEditProfile,
             ProfileChangeProfilePicture,
             ProfileChangeUsername,
-            ProfileChangePassword
+            ProfileChangePassword,
         ];
     }
+
 
     // ------------------ ADMIN ------------------
     public const string Admin = "*";

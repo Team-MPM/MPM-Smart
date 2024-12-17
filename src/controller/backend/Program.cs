@@ -16,6 +16,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
+using Shared.Services.Permissions;
 using Shared.Services.Telemetry;
 
 // ----------------------- Load Key -------------------------------
@@ -150,6 +151,11 @@ var app = builder.Build();
 // ----------------------------------------------------------------
 
 await app.LoadPluginsAsync();
+
+// ------------------------ Permissions ------------------------------
+
+var permissionProvider = app.Services.GetRequiredService<AvailablePermissionProvider>();
+permissionProvider.AddRange("System", UserClaims.ExportPermissions());
 
 // ------------------------ Middleware ----------------------------
 
