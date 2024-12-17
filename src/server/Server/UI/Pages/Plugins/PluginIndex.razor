@@ -15,14 +15,14 @@
 <h1>All Plugins</h1>
 
 <MudTextField T="string" Label="Search" Variant="Variant.Outlined"
-              @bind-Value="@searchValue" @onchange="StateHasChanged"/>
+              @bind-Value="@m_SearchValue" @onchange="StateHasChanged"/>
 
 <MudText Typo="Typo.h4" class="pb-4 pt-2">There are @Items.Count Plugins</MudText>
 
 <MudContainer>
-    @foreach (var item in string.IsNullOrWhiteSpace(searchValue)
+    @foreach (var item in string.IsNullOrWhiteSpace(m_SearchValue)
                       ? Items
-                      : Items.Where(i => i.Name.Contains(searchValue, StringComparison.OrdinalIgnoreCase)))
+                      : Items.Where(i => i.Name.Contains(m_SearchValue, StringComparison.OrdinalIgnoreCase)))
     {
         var downloadUrl = $"/api/plugins/download/{item.Name}";
         var infoUrl = $"/plugin/{item.Name}";
@@ -41,7 +41,7 @@
                                 <div class="flex flex-row">
                                     <MudText Typo="Typo.h4" Color="Color.Info" Style="cursor: pointer"
                                              @onclick="() => NavigationManager.NavigateTo(infoUrl)">
-                                        @item.Name
+                                        @item.Name[..^7]
                                     </MudText>
                                     <MudText Typo="Typo.body2">by: Gabriel Martin</MudText>
                                 </div>
@@ -81,9 +81,9 @@
 @code {
     [CascadingParameter] public required MainLayout MainLayout { get; set; }
 
-    public List<BlobItem> Items { get; set; } = [];
+    private List<BlobItem> Items { get; set; } = [];
 
-    string searchValue = "";
+    string m_SearchValue = "";
 
     protected override async Task OnInitializedAsync()
     {

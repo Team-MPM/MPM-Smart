@@ -33,7 +33,7 @@ public class PluginIndexService(
             {
                 var firstDot = blobItem.Name.IndexOf('.');
                 var name = blobItem.Name[..firstDot];
-                var version = blobItem.Name.Substring(firstDot + 1, blobItem.Name.Length - firstDot - 7);
+                var version = blobItem.Name.Substring(firstDot + 1, blobItem.Name.Length - firstDot - 8);
                 var entry = PluginEntries.FirstOrDefault(p => p.RegistryName == name);
 
                 if (entry is null)

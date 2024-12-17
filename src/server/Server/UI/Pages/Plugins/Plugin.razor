@@ -93,7 +93,7 @@ else
 
     protected override void OnInitialized()
     {
-        if (PluginIndexService.Plugins.FirstOrDefault(i => i.Entry.Name == PluginName) is { } plugin)
+        if (PluginIndexService.Plugins.FirstOrDefault(i => i.Entry.RegistryName == PluginName.Split('.')[0]) is { } plugin)
         {
             PluginInfo = plugin;
         }
