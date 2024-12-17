@@ -1,23 +1,58 @@
 ﻿@page "/Login"
+@using ApiSchema.Identity
+@using BackendConnectionData.Services
+@using Blazored.LocalStorage
+@using Microsoft.AspNetCore.Authorization
 @layout LoginLayout
+@inject HttpClient Client
+@inject CustomAuthStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
+@inject ILocalStorageService LocalStorage
+@attribute [StreamRendering]
 
 <MudForm Spacing="2" Class="Login-Form">
 
     <h1 class="Login-Heading">Sign In</h1>
-    <MudTextField T="string" Label="Username" Variant="Variant.Filled"/>
-    <MudTextField T="string" Label="Password" InputType="InputType.Password" Variant="Variant.Filled"/>
+    <MudTextField @bind-Value="@Model.UserName" T="string" Label="Username" Variant="Variant.Filled"/>
+    <MudTextField @bind-Value="@Model.Password" T="string" Label="Password" InputType="InputType.Password" Variant="Variant.Filled"/>
     <div class="Login-RememberMe">
         <MudCheckBox @bind-Value="RememberMe">Remember Me?</MudCheckBox>
         <MudLink Href="#">Forgot Password?</MudLink>
     </div>
-    <MudButton Class="Login-Button" Href="/Dashboard" Variant="Variant.Filled" Color="Color.Primary">Login</MudButton>
+    <MudButton Class="Login-Button" OnClick="OnSubmit" Variant="Variant.Filled" Color="Color.Primary">Login</MudButton>
 </MudForm>
 
-
-
-
+<div class="text-danger">@ErrorMessage</div>
 
 
 @code {
     public bool RememberMe { get; set; }
+    public string ErrorMessage { get; set; } = "";
+    public LoginModel Model { get; set; } = new LoginModel();
+
+    public async Task OnSubmit()
+    {
+        var response = await Client.PostAsJsonAsync("/api/identity/login", new LoginModel() { UserName = Model.UserName, Password = Model.Password });
+        if (response.IsSuccessStatusCode)
+        {
+            var result = await response.Content.ReadFromJsonAsync<string>();
+            result = result!.Trim('\"');
+            await LocalStorage.SetItemAsync("authToken", result);
+            AuthStateProvider.NotifyUserAuthentication(result);
+            ErrorMessage = "";
+            ErrorMessage = result;
+            Console.WriteLine(result);
+            // NavigationManager.NavigateTo("/");
+        }
+        else
+            ErrorMessage = "Invalid username or password";
+    }
+
+    public class LoginModel
+    {
+        public string UserName { get; set; } = "";
+        public string Password { get; set; } = "";
+    }
+
 }
+

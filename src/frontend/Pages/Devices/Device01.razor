@@ -1,4 +1,5 @@
 ﻿@page "/Devices/Device01"
+@using Microsoft.AspNetCore.Authorization
 @inject IDialogService DialogService
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="justify-space-between d-flex">
@@ -77,7 +78,7 @@
 
     private List<ChartSeries> Series = new List<ChartSeries>
     {
-    new ChartSeries { Name = "Series 1", Data = new double[] { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120 } },
+        new ChartSeries { Name = "Series 1", Data = new double[] { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120 } },
         new ChartSeries { Name = "Series 2", Data = new double[] { 120, 110, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10 } }
     };
 
@@ -92,8 +93,9 @@
         return DialogService.ShowAsync<UpdateDialog1>("Update Device", options);
 
     }
+
     string _value;
-    
+
     private string[] _timespans =
     {
         "15 Minutes",
@@ -107,4 +109,5 @@
         "1 Week",
         "1 Month"
     };
+
 }

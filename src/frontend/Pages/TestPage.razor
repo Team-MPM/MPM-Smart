@@ -1,0 +1,27 @@
+﻿@page "/test-auth"
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthProvider
+
+<h3>Test Authentication State</h3>
+<button @onclick="CheckAuthState">Check Authentication State</button>
+
+<p>@message</p>
+
+@code {
+    private string message = "Click the button to test authentication state.";
+
+    private async Task CheckAuthState()
+    {
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            message = $"Authenticated as: {user.Identity.Name}";
+        }
+        else
+        {
+            message = "User is not authenticated.";
+        }
+    }
+}

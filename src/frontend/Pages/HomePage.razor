@@ -1,11 +1,11 @@
 ﻿@page "/"
 @layout HomePageLayout
 @inject IDialogService DialogService
+@inject CustomAuthStateProvider provider
+@inject NavigationManager NavManager
 
-@using System.ComponentModel.DataAnnotations
-@using System.Runtime.InteropServices
-@using Frontend.Pages.Devices
-@using MudBlazor
+@using BackendConnectionData.Services
+@using Microsoft.AspNetCore.Components.Authorization
 
 <MudContainer Class="card-container">
     <MudGrid Gutter="3">
@@ -42,16 +42,50 @@
 <MudContainer>
     <MudButton OnClick="@(() => OpenDialogAsync())" Class="mr-3 mud-theme-primary" Variant="Variant.Filled">Hinzufügen</MudButton>
 </MudContainer>
+<!-- PLEASE LEAVE THIS HERE FOR NOW IN CASE ANYTHING WITH THE USER IS NOT WORKING THIS SHOULD JUST DISPLAY "False"-->
+
+@if (state is not null)
+{
+   @foreach(var c in state.User.Claims)
+    {
+        <p>@c.Type</p>
+        <p>@c.Value</p>
+    }
+
+    @foreach(var c in state.User.Identities)
+    {
+        <p>@c.Name</p>
+    }
+    <p>@state.User.Identity.Name</p>
+    <p>@state.User.Identity.AuthenticationType</p>
+    <p>@state.User.Identity.IsAuthenticated</p>
+}
+
+<!-- Until here, I don't care about the rest -->
 
 @code {
-    [Inject]
-    private NavigationManager? NavigationManager { get; set; }
+    [Inject] private NavigationManager? NavigationManager { get; set; }
+    AuthenticationState? state { get; set; }
+    string Claim { get; set; } = "";
+    protected override async Task OnInitializedAsync()
+    {
+        state = await provider.GetAuthenticationStateAsync();
+        if (state.User is not null)
+        {
+            var c = state.User.Claims.FirstOrDefault();
+            if(c is null)
+                Claim = "No Claim";
+        }
+        else { Claim = "No User"; }
+
+        await base.OnInitializedAsync();
+    }
 
     private void NavigateToLogin()
     {
-        NavigationManager.NavigateTo("/Login"); 
+        NavManager.NavigateTo("/Login");
     }
-    
+
     private Task OpenDialogAsync()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true };
@@ -59,5 +93,6 @@
         return DialogService.ShowAsync<AddDialog>("Sensor", options);
 
     }
+
 }
 
