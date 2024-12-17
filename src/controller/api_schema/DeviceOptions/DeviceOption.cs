@@ -7,6 +7,7 @@ public class DeviceOption
     public int MaxValue { get; set; }
     public int MinValue { get; set; }
     public int DefaultValue { get; set; }
+    public int Value { get; set; }
 }
 
 public enum EDeviceOptionType {Radio, Slider, Checkbox}

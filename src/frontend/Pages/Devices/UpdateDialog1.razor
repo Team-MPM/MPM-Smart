@@ -1,16 +1,40 @@
-﻿@using System.ComponentModel.DataAnnotations
-@using ApiSchema
+﻿@using ApiSchema
 @using ApiSchema.DeviceOptions
+@using MudBlazor.Extensions
+
+
 <MudDialog >
     <TitleContent>
         Device Settings
     </TitleContent>
     
     <DialogContent>
-        <MudContainer Style="height: 600px" Class="d-flex flex-row">
-            @foreach(var option in deviceOptions)
+        <MudContainer Style="height: 600px" Class="d-flex flex-column">
+            @foreach(var option in deviceOptions.Options)
             {
-                
+                @option.Name
+                switch (option.Type)
+                {
+                    case EDeviceOptionType.Checkbox:
+                        <MudCheckBox @bind-Value="option.Value" >@option.Name</MudCheckBox>
+                        break;
+                    case EDeviceOptionType.Radio:
+                        <MudRadioGroup @bind-Value="option.Value">
+                            @foreach(var radioOption in RadioOptions)
+                            {
+                                foreach (var choosableOption in radioOption.ChoosableOptions)
+                                {
+                                    <MudRadio Value="@radioOption.Value">@choosableOption</MudRadio>
+                                }
+                            }
+                        </MudRadioGroup>
+                        break;
+                    case EDeviceOptionType.Slider:
+                        <MudSlider @bind-Value="option.Value" Max="option.MaxValue" Min="option.MinValue" DefaultValue="option.DefaultValue" ></MudSlider>
+                        <MudText>@option.Value</MudText>
+                        break;
+                }
+                <MudSpacer/>
             }
         </MudContainer>
     </DialogContent>
@@ -24,14 +48,52 @@
 @code {
     [CascadingParameter]
     private MudDialogInstance? MudDialog { get; set; }
+    
+    public DeviceOptions deviceOptions = new DeviceOptions();
 
-    private List<DeviceOption> deviceOptions = new List<DeviceOption>
+    public List<RadioOption>? RadioOptions = new List<RadioOption>();
+
+    protected override void OnInitialized()
     {
-        
-    };
-    
-    
-    
+        deviceOptions.Options = new List<DeviceOption>
+        {
+            new SliderOption()
+            {
+                Name = "HumiditySensibility",
+                MaxValue = 100,
+                MinValue = 0,
+                DefaultValue = 10,
+                Type = EDeviceOptionType.Slider
+            },
+            new SliderOption()
+            {
+                Name = "HumidityThreshold",
+                MaxValue = 100,
+                MinValue = 0,
+                DefaultValue = 10,
+                Type = EDeviceOptionType.Slider
+            },
+            new RadioOption()
+            {
+                Name = "HumidityMode",
+                MaxValue = 100,
+                MinValue = 0,
+                DefaultValue = 10,
+                Type = EDeviceOptionType.Radio,
+                ChoosableOptions = new List<string> { "Auto", "Manual" }
+            },
+            new CheckboxOption()
+            {
+                Name = "HumidityWasINed",
+                MaxValue = 100,
+                MinValue = 0,
+                DefaultValue = 10,
+                Type = EDeviceOptionType.Checkbox
+            }
+        };
+        RadioOptions = deviceOptions.Options.OfType<RadioOption>().ToList();
+    }
+
     private void Submit()
     {
         MudDialog.Close(DialogResult.Ok(true));
