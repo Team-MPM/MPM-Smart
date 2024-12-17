@@ -18,10 +18,9 @@
         <MudCardContent>
             <MudGrid Justify="Justify.SpaceBetween" AlignItems="Center" AlginContent="Center">
                 <MudItem>
-                    <text style="color: white;">Backup</text>
+                    <text style="color: white;">Light Modus</text>
                 </MudItem>
                 <MudItem Style="display: flex; justify-content: center; align-items: center;">
-                    @* <MudSwitch @bind-Value="Label_Switch1"/> *@
                     <MudIcon Icon="@Icons.Material.Filled.ToggleOn"/>
                 </MudItem>
             </MudGrid>
@@ -46,13 +45,10 @@
             </MudRadio>
         </MudCardContent>
     </MudCard>
-
 </MudContainer>
 
-
 @code {
-string username = "detrax";
-string passwort = "*************";
-bool Label_Switch1 = false;
-
+    string username = "detrax";
+    string passwort = "*************";
+    bool Label_Switch1 = false;
 }

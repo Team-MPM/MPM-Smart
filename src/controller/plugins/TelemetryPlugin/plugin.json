@@ -1,6 +1,6 @@
 ﻿{
-  "Name": "Test Plugin",
-  "RegistryName": "test-plugin",
+  "Name": "Telemetry Plugin",
+  "RegistryName": "telemetry-plugin",
   "Description": "A test plugin",
   "Author": "Gabriel Martin",
   "Version": "1.0.0"
