@@ -45,11 +45,7 @@ public static class PluginEndpoints
 
             stream.Position = 0;
 
-            var contentType = "application/octet-stream";
-            if (fileName.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
-                contentType = "text/plain";
-            else if (fileName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
-                contentType = "application/pdf";
+            const string contentType = "application/octet-stream";
 
             return Results.Stream(stream, contentType, fileName);
         });

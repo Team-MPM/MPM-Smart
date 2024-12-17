@@ -3,45 +3,99 @@
 @using System.IO.Compression
 @using System.Text.RegularExpressions
 @using Azure.Storage.Blobs
+@using Microsoft.EntityFrameworkCore
+@using Server.Data
+@using Server.Services
+@using Server.UI.Components.Plugins
 @using Server.UI.Layout
 
+@rendermode InteractiveServer
+
 @inject BlobServiceClient BlobServiceClient
+@inject PluginIndexService PluginIndexService
+@inject IdentityUserAccessor IdentityUserAccessor
+@inject IHttpContextAccessor HttpContextAccessor
+@inject IDialogService DialogService
+@inject ServerDbContext DbContext
+@inject NavigationManager NavigationManager
 
 <PageTitle>Plugin Upload</PageTitle>
-<h3>Plugin Upload</h3>
 
-<p>@BlobServiceClient.Uri</p>
+<h1>Your Plugins</h1>
 
-<div>
-    <InputFile OnChange="HandleFileSelected"/>
-</div>
+@if (m_Plugins is null)
+{
+    <p>Loading...</p>
+}
+else if (m_Plugins.Count is 0)
+{
+    <p>You don't own any plugins yet</p>
+}
+else
+{
+    <MudTable Items="m_Plugins" Class="my-4">
+        <HeaderContent>
+            <MudTh>Plugin Name</MudTh>
+            <MudTh>Actions</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.Name</MudTd>
+            <MudTd>
+                <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled">
+                    <MudButton @onclick="@(() => NavigationManager.NavigateTo($"/Plugin/{context.RegistryName}"))">
+                        View
+                    </MudButton>
+                    <MudButton @onclick="@(() => DeletePlugin(context))">
+                        <MudFileUpload T="IBrowserFile" FilesChanged="@((file) => HandleFileSelected(file, context.RegistryName))">
+                            <ActivatorContent>
+                                <MudButton>
+                                    Update
+                                </MudButton>
+                            </ActivatorContent>
+                        </MudFileUpload>
+                    </MudButton>
+                    <MudButton @onclick="@(() => DeletePlugin(context))">
+                        Delete
+                    </MudButton>
+                </MudButtonGroup>
+
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+
+<MudButton Class="my-4" Color="Color.Primary" Variant="Variant.Filled" @onclick="RegisterPluginAsync">
+    Register New Plugin
+</MudButton>
 
 @code {
     [CascadingParameter] public required MainLayout MainLayout { get; set; }
 
     private static readonly List<string> RequiredFiles = ["plugin.json"];
 
-    protected override void OnInitialized()
+    private List<PluginEntry>? m_Plugins;
+    private ServerUser m_User = null!;
+
+    protected override async Task OnInitializedAsync()
     {
         MainLayout.Title = "Plugin Upload";
+
+        m_User = await IdentityUserAccessor.GetRequiredUserAsync(HttpContextAccessor.HttpContext!);
+
+        m_Plugins = PluginIndexService.PluginEntries
+            .Where(p => p.Author.Id == m_User.Id)
+            .ToList();
     }
 
-    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    private async Task HandleFileSelected(IBrowserFile? file, string registryName)
     {
-        var file = e.File;
-
-        if (!IsValidFileName(file.Name))
-        {
-            Console.WriteLine("Invalid file name");
-            // Show error
+        if (file is null)
             return;
-        }
 
-        if (file.Size > 100 * 1024 * 1024)
-        {
-            // Show error
+        if (file.Name.Split('.')[0] != registryName)
             return;
-        }
+
+        if (IsValidFile(file)) return;
 
         try
         {
@@ -50,30 +104,9 @@
             using var tarStream = new MemoryStream();
             await gzipStream.CopyToAsync(tarStream);
             tarStream.Position = 0;
-
-            var extractedFiles = new HashSet<string>();
             await using var tarReader = new TarReader(tarStream);
 
-            long contentLenght = 0;
-
-            while (await tarReader.GetNextEntryAsync() is { } entry)
-            {
-                if (entry.EntryType != TarEntryType.RegularFile) continue;
-
-                extractedFiles.Add(entry.Name.Split('/').Last());
-                contentLenght += entry.Length;
-                if (contentLenght > 50 * 1024 * 1024) // Limit to 50MB
-                    return; // Show error
-            }
-
-            // Check if required files exist
-            var missingFiles = RequiredFiles.Except(extractedFiles);
-            if (missingFiles.Any())
-            {
-                Console.WriteLine("Missing file");
-                // Show error
-                return;
-            }
+            if (await IsValidPluginPackage(tarReader)) return; // Show error
 
             // Upload the file to Blob Storage
             var client = BlobServiceClient.GetBlobContainerClient("plugins");
@@ -94,22 +127,105 @@
             Console.WriteLine(ex);
             // Show error
         }
+    }
 
-        // var client = BlobServiceClient.GetBlobContainerClient("plugins");
-        // var blobClient = client.GetBlobClient(file.Name);
-        //
-        // await using (var stream = file.OpenReadStream())
-        // {
-        //     await blobClient.UploadAsync(stream, true);
-        // }
+    private static async Task<bool> IsValidPluginPackage(TarReader tarReader)
+    {
+        var extractedFiles = new HashSet<string>();
 
-        StateHasChanged();
+        long contentLenght = 0;
+
+        while (await tarReader.GetNextEntryAsync() is { } entry)
+        {
+            if (entry.EntryType != TarEntryType.RegularFile) continue;
+
+            extractedFiles.Add(entry.Name.Split('/').Last());
+            contentLenght += entry.Length;
+            if (contentLenght > 50 * 1024 * 1024) // Limit to 50MB
+                return true;
+        }
+
+        // Check if required files exist
+        var missingFiles = RequiredFiles.Except(extractedFiles);
+        if (missingFiles.Any())
+        {
+            Console.WriteLine("Missing file");
+            // Show error
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool IsValidFile(IBrowserFile file)
+    {
+        if (!IsValidFileName(file.Name))
+        {
+            Console.WriteLine("Invalid file name");
+            // Show error
+            return true;
+        }
+
+        if (file.Size > 100 * 1024 * 1024)
+        {
+            // Show error
+            return true;
+        }
+
+        return false;
     }
 
     private static bool IsValidFileName(string fileName)
     {
         var regex = new Regex(@"^[a-zA-Z0-9_\-]+\.\d+\.\d+\.\d+\.tar\.gz$");
         return regex.IsMatch(fileName);
+    }
+
+    private async Task RegisterPluginAsync()
+    {
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            FullWidth = true,
+            CloseButton = true,
+            BackdropClick = true,
+            MaxWidth = MaxWidth.Medium
+        };
+
+        var parameters = new DialogParameters<PluginRegistrationDialog>
+        {
+            { x => x.TagsAvailable, await DbContext.PluginTags.Select(t => t.Tag).ToListAsync() },
+        };
+
+        var dialog = await DialogService.ShowAsync<PluginRegistrationDialog>("Simple Dialog", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is null || result.Canceled || result.Data is null)
+            return;
+
+        var data = result.Data as PluginRegistrationDialog.Model;
+
+        if (await DbContext.Plugins.AnyAsync(p => p.RegistryName == data!.RegistryName))
+            return;
+
+        DbContext.Plugins.Add(new PluginEntry
+        {
+            Name = data!.Name,
+            Description = data.Description,
+            AuthorId = m_User.Id,
+            RegistryName = data.RegistryName
+        });
+
+        await DbContext.SaveChangesAsync();
+
+        m_Plugins = PluginIndexService.PluginEntries
+            .Where(p => p.Author.Id == m_User.Id)
+            .ToList();
+    }
+
+    private Task DeletePlugin(PluginEntry context)
+    {
+        return Task.CompletedTask;
     }
 
 }

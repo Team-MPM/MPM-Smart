@@ -57,10 +57,9 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseAntiforgery();
-
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseAntiforgery();
 
 app.UseOutputCache();
 
