@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -33,6 +34,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
         try
         {
             var identity = new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             Console.WriteLine("Returning authenticated user.");
             return new AuthenticationState(new ClaimsPrincipal(identity));
         }

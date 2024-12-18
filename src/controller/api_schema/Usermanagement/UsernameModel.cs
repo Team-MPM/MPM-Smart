@@ -1,4 +1,4 @@
-﻿namespace ApiSchema.Settings;
+﻿namespace ApiSchema.Usermanagement;
 
 public class UsernameModel
 {

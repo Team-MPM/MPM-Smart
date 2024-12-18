@@ -1,4 +1,5 @@
 ﻿@page "/Login"
+@using System.Net
 @using ApiSchema.Identity
 @using BackendConnectionData.Services
 @using Blazored.LocalStorage
@@ -8,6 +9,7 @@
 @inject CustomAuthStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
 @inject ILocalStorageService LocalStorage
+@inject ApiAccessor accessor
 @attribute [StreamRendering]
 
 <MudForm Spacing="2" Class="Login-Form">
@@ -27,25 +29,17 @@
 
 @code {
     public bool RememberMe { get; set; }
-    public string ErrorMessage { get; set; } = "";
-    public LoginModel Model { get; set; } = new LoginModel();
+    private string ErrorMessage { get; set; } = "";
+    private LoginModel Model { get; set; } = new LoginModel();
 
     public async Task OnSubmit()
     {
-        var response = await Client.PostAsJsonAsync("/api/identity/login", new LoginModel() { UserName = Model.UserName, Password = Model.Password });
-        if (response.IsSuccessStatusCode)
-        {
-            var result = await response.Content.ReadFromJsonAsync<string>();
-            result = result!.Trim('\"');
-            await LocalStorage.SetItemAsync("authToken", result);
-            AuthStateProvider.NotifyUserAuthentication(result);
-            ErrorMessage = "";
-            ErrorMessage = result;
-            Console.WriteLine(result);
-            // NavigationManager.NavigateTo("/");
-        }
+        ErrorMessage = "";
+        var result = await accessor.Login(Model.UserName, Model.Password);
+        if(result.Success)
+            NavigationManager.NavigateTo("/");
         else
-            ErrorMessage = "Invalid username or password";
+            ErrorMessage = ((HttpStatusCode) result.StatusCode) + ": " + result.Message!;
     }
 
     public class LoginModel

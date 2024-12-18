@@ -3,7 +3,10 @@
 @inject IDialogService DialogService
 @inject CustomAuthStateProvider provider
 @inject NavigationManager NavManager
+@inject ApiAccessor accessor
 
+@using System.Runtime.CompilerServices
+@using BackendConnectionData.Model
 @using BackendConnectionData.Services
 @using Microsoft.AspNetCore.Components.Authorization
 
@@ -48,8 +51,8 @@
 {
    @foreach(var c in state.User.Claims)
     {
-        <p>@c.Type</p>
-        <p>@c.Value</p>
+        <p>Type: @c.Type</p>
+        <p>Value: @c.Value</p>
     }
 
     @foreach(var c in state.User.Identities)
@@ -61,10 +64,27 @@
     <p>@state.User.Identity.IsAuthenticated</p>
 }
 
+@if (Permissions is not null)
+{
+    @foreach (var kvp in Permissions.RolePermissions)
+    {
+        <div>Type: @kvp.Key</div>
+        @foreach(var permission in kvp.Value)
+        {
+            <div>Permissions: @permission</div>
+        }
+    }
+    <div>user:</div>
+    @foreach (var permission in Permissions.UserPermissions)
+    {
+        <div>Permissions: @permission</div>
+    }
+}
+
 <!-- Until here, I don't care about the rest -->
 
 @code {
-    [Inject] private NavigationManager? NavigationManager { get; set; }
+    PermissionsModel? Permissions { get; set; }
     AuthenticationState? state { get; set; }
     string Claim { get; set; } = "";
     protected override async Task OnInitializedAsync()
@@ -77,6 +97,25 @@
                 Claim = "No Claim";
         }
         else { Claim = "No User"; }
+
+        await accessor.SetLanguage(1);
+        await accessor.SetPassword("1234", "Abcd123.");
+        await accessor.SetUsername("NotSayo");
+
+        var result = await accessor.GetUserPermissions();
+        if (result.Success)
+        {
+            Permissions = result.Response;
+            Console.WriteLine("Inserted Permissions");
+        }
+        else
+        {
+            Console.WriteLine(result.StatusCode);
+            Console.WriteLine(result.Message);
+        }
+
+
+
 
         await base.OnInitializedAsync();
     }
