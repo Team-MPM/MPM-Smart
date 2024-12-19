@@ -36,8 +36,13 @@
     {
         ErrorMessage = "";
         var result = await accessor.Login(Model.UserName, Model.Password);
-        if(result.Success)
+
+        if (result.Success)
+        {
+            await LocalStorage.SetItemAsync("authToken", result.Response);
+            AuthStateProvider.NotifyUserAuthentication(result.Response!);
             NavigationManager.NavigateTo("/");
+        }
         else
             ErrorMessage = ((HttpStatusCode) result.StatusCode) + ": " + result.Message!;
     }
