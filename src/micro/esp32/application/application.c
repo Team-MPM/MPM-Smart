@@ -1,5 +1,6 @@
 #include "application.h"
 
+#include <dht.h>
 #include <esp_chip_info.h>
 #include <esp_http_server.h>
 #include <esp_idf_version.h>
@@ -9,6 +10,7 @@
 #include <esp_wifi.h>
 #include <nvs_flash.h>
 #include <string.h>
+#include <driver/gpio.h>
 
 #define TAG "Application"
 
@@ -223,6 +225,19 @@ static esp_err_t index_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
+#ifdef CONFIG_DHT
+static int dht11_data[DHT_DATA_SIZE];
+static char* dht_json_buffer[64];
+
+static esp_err_t dht_handler(httpd_req_t *req)
+{
+    ESP_LOGI(TAG, "uri: /dht");
+    dht11_to_json(dht11_data, dht_json_buffer, sizeof(dht_json_buffer));
+    httpd_resp_sendstr(req, dht_json_buffer);
+    return ESP_OK;
+}
+#endif
+
 static httpd_handle_t start_webserver(void)
 {
     httpd_handle_t server = NULL;
@@ -245,8 +260,17 @@ static httpd_handle_t start_webserver(void)
         .handler   = index_handler,
     };
 
-    ESP_LOGI(TAG, "Registering URI handlers");
     httpd_register_uri_handler(server, &index_uri);
+
+#ifdef CONFIG_DHT
+    const httpd_uri_t dht_uri = {
+        .uri       = "/dht",
+        .method    = HTTP_GET,
+        .handler   = dht_handler,
+    };
+
+    httpd_register_uri_handler(server, &dht_uri);
+#endif
 
     return server;
 }
@@ -323,6 +347,11 @@ void application_run(void) {
 
     // Start the server
     httpd_handle_t server = start_webserver();
+
+#ifdef CONFIG_DHT
+    int params_task1[3] = {GPIO_NUM_17, (int)dht11_data, 2000};
+    xTaskCreate(&dht11_task, "dht11_task", 2048, params_task1, 5, NULL);
+#endif
 
     printf("Application is running...\n");
 

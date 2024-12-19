@@ -2040,7 +2040,7 @@ CONFIG_WIFI_PROV_STA_ALL_CHANNEL_SCAN=y
 # CONFIG_WIFI_PROV_STA_FAST_SCAN is not set
 # end of Wi-Fi Provisioning Manager
 
-# CONFIG_DHT is not set
+CONFIG_DHT=y
 # end of Component config
 
 CONFIG_IDF_EXPERIMENTAL_FEATURES=y
