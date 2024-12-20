@@ -98,7 +98,7 @@ public class TestPluginClass : PluginBase&lt;TestPluginClass&gt;
     <chapter title="Additional Considerations" id="additional-considerations">
         <list>
             <li>Make sure to include all static assets in the output folder of the plugin.</li>
-            <li>Make sure there are now overlapping .dll file dependencies with the backend application for shared
+            <li>Make sure there are no overlapping .dll file dependencies with the backend application for shared
                 types.
             </li>
             <li>Make sure to include all necessary files in the .csproj file.</li>

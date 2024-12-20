@@ -1,0 +1,114 @@
+﻿@page "/Plugin/{PluginName}"
+@using Microsoft.AspNetCore.OutputCaching
+@using Server.Data
+@using Server.Services
+@using Server.UI.Layout
+
+@inject PluginIndexService PluginIndexService
+@inject IJSRuntime JsRuntime
+@inject NavigationManager NavigationManager
+@attribute [OutputCache(Duration = 10)]
+
+
+@if (Loading)
+{
+    <div>Loading...</div>
+}
+else if (PluginInfo is not null)
+{
+    var downloadUrl = $"/api/plugins/download/{PluginInfo.Entry.RegistryName}.{PluginInfo.Version}.tar.gz";
+    <MudText Typo="Typo.h4">@PluginInfo.Entry.Name</MudText>
+    <MudText Typo="Typo.body2">by: @PluginInfo.Entry.Author</MudText>
+    <div class="flex flex-row py-1">
+        @for (var i = 0; i < PluginInfo.Entry.Tags.Count; i++)
+        {
+            var item = PluginInfo.Entry.Tags[i];
+            <MudChip T="string" Variant="Variant.Text" Color="Colors[i % 5]">@item.Tag</MudChip>
+        }
+    </div>
+    <MudText Typo="Typo.subtitle2">@PluginInfo.Entry.Description</MudText>
+
+    <MudDivider class="py-2 mt-4"/>
+
+    <MudField Label="Install" Variant="Variant.Outlined">
+        mpmcli install @PluginInfo.Entry.Name:@PluginInfo.Version
+    </MudField>
+
+    <MudButton Color="Color.Primary" Variant="Variant.Filled" class="mr-1">
+        <a target="_blank" href="@downloadUrl" style="color: inherit">Download Package File</a>
+    </MudButton>
+
+    <MudButton Color="Color.Info" Variant="Variant.Filled" class="mr-1"
+               @onclick="async () => await CopyLinkToClipboard()">
+        Copy Download Link
+    </MudButton>
+
+    <MudButton Color="Color.Error" Variant="Variant.Filled" class="mr-1">
+        Report
+    </MudButton>
+
+    <MudDivider class="py-2 mt-4"/>
+
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+        <MudTabPanel Text="ReadMe">
+            <MudText>Content One</MudText>
+        </MudTabPanel>
+        <MudTabPanel Text="Dependencies">
+            <MudText>Content Two</MudText>
+        </MudTabPanel>
+        <MudTabPanel Text="Versions">
+            <MudText>Content Three</MudText>
+        </MudTabPanel>
+        <MudTabPanel Text="Used By">
+            <MudText>Content Disabled</MudText>
+        </MudTabPanel>
+        <MudTabPanel Text="License">
+            <MudText>Content One</MudText>
+        </MudTabPanel>
+        <MudTabPanel Text="Statistics">
+            <MudText>Content One</MudText>
+        </MudTabPanel>
+    </MudTabs>
+}
+else
+{
+    <div>Not Found!</div>
+
+    <MudButton Color="Color.Info" Variant="Variant.Filled" class="mr-1"
+               @onclick="@(() => NavigationManager.NavigateTo("/plugin-index"))">
+        Back to Plugin Index
+    </MudButton>
+}
+
+@code {
+    [CascadingParameter] public required MainLayout MainLayout { get; set; }
+
+    [Parameter] public required string PluginName { get; set; }
+
+    public bool Loading { get; set; } = true;
+
+    public PluginInfo? PluginInfo { get; set; }
+
+    public static readonly Color[] Colors = [Color.Primary, Color.Secondary, Color.Info, Color.Success, Color.Warning];
+
+    protected override void OnInitialized()
+    {
+        if (PluginIndexService.Plugins.FirstOrDefault(i => i.Entry.RegistryName == PluginName.Split('.')[0]) is { } plugin)
+        {
+            PluginInfo = plugin;
+        }
+
+        MainLayout.Title = PluginName;
+        Loading = false;
+    }
+
+    private async Task CopyLinkToClipboard()
+    {
+        if (PluginInfo is null) return;
+
+        var url = new Uri(NavigationManager.BaseUri
+            + $"api/plugins/download/{PluginInfo.Entry.RegistryName}.{PluginInfo.Version}.tar.gz");
+        await JsRuntime.InvokeAsync<object>("navigator.clipboard.writeText", url);
+    }
+
+}

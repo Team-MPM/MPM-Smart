@@ -1,4 +1,6 @@
-﻿@inherits LayoutComponentBase
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@inherits LayoutComponentBase
+@implements IDisposable
 
 @inject NavigationManager NavigationManager
 
@@ -15,6 +17,36 @@
                              ToggledIcon="@Icons.Material.Filled.DarkMode"
                              ToggledColor="@Color.Success"
                              title="@(UseDarkMode ? "On" : "Off")"/>
+        <AuthorizeView>
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="Account/Manage">
+                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <form action="Account/Logout" method="post">
+                        <AntiforgeryToken/>
+                        <input type="hidden" name="ReturnUrl" value="@m_CurrentUrl"/>
+                        <button type="submit" class="nav-link">
+                            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
+                        </button>
+                    </form>
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="Account/Register">
+                        <span class="bi bi-person-nav-menu" aria-hidden="true"></span> Register
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="Account/Login">
+                        <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
+                    </NavLink>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
     </MudAppBar>
 
     <MudDrawer @bind-Open="@m_NavOpen" Elevation="1" Width="240px">
@@ -82,6 +114,25 @@
     public bool UseDarkMode { get; set; } = true;
     public string Title { get; set; } = "";
     private bool m_NavOpen = true;
+
+    private string? m_CurrentUrl;
+
+    protected override void OnInitialized()
+    {
+        m_CurrentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        m_CurrentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
 
     private void ToggleDrawer(MouseEventArgs obj)
     {
