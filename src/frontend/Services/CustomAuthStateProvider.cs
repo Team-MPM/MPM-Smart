@@ -3,23 +3,23 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.Extensions.Logging;
 
-namespace BackendConnectionData.Services;
+namespace Frontend.Services;
 
 public class CustomAuthStateProvider(
-    ILocalStorageService localStorageService,
-    HttpClient client,
+    ControllerConnectionManager controllerConnectionManager,
     ILogger<CustomAuthStateProvider> logger)
     : AuthenticationStateProvider
 {
-    public override async Task<AuthenticationState> GetAuthenticationStateAsync()
+    public override Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        var token = await localStorageService.GetItemAsStringAsync("authToken");
+        var token = controllerConnectionManager.GetCurrentClient()?
+            .DefaultRequestHeaders.Authorization?.Parameter;
+
         if (string.IsNullOrEmpty(token))
         {
-            Console.WriteLine("No token found, returning anonymous user.");
-            return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+            logger.LogInformation("No token found, returning anonymous user.");
+            return Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
         }
 
         token = token.Trim('\"');
@@ -27,14 +27,13 @@ public class CustomAuthStateProvider(
         try
         {
             var identity = new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            Console.WriteLine("Returning authenticated user.");
-            return new AuthenticationState(new ClaimsPrincipal(identity));
+            logger.LogInformation("Returning authenticated user.");
+            return Task.FromResult(new AuthenticationState(new ClaimsPrincipal(identity)));
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error parsing token: {ex.Message}");
-            return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+            logger.LogInformation("Error parsing token: {Message}", ex.Message);
+            return Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
         }
     }
 
@@ -47,9 +46,8 @@ public class CustomAuthStateProvider(
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
     }
 
-    public async Task NotifyUserLogout()
+    public void NotifyUserLogout()
     {
-        await localStorageService.RemoveItemAsync("authToken");
         var anonymousUser = new ClaimsPrincipal(new ClaimsIdentity());
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(anonymousUser)));
     }
@@ -62,7 +60,7 @@ public class CustomAuthStateProvider(
         Console.WriteLine("Claims in JWT:");
         foreach (var claim in token.Claims)
         {
-           logger.LogInformation($"Type: {claim.Type}, Value: {claim.Value}");
+            logger.LogInformation("Type: {Type}, Value: {Value}", claim.Type, claim.Value);
         }
 
         return token.Claims;

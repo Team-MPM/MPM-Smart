@@ -1,4 +1,4 @@
-﻿namespace BackendConnectionData.Services;
+﻿namespace Frontend.Services;
 
 public class UserHasAccess
 {

@@ -1,6 +1,6 @@
 ﻿using ApiSchema.Enums;
 
-namespace BackendConnectionData.Model;
+namespace ApiSchema.Usermanagement;
 
 public class UserData
 {

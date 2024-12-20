@@ -1,13 +1,12 @@
 ﻿@page "/"
 @layout HomePageLayout
 
-@using BackendConnectionData.Model
-@using BackendConnectionData.Services
+@using ApiSchema.Usermanagement
 @using Frontend.Components.Dialogs
+@using Frontend.Services
 @using Microsoft.AspNetCore.Components.Authorization
 
 @inject IDialogService DialogService
-@inject CustomAuthStateProvider Provider
 @inject NavigationManager NavManager
 @inject ApiAccessor Accessor
 
@@ -72,6 +71,15 @@
     private void NavigateToLogin()
     {
         NavManager.NavigateTo("/Login");
+        // if (builder.HostEnvironment.IsDevelopment())
+        // {
+        //     using var scope = app.Services.CreateScope();
+        //     var storage = scope.ServiceProvider.GetRequiredService<ILocalStorageService>();
+        //     await app.Services.GetRequiredService<ControllerConnectionManager>().ConnectToControllerAsync(
+        //         new ControllerConnectionDetails(IPAddress.Loopback, 54321),
+        //         new ControllerPasswordCredentials("admin", "admin", storage));
+        // }
+
     }
 
     private Task OpenDialogAsync()
