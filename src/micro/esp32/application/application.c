@@ -227,12 +227,14 @@ static esp_err_t index_handler(httpd_req_t *req)
 
 #ifdef CONFIG_DHT
 static int dht11_data[DHT_DATA_SIZE];
+static int dht11_data_valid[DHT_DATA_SIZE];
 static char* dht_json_buffer[64];
 
 static esp_err_t dht_handler(httpd_req_t *req)
 {
     ESP_LOGI(TAG, "uri: /dht");
     dht11_to_json(dht11_data, dht_json_buffer, sizeof(dht_json_buffer));
+    httpd_resp_set_type(req, "application/json");
     httpd_resp_sendstr(req, dht_json_buffer);
     return ESP_OK;
 }
