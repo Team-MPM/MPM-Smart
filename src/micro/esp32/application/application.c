@@ -1,6 +1,5 @@
 #include "application.h"
 
-#include <dht.h>
 #include <esp_chip_info.h>
 #include <esp_http_server.h>
 #include <esp_idf_version.h>
@@ -9,10 +8,16 @@
 #include <system_config.h>
 #include <esp_wifi.h>
 #include <nvs_flash.h>
-#include <sound.h>
 #include <string.h>
 #include <tgmath.h>
 #include <driver/gpio.h>
+
+#ifdef CONFIG_DHT
+#include <dht.h>
+#endif
+#ifdef CONFIG_SOUND
+#include <sound.h>
+#endif
 
 #define TAG "Application"
 
