@@ -61,6 +61,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FrontendBackendConnection",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackendConnectionData", "src\BackendConnectionData\BackendConnectionData.csproj", "{D887723D-0F6A-4765-9604-A83EE711C287}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TemperatureDemoPlugin", "src\controller\plugins\TemperatureDemoPlugin\TemperatureDemoPlugin.csproj", "{0501BAB8-BF01-4C43-838A-9E8EEBAA2975}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -158,6 +160,10 @@ Global
 		{D887723D-0F6A-4765-9604-A83EE711C287}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D887723D-0F6A-4765-9604-A83EE711C287}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D887723D-0F6A-4765-9604-A83EE711C287}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0501BAB8-BF01-4C43-838A-9E8EEBAA2975}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0501BAB8-BF01-4C43-838A-9E8EEBAA2975}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0501BAB8-BF01-4C43-838A-9E8EEBAA2975}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0501BAB8-BF01-4C43-838A-9E8EEBAA2975}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4EFEA609-1FD3-4AF0-9AC1-1DBC7BA8C520} = {15A159CC-FB34-49B3-9591-7BF3D30ED6B7}

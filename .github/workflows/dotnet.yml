@@ -25,14 +25,10 @@ jobs:
         dotnet-version: 9.0.x
     - name: Restore dependencies
       run: dotnet restore
+    - name: Build Tasks
+      run: dotnet build --no-restore src/build-tasks/ReadJsonFileTask/ReadJsonFileTask.csproj
     - name: Build
       run: dotnet build --no-restore
-    - name: PWD
-      run: pwd
-    - name: LS1
-      run: ls
-    - name: LS2
-      run: ls build/controller/backend
     - name: Test
       run: dotnet test --no-build --verbosity normal
       

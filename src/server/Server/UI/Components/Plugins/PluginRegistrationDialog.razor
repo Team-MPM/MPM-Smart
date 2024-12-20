@@ -1,0 +1,57 @@
+@using System.ComponentModel.DataAnnotations
+
+<EditForm Model="@m_Model" OnValidSubmit="OnValidSubmit">
+    <MudDialog>
+        <TitleContent>
+            Plugin Registration
+        </TitleContent>
+        <DialogContent>
+            <DataAnnotationsValidator/>
+            <MudTextField Label="Plugin Name" HelperText="Max 50 characters"
+                          @bind-Value="m_Model.Name" For="@(() => m_Model.Name)"/>
+            <MudTextField Label="Registry Name" HelperText="Uniform ID for registry entry" Class="mt-3"
+                          @bind-Value="m_Model.RegistryName" For="@(() => m_Model.RegistryName)"/>
+            <MudTextField Label="Description" HelperText="Describe your Plugin" Class="mt-3"
+                          @bind-Value="m_Model.Description" For="@(() => m_Model.Description)"/>
+            <MudSelect T="string" Label="Tags" Class="mt-3" @bind-Value="m_Tag"
+                       @bind-SelectedValues="m_Model.Tags" MultiSelection="true">
+                @foreach (var tag in TagsAvailable)
+                {
+                    <MudSelectItem Value="@tag">@tag</MudSelectItem>
+                }
+            </MudSelect>
+            <MudText Color="@Color.Error" Class="mt-2">
+                <ValidationSummary/>
+            </MudText>
+        </DialogContent>
+        <DialogActions>
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary"
+                       Class="ml-auto">Register
+            </MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+
+@code {
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
+
+    public record Model
+    {
+        [Required] [StringLength(50)] public string Name { get; set; } = "";
+        [Required] [StringLength(50)] public string RegistryName { get; set; } = "";
+        [Required] [StringLength(1000)] public string Description { get; set; } = "";
+        public IEnumerable<string> Tags { get; set; } = [];
+    }
+
+    private readonly Model m_Model = new();
+    private string m_Tag { get; set; } = "Nothing selected";
+
+    [Parameter] public required List<string> TagsAvailable { get; set; }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(m_Model));
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void OnValidSubmit(EditContext obj) => Submit();
+
+}

@@ -5,6 +5,7 @@ idf_component_register(
             "file.c"
         INCLUDE_DIRS "include"
         REQUIRES
+            "dht"
             "spiffs"
             "esp_wifi"
             "esp_http_server"

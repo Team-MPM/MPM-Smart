@@ -1,6 +1,12 @@
-﻿<Router AppAssembly="typeof(Program).Assembly">
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Server.UI.Components.Identity
+<Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)"/>
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
+            <NotAuthorized>
+                <RedirectToLogin/>
+            </NotAuthorized>
+        </AuthorizeRouteView>
     </Found>
     <NotFound>
         <LayoutView Layout="typeof(Layout.MainLayout)">
