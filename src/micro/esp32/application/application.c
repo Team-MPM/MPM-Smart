@@ -9,7 +9,9 @@
 #include <system_config.h>
 #include <esp_wifi.h>
 #include <nvs_flash.h>
+#include <sound.h>
 #include <string.h>
+#include <tgmath.h>
 #include <driver/gpio.h>
 
 #define TAG "Application"
@@ -240,6 +242,20 @@ static esp_err_t dht_handler(httpd_req_t *req)
 }
 #endif
 
+#ifdef CONFIG_SOUND
+static char* sound_json_buffer[64];
+static adc1_channel_t sound_channel = ADC1_CHANNEL_6; // GPIO34
+
+static esp_err_t sound_handler(httpd_req_t *req)
+{
+    ESP_LOGI(TAG, "uri: /sound");
+    snprintf(sound_json_buffer, sizeof(sound_json_buffer), "{\"volume\":%d}", read_sound(sound_channel));
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_sendstr(req, sound_json_buffer);
+    return ESP_OK;
+}
+#endif
+
 static httpd_handle_t start_webserver(void)
 {
     httpd_handle_t server = NULL;
@@ -274,6 +290,16 @@ static httpd_handle_t start_webserver(void)
     httpd_register_uri_handler(server, &dht_uri);
 #endif
 
+#ifdef CONFIG_SOUND
+    const httpd_uri_t sound_uri = {
+        .uri       = "/sound",
+        .method    = HTTP_GET,
+        .handler   = sound_handler,
+    };
+
+    httpd_register_uri_handler(server, &sound_uri);
+#endif
+
     return server;
 }
 
@@ -305,7 +331,6 @@ static void connect_handler(void* arg, esp_event_base_t event_base,
         *server = start_webserver();
     }
 }
-
 
 void application_run(void) {
     system_config_t config = {};
@@ -353,6 +378,12 @@ void application_run(void) {
 #ifdef CONFIG_DHT
     int params_task1[3] = {GPIO_NUM_17, (int)dht11_data, 2000};
     xTaskCreate(&dht11_task, "dht11_task", 2048, params_task1, 5, NULL);
+#endif
+
+#ifdef CONFIG_SOUND
+    gpio_set_direction(34, GPIO_MODE_INPUT);
+    gpio_set_pull_mode(34, GPIO_PULLUP_ONLY);
+    setup_sound_pin(sound_channel);
 #endif
 
     printf("Application is running...\n");

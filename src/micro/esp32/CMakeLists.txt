@@ -3,7 +3,8 @@ cmake_minimum_required(VERSION 3.29)
 set(EXTRA_COMPONENT_DIRS
     application
     shared
-    dht)
+    dht
+    sound)
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
 project(mpm_smart)

@@ -6,6 +6,7 @@ idf_component_register(
         INCLUDE_DIRS "include"
         REQUIRES
             "dht"
+            "sound"
             "spiffs"
             "esp_wifi"
             "esp_http_server"

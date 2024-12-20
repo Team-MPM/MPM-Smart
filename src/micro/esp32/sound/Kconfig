@@ -1,0 +1,3 @@
+menuconfig SOUND
+    bool "Use Module Sound"
+    default n

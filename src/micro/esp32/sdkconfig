@@ -2041,6 +2041,7 @@ CONFIG_WIFI_PROV_STA_ALL_CHANNEL_SCAN=y
 # end of Wi-Fi Provisioning Manager
 
 CONFIG_DHT=y
+CONFIG_SOUND=y
 # end of Component config
 
 CONFIG_IDF_EXPERIMENTAL_FEATURES=y
