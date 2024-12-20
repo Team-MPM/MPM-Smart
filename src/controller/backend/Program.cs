@@ -193,7 +193,10 @@ app.MapPermissionEndpoints();
 app.MapRoleManagementEndpoint();
 
 app.MapGet("/", () => "Hello World!");
-
+app.MapGet("/info", () => new
+{
+    Version = "1.0.0", System = "Mpm Smart Backend", Id = key.Rsa.ExportRSAPublicKey()
+});
 app.MapGet("/kys", (IHostApplicationLifetime env) => env.StopApplication());
 
 await app.RunAsync("http://*:54321");

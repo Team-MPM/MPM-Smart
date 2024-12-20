@@ -1,22 +1,21 @@
 ﻿@page "/Login"
+@layout LoginLayout
+
 @using System.Net
-@using ApiSchema.Identity
 @using BackendConnectionData.Services
 @using Blazored.LocalStorage
-@using Microsoft.AspNetCore.Authorization
-@layout LoginLayout
-@inject HttpClient Client
+
 @inject CustomAuthStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
 @inject ILocalStorageService LocalStorage
-@inject ApiAccessor accessor
-@attribute [StreamRendering]
+@inject ApiAccessor Accessor
 
 <MudForm Spacing="2" Class="Login-Form">
 
     <h1 class="Login-Heading">Sign In</h1>
     <MudTextField @bind-Value="@Model.UserName" T="string" Label="Username" Variant="Variant.Filled"/>
-    <MudTextField @bind-Value="@Model.Password" T="string" Label="Password" InputType="InputType.Password" Variant="Variant.Filled"/>
+    <MudTextField @bind-Value="@Model.Password" T="string" Label="Password" InputType="InputType.Password"
+                  Variant="Variant.Filled"/>
     <div class="Login-RememberMe">
         <MudCheckBox @bind-Value="RememberMe">Remember Me?</MudCheckBox>
         <MudLink Href="#">Forgot Password?</MudLink>
@@ -35,7 +34,7 @@
     public async Task OnSubmit()
     {
         ErrorMessage = "";
-        var result = await accessor.Login(Model.UserName, Model.Password);
+        var result = await Accessor.Login(Model.UserName, Model.Password);
 
         if (result.Success)
         {
@@ -44,7 +43,7 @@
             NavigationManager.NavigateTo("/");
         }
         else
-            ErrorMessage = ((HttpStatusCode) result.StatusCode) + ": " + result.Message!;
+            ErrorMessage = ((HttpStatusCode)result.StatusCode) + ": " + result.Message!;
     }
 
     public class LoginModel

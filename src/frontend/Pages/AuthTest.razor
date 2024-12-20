@@ -5,10 +5,10 @@
 <h3>Test Authentication State</h3>
 <button @onclick="CheckAuthState">Check Authentication State</button>
 
-<p>@message</p>
+<p>@m_Message</p>
 
 @code {
-    private string message = "Click the button to test authentication state.";
+    private string m_Message = "Click the button to test authentication state.";
 
     private async Task CheckAuthState()
     {
@@ -17,11 +17,11 @@
 
         if (user.Identity?.IsAuthenticated == true)
         {
-            message = $"Authenticated as: {user.Identity.Name}";
+            m_Message = $"Authenticated as: {user.Identity.Name}";
         }
         else
         {
-            message = "User is not authenticated.";
+            m_Message = "User is not authenticated.";
         }
     }
 }

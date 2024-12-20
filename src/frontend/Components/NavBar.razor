@@ -1,25 +1,25 @@
 ﻿<MudThemeProvider/>
 
-
 <MudLayout>
     <MudPaper Class="" Height="100vh">
         <MudNavMenu Class="">
             <MudNavGroup Icon="@Icons.Material.Filled.Dashboard" Title="Dashboards" Expanded="true">
-                <MudNavLink Href="/Dashboard"  Match="NavLinkMatch.Prefix">Dashboard 1</MudNavLink>
-                <MudNavLink Href="/Dashboard2"  Match="NavLinkMatch.Prefix">Dashboard 2</MudNavLink>
+                <MudNavLink Href="/home" Match="NavLinkMatch.Prefix">Dashboard 1</MudNavLink>
+                <MudNavLink Href="/home" Match="NavLinkMatch.Prefix">Dashboard 2</MudNavLink>
             </MudNavGroup>
             <MudNavGroup Icon="@Icons.Material.Filled.Devices" Title="Devices" Expanded="true">
-                <MudNavLink Href="/Devices/Device01"  Match="NavLinkMatch.Prefix">Sensor 1</MudNavLink>
-                <MudNavLink Href="/Devices/Device02"  Match="NavLinkMatch.Prefix">Sensor 2</MudNavLink>
+                <MudNavLink Href="/Devices/Device01" Match="NavLinkMatch.Prefix">Sensor 1</MudNavLink>
+                <MudNavLink Href="/Devices/Device02" Match="NavLinkMatch.Prefix">Sensor 2</MudNavLink>
             </MudNavGroup>
             <MudNavGroup Icon="@Icons.Material.Filled.Settings" Title="Settings" Expanded="true">
                 <MudNavLink Href="/Settings/General" Match="NavLinkMatch.Prefix">General</MudNavLink>
                 <MudNavLink Href="/Settings/User" Match="NavLinkMatch.Prefix">User</MudNavLink>
                 <MudNavLink Href="/Settings/logs" Match="NavLinkMatch.Prefix">Logs</MudNavLink>
                 <MudNavLink Href="/Settings/DeviceSettings" Match="NavLinkMatch.Prefix">Device</MudNavLink>
-                @if(IsAdmin)
+                @if (IsAdmin)
                 {
-                <MudNavLink Href="/Settings/User-Management" Match="NavLinkMatch.Prefix">User-Management</MudNavLink>
+                    <MudNavLink Href="/Settings/User-Management" Match="NavLinkMatch.Prefix">User-Management
+                    </MudNavLink>
                 }
             </MudNavGroup>
         </MudNavMenu>
@@ -27,5 +27,5 @@
 </MudLayout>
 
 @code {
-   public bool IsAdmin = true;
+    public bool IsAdmin = true;
 }

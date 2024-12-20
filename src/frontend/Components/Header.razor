@@ -1,19 +1,12 @@
-﻿<MudAppBar Fixed="true">
+﻿@inject NavigationManager NavigationManager
+
+<MudAppBar Fixed="true">
     <h3 style="cursor: pointer; margin: 0;" @onclick="NavigateToHome">MPM-Smart</h3>
     <MudSpacer/>
     <MudIconButton Href="/" Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit" Edge="Edge.Start"/>
     <MudIconButton Href="/Settings/User" Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" Edge="Edge.Start"/>
 </MudAppBar>
 
-
-
-
 @code {
-        [Inject]
-        private NavigationManager? NavigationManager { get; set; }
-
-        private void NavigateToHome()
-        {
-            NavigationManager.NavigateTo("/"); 
-        }
+        private void NavigateToHome() => NavigationManager.NavigateTo("/");
 }

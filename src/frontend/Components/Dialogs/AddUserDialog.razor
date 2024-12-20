@@ -2,36 +2,34 @@
 @using ApiSchema.DeviceOptions
 @inject IDialogService DialogService
 
-<MudDialog >
+<MudDialog>
     <TitleContent>
         Add new User
     </TitleContent>
-    
+
     <DialogContent>
         <MudContainer Style="height: 600px" Class="d-flex flex-row">
             <MudTextField @bind-Value="NameBinding" Label="Filled" Variant="Variant.Filled"></MudTextField>
-            <MudCheckBox @bind-Value="IsAdminBinding" >IsAdmin</MudCheckBox>
+            <MudCheckBox @bind-Value="IsAdminBinding">IsAdmin</MudCheckBox>
         </MudContainer>
     </DialogContent>
-    
+
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary"  OnClick="Submit">Ok</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
-    [CascadingParameter]
-    private MudDialogInstance? MudDialog { get; set; }
-    [Parameter]
-    public DeviceOptions DeviceOptions { get; set; }
-    
+    [CascadingParameter] private MudDialogInstance? MudDialog { get; set; }
+    [Parameter] public required DeviceOptions DeviceOptions { get; set; }
+
     private string NameBinding { get; set; } = "Enter username";
     private bool IsAdminBinding { get; set; } = false;
 
     protected override void OnInitialized()
     {
-       User = new DummyUser()
+        User = new DummyUser
         {
             Name = NameBinding,
             IsAdmin = IsAdminBinding
@@ -39,8 +37,8 @@
     }
 
     public DummyUser User { get; set; }
-    
-    
+
+
     private void Submit()
     {
         User.Name = NameBinding;
@@ -53,6 +51,4 @@
     {
         MudDialog.Cancel();
     }
-    
-
 }
