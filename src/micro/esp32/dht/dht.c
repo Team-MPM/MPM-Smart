@@ -23,8 +23,8 @@ static bool dht11_read(gpio_num_t pin, int* dht11_data)
     gpio_set_level(pin, 0);
     vTaskDelay(pdMS_TO_TICKS(18));
     gpio_set_level(pin, 1);
-    gpio_set_direction(pin, GPIO_MODE_INPUT );
-    ets_delay_us(140);
+    gpio_set_direction(pin, GPIO_MODE_INPUT);
+    ets_delay_us(160);
 
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j < 8; j++) {
@@ -68,10 +68,29 @@ void dht11_task(void *pvParameter)
     ESP_LOGI(TAG, "Starting DHT11 Task");
     const gpio_num_t pin = ((gpio_num_t*)pvParameter)[0];
     int* data = (int*)((gpio_num_t*)pvParameter)[1];
+    int local_data[5];
     const int delay_ms = ((int *)pvParameter)[2];
+    int fail_count = 0;
 
     while (1) {
-        if (dht11_read(pin, data)) {
+        if (dht11_read(pin, local_data)) {
+            if (local_data[0] > 100 || local_data[1] > 100 || local_data[2] > 100 || local_data[3] > 100
+                || (data[0] != 0 && local_data[0] < data[0] * 0.7) || (data[0] != 0 && local_data[0] > data[0] * 1.3)
+                || (data[2] != 0 && local_data[2] < data[2] * 0.7) || (data[2] != 0 && local_data[2] > data[2] * 1.3)) {
+                ESP_LOGI(TAG, "Pin %d - Invalid data", pin);
+                fail_count++;
+                if (fail_count < 5) {
+                    vTaskDelay(pdMS_TO_TICKS(delay_ms));
+                    continue;
+                }
+            }
+
+            fail_count = 0;
+
+            for (int i = 0; i < 5; i++) {
+                data[i] = local_data[i];
+            }
+
             ESP_LOGI(TAG, "Pin %d - Temperature: %d.%d \u00B0C", pin, data[2], data[3]);
             ESP_LOGI(TAG, "Pin %d - Humidity: %d.%d %%", pin, data[0], data[1]);
         } else {
