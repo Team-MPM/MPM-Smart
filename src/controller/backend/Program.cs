@@ -182,4 +182,4 @@ app.MapGet("/", () => "Hello World!");
 
 app.MapGet("/kys", (IHostApplicationLifetime env) => env.StopApplication());
 
-await app.RunAsync("http://*:543");
+await app.RunAsync("http://*:54321");
