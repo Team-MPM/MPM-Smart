@@ -7,11 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Services\" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
+      <PackageReference Include="OpenTelemetry" Version="1.10.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="OpenTelemetry" Version="1.10.0" />
+      <Folder Include="Services\Sensors\TempDemo\" />
     </ItemGroup>
 
 </Project>

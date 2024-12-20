@@ -55,6 +55,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadJsonFileTask", "src\bui
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginTemplate", "src\controller\plugins\PluginTemplate\PluginTemplate.csproj", "{57A5D181-5970-4365-A002-01B01ADE2C0A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TemperatureDemoPlugin", "src\controller\plugins\TemperatureDemoPlugin\TemperatureDemoPlugin.csproj", "{0501BAB8-BF01-4C43-838A-9E8EEBAA2975}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -144,6 +146,10 @@ Global
 		{57A5D181-5970-4365-A002-01B01ADE2C0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57A5D181-5970-4365-A002-01B01ADE2C0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57A5D181-5970-4365-A002-01B01ADE2C0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0501BAB8-BF01-4C43-838A-9E8EEBAA2975}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0501BAB8-BF01-4C43-838A-9E8EEBAA2975}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0501BAB8-BF01-4C43-838A-9E8EEBAA2975}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0501BAB8-BF01-4C43-838A-9E8EEBAA2975}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4EFEA609-1FD3-4AF0-9AC1-1DBC7BA8C520} = {15A159CC-FB34-49B3-9591-7BF3D30ED6B7}
@@ -171,5 +177,6 @@ Global
 		{09BC283B-62EC-4CA7-A7E9-8F56942A82F7} = {15A159CC-FB34-49B3-9591-7BF3D30ED6B7}
 		{CA1DDFDE-9B3B-4981-9454-A255005C62EE} = {09BC283B-62EC-4CA7-A7E9-8F56942A82F7}
 		{57A5D181-5970-4365-A002-01B01ADE2C0A} = {B19FDEEB-84B9-45D0-B846-73086A049F82}
+		{0501BAB8-BF01-4C43-838A-9E8EEBAA2975} = {B19FDEEB-84B9-45D0-B846-73086A049F82}
 	EndGlobalSection
 EndGlobal
