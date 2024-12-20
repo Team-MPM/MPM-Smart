@@ -1,8 +1,42 @@
 ﻿@page "/Settings/User-Management"
+@using MudBlazor.Extensions
+@attribute [StreamRendering]
+@inject IDialogService DialogService
+@inject ILogger<UserManagement> Logger
+
 <h3>UserManagement</h3>
-@if (IsAdmin)
+@if (currentUser.IsAdmin)
 {
-    <p>W</p>
+    <MudContainer Class="p-4" MaxWidth="MaxWidth.Large">
+        <MudContainer Style="padding: 20px;">
+            <MudGrid Justify="Justify.FlexEnd" AlignItems="Center">
+                <MudItem>
+                    <MudButton Class="mud-theme-primary" Variant="Variant.Filled" OnClick="@AddnewUser">Add</MudButton>
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
+
+        <MudContainer Class="p-4">
+            @foreach (var user in dummyUsers)
+            {
+                <MudCardContent>
+                    <MudGrid Justify="Justify.SpaceBetween" AlignItems="Center">
+                        <MudItem Style="display: flex; align-items: center; gap: 10px;">
+                            <text style="color: white;">@user.Name</text>
+                        </MudItem>
+                        <MudItem Style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+                            <MudButton OnClick="() => EditUser(user)">
+                                <MudIcon Icon="@Icons.Material.Filled.Edit" Style="cursor: pointer;"/>
+                            </MudButton>
+                            <MudButton @onclick="() => DeleteUser(user)">
+                                <MudIcon Icon="@Icons.Material.Filled.Delete" Style="cursor: pointer;"/>
+                            </MudButton>
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            }
+        </MudContainer>
+    </MudContainer>
 }
 else
 {
@@ -10,5 +44,70 @@ else
 }
 
 @code {
-    bool IsAdmin = true;
+
+   List<DummyUser> dummyUsers = new List<DummyUser>
+{
+    new DummyUser { Name = "John Doe", IsAdmin = false },
+    new DummyUser { Name = "Jane Smith", IsAdmin = true },
+    new DummyUser { Name = "Alice Johnson", IsAdmin = false },
+    new DummyUser { Name = "Bob Brown", IsAdmin = true },
+    new DummyUser { Name = "Charlie Davis", IsAdmin = false },
+    new DummyUser { Name = "Diana Evans", IsAdmin = true },
+    new DummyUser { Name = "Ethan Harris", IsAdmin = false },
+    new DummyUser { Name = "Fiona Clark", IsAdmin = true },
+    new DummyUser { Name = "George Lewis", IsAdmin = false },
+    new DummyUser { Name = "Hannah Walker", IsAdmin = true }
+};
+    DummyUser currentUser = new DummyUser { Name = "Jane Smith", IsAdmin = true };
+
+    private async Task AddnewUser()
+    {
+        _=AddDialog();
+    }
+
+    private async Task AddDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+        
+        var dialog = await DialogService.ShowAsync<AddUserDialog>("Add new User", options);
+              
+        var result = await dialog.Result;
+
+        if (result.Data != null)
+        {
+            Logger.LogInformation("is nimma null du spast");
+            DummyUser user = result.Data.As<DummyUser>();
+            dummyUsers.Add(user);
+        }
+        InvokeAsync(StateHasChanged);
+        StateHasChanged();
+    }
+    private async Task EditUser(DummyUser user)
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+        
+        var dialog = await DialogService.ShowAsync<EditUserDialog>("Edit User", options);
+              
+        var result = await dialog.Result;
+        
+        var searched_user = dummyUsers.Where(u => user.Name == u.Name).FirstOrDefault();
+
+        if (result.Data != null)
+        {
+            Logger.LogInformation("is nimma null du spast");
+            DummyUser newUser = result.Data.As<DummyUser>();
+            dialog.Close(DialogResult.Ok(newUser));
+            searched_user.Name = newUser.Name;
+            searched_user.IsAdmin = newUser.IsAdmin;
+        }
+        //dummyUsers.Add(new () {Name = "Test", IsAdmin = true});
+        InvokeAsync(StateHasChanged);
+        StateHasChanged();
+    }
+    
+    public void DeleteUser(DummyUser user)
+    {
+        dummyUsers.Remove(user);
+        StateHasChanged();
+    }
 }

@@ -1,0 +1,45 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using ApiSchema
+@using ApiSchema.DeviceOptions
+<MudDialog >
+    <TitleContent>
+        Device Settings
+    </TitleContent>
+    
+    <DialogContent>
+        <MudContainer Style="height: 600px" Class="d-flex flex-row">
+            @foreach(var option in deviceOptions)
+            {
+                
+            }
+        </MudContainer>
+    </DialogContent>
+    
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary"  OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance? MudDialog { get; set; }
+
+    private List<DeviceOption> deviceOptions = new List<DeviceOption>
+    {
+        
+    };
+    
+    
+    
+    private void Submit()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+}

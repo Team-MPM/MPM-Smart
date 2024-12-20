@@ -1,0 +1,137 @@
+﻿@page "/"
+@layout HomePageLayout
+@inject IDialogService DialogService
+@inject CustomAuthStateProvider provider
+@inject NavigationManager NavManager
+@inject ApiAccessor accessor
+
+@using System.Runtime.CompilerServices
+@using BackendConnectionData.Model
+@using BackendConnectionData.Services
+@using Microsoft.AspNetCore.Components.Authorization
+
+<MudContainer Class="card-container">
+    <MudGrid Gutter="3">
+        <MudItem xs="12" sm="4">
+            <MudCard Class="card-style" Hover="true" @onclick="NavigateToLogin">
+                <MudCardMedia Image="https://via.placeholder.com/150" Alt="SmartHome Schule" Class="card-media" />
+                <MudCardContent>
+                    <MudText Typo="Typo.h5" Class="card-title">Schule</MudText>
+                    <MudText Typo="Typo.body2" Class="card-description">SmartHome der HTL KREMS</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="4">
+            <MudCard Class="card-style" Hover="true" @onclick="NavigateToLogin">
+                <MudCardMedia Image="https://via.placeholder.com/150" Alt="SmartHome Olaf" Class="card-media" />
+                <MudCardContent>
+                    <MudText Typo="Typo.h5" Class="card-title">Olaf's Zuhause</MudText>
+                    <MudText Typo="Typo.body2" Class="card-description">SmartHome von Olaf</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="4">
+            <MudCard Class="card-style" Hover="true" @onclick="NavigateToLogin">
+                <MudCardMedia Image="https://via.placeholder.com/150" Alt="SmartHome Jacob" Class="card-media" />
+                <MudCardContent>
+                    <MudText Typo="Typo.h5" Class="card-title">Jacob's Zuhause</MudText>
+                    <MudText Typo="Typo.body2" Class="card-description">SmartHome von Jacob</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+<MudContainer>
+    <MudButton OnClick="@(() => OpenDialogAsync())" Class="mr-3 mud-theme-primary" Variant="Variant.Filled">Hinzufügen</MudButton>
+</MudContainer>
+<!-- PLEASE LEAVE THIS HERE FOR NOW IN CASE ANYTHING WITH THE USER IS NOT WORKING THIS SHOULD JUST DISPLAY "False"-->
+
+@if (state is not null)
+{
+   @foreach(var c in state.User.Claims)
+    {
+        <p>Type: @c.Type</p>
+        <p>Value: @c.Value</p>
+    }
+
+    @foreach(var c in state.User.Identities)
+    {
+        <p>@c.Name</p>
+    }
+    <p>@state.User.Identity.Name</p>
+    <p>@state.User.Identity.AuthenticationType</p>
+    <p>@state.User.Identity.IsAuthenticated</p>
+}
+
+@if (Permissions is not null)
+{
+    @foreach (var kvp in Permissions.RolePermissions)
+    {
+        <div>Type: @kvp.Key</div>
+        @foreach(var permission in kvp.Value)
+        {
+            <div>Permissions: @permission</div>
+        }
+    }
+    <div>user:</div>
+    @foreach (var permission in Permissions.UserPermissions)
+    {
+        <div>Permissions: @permission</div>
+    }
+}
+
+<!-- Until here, I don't care about the rest -->
+
+@code {
+    PermissionsModel? Permissions { get; set; }
+    AuthenticationState? state { get; set; }
+    string Claim { get; set; } = "";
+    protected override async Task OnInitializedAsync()
+    {
+        state = await provider.GetAuthenticationStateAsync();
+        if (state.User is not null)
+        {
+            var c = state.User.Claims.FirstOrDefault();
+            if(c is null)
+                Claim = "No Claim";
+        }
+        else { Claim = "No User"; }
+
+        await accessor.SetLanguage(1);
+        await accessor.SetPassword("1234", "Abcd123.");
+        await accessor.SetUsername("NotSayo");
+
+        var result = await accessor.GetUserPermissions();
+        if (result.Success)
+        {
+            Permissions = result.Response;
+            Console.WriteLine("Inserted Permissions");
+        }
+        else
+        {
+            Console.WriteLine(result.StatusCode);
+            Console.WriteLine(result.Message);
+        }
+
+
+
+
+        await base.OnInitializedAsync();
+    }
+
+    private void NavigateToLogin()
+    {
+        NavManager.NavigateTo("/Login");
+    }
+
+    private Task OpenDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+
+        return DialogService.ShowAsync<AddDialog>("Sensor", options);
+
+    }
+
+}
+

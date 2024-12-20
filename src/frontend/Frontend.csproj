@@ -9,9 +9,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="9.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.0" PrivateAssets="all"/>
+        <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
         <PackageReference Include="MudBlazor" Version="7.15.0"/>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.3.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -21,13 +25,19 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\BackendConnectionData\BackendConnectionData.csproj" />
         <ProjectReference Include="..\controller\api_schema\ApiSchema.csproj"/>
+        <ProjectReference Include="..\controller\data\Data.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <ServiceWorker Include="wwwroot\service-worker.js">
         <PublishedContent>wwwroot\js\service-worker.published.js</PublishedContent>
       </ServiceWorker>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Pages\Dashboards\" />
     </ItemGroup>
 
 </Project>

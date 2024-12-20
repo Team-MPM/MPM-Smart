@@ -14,6 +14,7 @@ public static class UserManagementEndpoints
     {
         var group = endpoints.MapGroup("/api");
 
+
         group.MapGet("/users/{user}", async (
             UserManager<SystemUser> userManager,
             string user) =>
@@ -22,12 +23,12 @@ public static class UserManagementEndpoints
                 .Include(s => s.UserProfile).FirstOrDefaultAsync(s => s.UserName == user);
             if (userEntity is null)
                 return Results.NotFound();
-            return Results.Ok(new
+            return Results.Ok(new UsersModel()
             {
-                Username = userEntity.UserName,
+                Username = userEntity.UserName!,
                 CanChangeUsername = userEntity.CanChangeUsername,
                 IsActive = userEntity.IsActive,
-                Language = userEntity.UserProfile!.Language,
+                Language = (int)userEntity.UserProfile!.Language,
                 UseDarkMode = userEntity.UserProfile.UseDarkMode
             });
         }).RequirePermission(UserClaims.UserViewUsers);
@@ -113,12 +114,13 @@ public static class UserManagementEndpoints
                     return Results.Unauthorized();
                 var users = await userManager.Users.Include(s => s.UserProfile).ToListAsync();
                 var usersInAdmin = await userManager.GetUsersInRoleAsync("admin");
-                return Results.Ok(users.Select(u => new
+                return Results.Ok(users.Select(u => new UsersModel()
                 {
-                    Username = u.UserName,
-                    Language = u.UserProfile!.Language,
+                    Username = u.UserName!,
+                    Language = (int) u.UserProfile!.Language,
                     UseDarkMode = u.UserProfile.UseDarkMode,
-                    IsAdmin = usersInAdmin.Contains(u)
+                    CanChangeUsername = u.CanChangeUsername,
+                    IsActive = u.IsActive,
                 }));
             }).RequirePermission(UserClaims.UserViewUsers);
 
@@ -153,19 +155,19 @@ public static class UserManagementEndpoints
             return Results.Created();
         }).RequirePermission(UserClaims.UserAddUser);
 
-        group.MapDelete("/users", async (
+        group.MapDelete("/users/{user}", async (
             HttpContext context,
             UserManager<SystemUser> userManager,
-            [FromBody] RemoveUserModel model) =>
+            [FromRoute] string user) =>
         {
-            var user = await userManager.GetUserAsync(context.User);
-            if (user is null)
+            var userEntity = await userManager.GetUserAsync(context.User);
+            if (userEntity is null)
                 return Results.Unauthorized();
             var usersInAdmin = await userManager.GetUsersInRoleAsync("admin");
-            if (!usersInAdmin.Contains(user))
+            if (!usersInAdmin.Contains(userEntity))
                 return Results.Forbid();
             var username = context.Request.Query["username"];
-            var userToRemove = await userManager.FindByNameAsync(model.Username);
+            var userToRemove = await userManager.FindByNameAsync(user);
             if (userToRemove is null)
                 return Results.NotFound();
             var result = await userManager.DeleteAsync(userToRemove);

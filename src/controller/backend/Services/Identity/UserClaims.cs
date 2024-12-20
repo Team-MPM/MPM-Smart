@@ -103,8 +103,8 @@ public static class UserClaims
     public const string ProfileViewProfile = "Permissions.Profile.ViewProfile";
     public const string ProfileEditProfile = "Permissions.Profile.EditProfile";
     public const string ProfileChangeProfilePicture = "Permissions.Profile.ChangeProfilePicture";
-    public const string ProfileChangeUsername = "Permissions.User.ChangeUsername";
-    public const string ProfileChangePassword = "Permissions.User.ChangePassword";
+    public const string ProfileChangeUsername = "Permissions.Profile.ChangeUsername";
+    public const string ProfileChangePassword = "Permissions.Profile.ChangePassword";
 
 
 }

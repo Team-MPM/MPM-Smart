@@ -1,5 +1,7 @@
-﻿@page "/"
+﻿@page "/Dashboard"
+@using Microsoft.AspNetCore.Authorization
 @layout MainLayout
+@attribute [Authorize]
 
 
 <h1>Dashboard</h1>

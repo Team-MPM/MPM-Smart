@@ -1,7 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Reflection.Metadata.Ecma335;
-using ApiSchema.Identity;
-using ApiSchema.Settings;
+﻿using ApiSchema.Settings;
 using Backend.Services.Identity;
 using Backend.Extensions;
 using Data.System;
@@ -20,6 +17,17 @@ public static class ControllerSettingsEndpoints
         {
             return "Hello, Admin!";
         }).RequirePermission(UserClaims.Admin);
+
+        group.MapGet("/", async (
+            SystemDbContext dbContext) =>
+        {
+            return Results.Ok(new SettingsModel()
+            {
+                SystemName = await dbContext.SystemConfiguration.Select(s => s.SystemName).FirstAsync(),
+                SystemTime = (await dbContext.SystemConfiguration.Select(s => s.TimeZoneCode).FirstAsync()).ToString(),
+                TimeBetweenUpdatesInSec = await dbContext.SystemConfiguration.Select(s => s.TimeBetweenDataUpdatesSeconds).FirstAsync(),
+            });
+        }).RequirePermission(UserClaims.SettingsViewSettings);
 
         group.MapGet("/systemname", async (
                 SystemDbContext dbContext) =>

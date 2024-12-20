@@ -144,6 +144,12 @@ builder.Services.AddOpenTelemetry()
 builder.Services.AddSingleton<IPluginManager, PluginManager>();
 builder.Services.AddSingleton<IPluginLoader, PluginLoader>();
 
+
+
+// ------------------------ Cors ----------------------------------
+
+builder.Services.AddCors();
+
 // ----------------------------------------------------------------
 
 var app = builder.Build();
@@ -162,6 +168,14 @@ permissionProvider.AddRange("System", UserClaims.ExportPermissions());
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+
+// ------------------------ Cors ----------------------------------
+
+app.UseCors(x => x
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .SetIsOriginAllowed(origin => true)
+    .AllowCredentials());
 
 // ----------------------------------------------------------------
 

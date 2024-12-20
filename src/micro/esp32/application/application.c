@@ -306,7 +306,6 @@ static void connect_handler(void* arg, esp_event_base_t event_base,
     }
 }
 
-
 void application_run(void) {
     system_config_t config = {};
     wifi_config_t wifi_config = {};
