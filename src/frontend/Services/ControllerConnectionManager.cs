@@ -5,7 +5,7 @@ using Blazored.LocalStorage;
 
 namespace Frontend.Services;
 
-public record ControllerConnectionDetails(string Address, int Port);
+public record ControllerConnectionDetails(string Address, int Port, bool UseHttps);
 
 public record ControllerCredentials;
 
@@ -35,7 +35,8 @@ public class ControllerConnectionManager(IServiceProvider sp)
     {
         Init();
         m_Client = new HttpClient();
-        m_Client.BaseAddress = new Uri($"https://{details.Address}:{details.Port}/");
+        var protocol = details.UseHttps ? "https" : "http";
+        m_Client.BaseAddress = new Uri($"{protocol}://{details.Address}:{details.Port}/");
         m_Client.Timeout = TimeSpan.FromSeconds(5);
 
         HttpResponseMessage res;

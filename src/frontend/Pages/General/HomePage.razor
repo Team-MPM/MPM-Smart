@@ -56,7 +56,8 @@
         string Description,
         string ImageUrl,
         string Address,
-        int Port
+        int Port,
+        bool UseHttps
     );
 
     private readonly List<ControllerInfo> m_Controllers = [];
@@ -72,14 +73,16 @@
             Description: "Local Development instance",
             ImageUrl: m_Banners[6],
             Address: IPAddress.Loopback.ToString(),
-            Port: 54321));
+            Port: 54321,
+            UseHttps: false));
 
         m_Controllers.Add(new ControllerInfo(
             Name: "Cloud",
             Description: "Cloud Development instance",
             ImageUrl: m_Banners[4],
             Address: "test-instance.mpm-smart.g-martin.work",
-            Port: 443));
+            Port: 443,
+            UseHttps: true));
 
         await Storage.GetItemAsync<List<ControllerInfo>>("controllers").AsTask()
             .ContinueWith(task =>
@@ -100,7 +103,7 @@
     {
         ControllerConnectionManager.DisconnectFromController(AuthStateProvider);
         if (await ControllerConnectionManager.ConnectToControllerAsync(
-                new ControllerConnectionDetails(controllerInfo.Address, controllerInfo.Port),
+                new ControllerConnectionDetails(controllerInfo.Address, controllerInfo.Port, controllerInfo.UseHttps),
                 new ControllerStoredCredentials(Storage), AuthStateProvider))
         {
             NavigationManager.NavigateTo("/home");
@@ -120,7 +123,7 @@
         {
             {
                 x => x.ConnectionDetails,
-                new ControllerConnectionDetails(controllerInfo.Address, controllerInfo.Port)
+                new ControllerConnectionDetails(controllerInfo.Address, controllerInfo.Port, controllerInfo.UseHttps)
             },
         };
 
@@ -151,7 +154,7 @@
             if (m_Controllers.FirstOrDefault(c => c.Name == model.Name) is { } controller)
                 m_Controllers.Remove(controller);
             m_Controllers.Add(new ControllerInfo(model.Name, model.Desc,
-                m_Banners[Random.Shared.Next(0, m_Banners.Count)], model.Address, model.Port));
+                m_Banners[Random.Shared.Next(0, m_Banners.Count)], model.Address, model.Port, model.UseHttps));
         }
     }
 
@@ -188,7 +191,7 @@
             if (m_Controllers.FirstOrDefault(c => c.Name == model.Name) is { } controller)
                 m_Controllers.Remove(controller);
             m_Controllers.Add(
-                new ControllerInfo(model.Name, model.Desc, controllerInfo.ImageUrl, model.Address, model.Port)
+                new ControllerInfo(model.Name, model.Desc, controllerInfo.ImageUrl, model.Address, model.Port, model.UseHttps)
             );
         }
         else if (result?.Data is null && !result!.Canceled)

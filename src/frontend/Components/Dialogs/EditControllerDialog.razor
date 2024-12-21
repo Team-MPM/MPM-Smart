@@ -11,6 +11,7 @@
             <MudTextField Class="mb-2" Label="Description" @bind-Value="Controller.Desc" For="@(() => Controller.Desc)"/>
             <MudTextField Class="mb-2" Label="Address" @bind-Value="Controller.Address" For="@(() => Controller.Address)"/>
             <MudTextField Class="mb-2" Label="Port" @bind-Value="Controller.Port" For="@(() => Controller.Port)"/>
+            <MudSwitch Class="mb-2" Label="Use HTTPS" @bind-Value="Controller.UseHttps" For="@(() => Controller.UseHttps)"/>
             <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">
                 Save
             </MudButton>
@@ -44,6 +45,8 @@
         [Required(ErrorMessage = "Description is required.")]
         [StringLength(100, ErrorMessage = "Description must be at most 100 characters long.")]
         public required string Desc { get; set; }
+
+        public bool UseHttps { get; set; }
     }
 
     private void OnValidSubmit(EditContext context)
