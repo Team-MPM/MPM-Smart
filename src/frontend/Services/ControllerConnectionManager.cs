@@ -14,26 +14,37 @@ public record ControllerPasswordCredentials(string Username, string Password, IL
 
 public record ControllerTokenCredentials(string Token) : ControllerCredentials;
 
+public record ControllerStoredCredentials(ILocalStorageService Storage) : ControllerCredentials;
+
 public class ControllerConnectionManager(IServiceProvider sp)
 {
-    private readonly HttpClient m_Client = new();
+    private HttpClient m_Client = new();
     private bool m_Connected = false;
     private ApiAccessor m_Api = null!;
-    private CustomAuthStateProvider m_Auth = null!;
 
     public void Init()
     {
         m_Api ??= sp.GetRequiredService<ApiAccessor>();
-        m_Auth ??= sp.GetRequiredService<CustomAuthStateProvider>();
     }
 
     public async Task<bool> ConnectToControllerAsync(ControllerConnectionDetails details,
-        ControllerCredentials credentials)
+        ControllerCredentials credentials, CustomAuthStateProvider auth)
     {
         Init();
+        m_Client = new HttpClient();
         m_Client.BaseAddress = new Uri($"https://{details.Address}:{details.Port}/");
         m_Client.Timeout = TimeSpan.FromSeconds(5);
-        var res = await m_Client.GetAsync("/info");
+
+        HttpResponseMessage res;
+
+        try
+        {
+            res = await m_Client.GetAsync("/info");
+        }
+        catch (Exception)
+        {
+            return false;
+        }
 
         if (!res.IsSuccessStatusCode)
         {
@@ -45,9 +56,9 @@ public class ControllerConnectionManager(IServiceProvider sp)
 
         var jsonDocument = await JsonDocument.ParseAsync(stream);
         var root = jsonDocument.RootElement;
-        var version = root.GetProperty("Version").GetString();
-        var system = root.GetProperty("System").GetString();
-        var id = root.GetProperty("Id").GetString();
+        var version = root.GetProperty("version").GetString();
+        var system = root.GetProperty("system").GetString();
+        var id = root.GetProperty("id").GetString();
 
         if (version is null || system is null || id is null)
         {
@@ -62,31 +73,41 @@ public class ControllerConnectionManager(IServiceProvider sp)
             case ControllerTokenCredentials tokenCredentials:
                 m_Client.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", tokenCredentials.Token);
-                m_Auth.NotifyUserAuthentication(tokenCredentials.Token);
+                auth.NotifyUserAuthentication(tokenCredentials.Token);
                 break;
             case ControllerPasswordCredentials passwordCredentials:
                 var tokenResponse = await m_Api.Login(passwordCredentials.Username, passwordCredentials.Password);
-
+                Console.WriteLine(tokenResponse.Success);
                 if (!tokenResponse.Success || tokenResponse.Response is null)
                     return false;
 
                 await passwordCredentials.Storage
-                    .SetItemAsStringAsync($"authToken-{id}", tokenResponse.Response);
+                    .SetItemAsStringAsync($"authToken-{details.Address.ToString()}:{details.Port}",
+                        tokenResponse.Response);
                 m_Client.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", tokenResponse.Response);
-                m_Auth.NotifyUserAuthentication(tokenResponse.Response);
+                auth.NotifyUserAuthentication(tokenResponse.Response);
+                break;
+            case ControllerStoredCredentials storedCredentials:
+                var token = await storedCredentials.Storage
+                    .GetItemAsStringAsync($"authToken-{details.Address.ToString()}:{details.Port}");
+                if (token is null)
+                    return false;
+                m_Client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token);
+                auth.NotifyUserAuthentication(token);
                 break;
         }
 
         return true;
     }
 
-    public void DisconnectFromController()
+    public void DisconnectFromController(CustomAuthStateProvider auth)
     {
         Init();
         m_Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "");
         m_Connected = false;
-        m_Auth.NotifyUserLogout();
+        auth.NotifyUserLogout();
     }
 
     public HttpClient? GetCurrentClient() => m_Connected ? m_Client : null;

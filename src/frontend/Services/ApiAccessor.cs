@@ -19,7 +19,7 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         try
         {
             var response = await request(Client);
-            return response.IsSuccessStatusCode
+            return !response.IsSuccessStatusCode
                 ? new ResponseModel().ServerError(response)
                 : await new ResponseModel().SuccessResultAsync(response);
         }
@@ -38,7 +38,7 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         try
         {
             var response = await request(Client);
-            return response.IsSuccessStatusCode
+            return !response.IsSuccessStatusCode
                 ? new ResponseModel<T>().ServerError(response)
                 : await new ResponseModel<T>().SuccessResultAsync(response);
         }
