@@ -1,31 +1,60 @@
-﻿<MudThemeProvider/>
+﻿@using Frontend.Services
+@inject UserAccessor UserAccessor
 
-<MudLayout>
-    <MudPaper Class="" Height="100vh">
-        <MudNavMenu Class="">
-            <MudNavGroup Icon="@Icons.Material.Filled.Dashboard" Title="Dashboards" Expanded="true">
-                <MudNavLink Href="/home" Match="NavLinkMatch.Prefix">Dashboard 1</MudNavLink>
-                <MudNavLink Href="/home" Match="NavLinkMatch.Prefix">Dashboard 2</MudNavLink>
-            </MudNavGroup>
-            <MudNavGroup Icon="@Icons.Material.Filled.Devices" Title="Devices" Expanded="true">
-                <MudNavLink Href="/Devices/Device01" Match="NavLinkMatch.Prefix">Sensor 1</MudNavLink>
-                <MudNavLink Href="/Devices/Device02" Match="NavLinkMatch.Prefix">Sensor 2</MudNavLink>
-            </MudNavGroup>
-            <MudNavGroup Icon="@Icons.Material.Filled.Settings" Title="Settings" Expanded="true">
-                <MudNavLink Href="/Settings/General" Match="NavLinkMatch.Prefix">General</MudNavLink>
-                <MudNavLink Href="/Settings/User" Match="NavLinkMatch.Prefix">User</MudNavLink>
-                <MudNavLink Href="/Settings/logs" Match="NavLinkMatch.Prefix">Logs</MudNavLink>
-                <MudNavLink Href="/Settings/DeviceSettings" Match="NavLinkMatch.Prefix">Device</MudNavLink>
-                @if (IsAdmin)
-                {
-                    <MudNavLink Href="/Settings/User-Management" Match="NavLinkMatch.Prefix">User-Management
-                    </MudNavLink>
-                }
-            </MudNavGroup>
-        </MudNavMenu>
-    </MudPaper>
-</MudLayout>
+<MudDrawer @bind-Open="@IsOpen" Elevation="1" Width="240px">
+    <MudDrawerHeader Class="flex-column">
+        <MudText Typo="Typo.h6">Mpm-Smart</MudText>
+        <MudText Typo="Typo.body2" Class="mud-text-secondary">Smart-App</MudText>
+    </MudDrawerHeader>
+    <MudNavMenu Class="">
+        <MudNavGroup Icon="@Icons.Material.Filled.Dashboard" Title="Dashboards" Expanded="true">
+            <MudNavLink Href="/home" Match="NavLinkMatch.Prefix">
+                Home
+            </MudNavLink>
+            <MudNavLink Href="/board/1" Match="NavLinkMatch.Prefix">
+                Dashboard 1
+            </MudNavLink>
+            <MudNavLink Href="/board/2" Match="NavLinkMatch.Prefix">
+                Dashboard 2
+            </MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Icon="@Icons.Material.Filled.Devices" Title="Devices" Expanded="true">
+            <MudNavLink Href="/device/1" Match="NavLinkMatch.Prefix">
+                Sensor 1
+            </MudNavLink>
+            <MudNavLink Href="/device/2" Match="NavLinkMatch.Prefix">
+                Sensor 2
+            </MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Icon="@Icons.Material.Filled.Settings" Title="Settings" Expanded="true">
+            <MudNavLink Href="/Settings/General" Match="NavLinkMatch.Prefix">
+                General
+            </MudNavLink>
+            <MudNavLink Href="/Settings/User" Match="NavLinkMatch.Prefix">
+                User
+            </MudNavLink>
+            <MudNavLink Href="/Settings/logs" Match="NavLinkMatch.Prefix">
+                Logs
+            </MudNavLink>
+            <MudNavLink Href="/Settings/DeviceSettings" Match="NavLinkMatch.Prefix">
+                Device
+            </MudNavLink>
+            @if (m_IsAdmin)
+            {
+                <MudNavLink Href="/Settings/User-Management" Match="NavLinkMatch.Prefix">User-Management
+                </MudNavLink>
+            }
+        </MudNavGroup>
+    </MudNavMenu>
+</MudDrawer>
 
 @code {
-    public bool IsAdmin = true;
+    private bool m_IsAdmin = false;
+
+    [Parameter] public required bool IsOpen { get; set; }
+
+    protected override void OnInitialized()
+    {
+        m_IsAdmin = UserAccessor.IsAdmin();
+    }
 }
