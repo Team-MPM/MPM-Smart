@@ -39,7 +39,7 @@
 </MudContainer>
 
 <div style="position: absolute; bottom: 20px; right: 10px;">
-    <MudButton OnClick="OpenDialogAsync" Class="mr-3 mud-theme-primary" Variant="Variant.Filled">
+    <MudButton OnClick="OpenAddDialogAsync" Class="mr-3 mud-theme-primary" Variant="Variant.Filled">
         Add
     </MudButton>
     <MudButton OnClick="SaveControllers" Class="mr-3 mud-theme-primary" Variant="Variant.Filled">
@@ -130,11 +130,27 @@
         }
     }
 
-    private Task OpenDialogAsync()
+    private async Task OpenAddDialogAsync()
     {
-        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            FullWidth = true,
+            CloseButton = true,
+            BackdropClick = true,
+            MaxWidth = MaxWidth.Medium
+        };
 
-        return DialogService.ShowAsync<AddSensorDialog>("Sensor", options);
+        var dialog = await DialogService.ShowAsync<AddControllerDialog>(null, options);
+        var result = await dialog.Result;
+
+        if (result?.Data is AddControllerDialog.Model model)
+        {
+            if (m_Controllers.FirstOrDefault(c => c.Name == model.Name) is { } controller)
+                m_Controllers.Remove(controller);
+            m_Controllers.Add(new ControllerInfo(model.Name, model.Desc,
+                m_Banners[Random.Shared.Next(0, m_Banners.Count)], model.Address, model.Port));
+        }
     }
 
     private async Task OpenEditDialog(ControllerInfo controllerInfo)
