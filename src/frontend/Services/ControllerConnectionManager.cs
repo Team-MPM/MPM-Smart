@@ -33,7 +33,6 @@ public class ControllerConnectionManager(IServiceProvider sp)
     public async Task<bool> ConnectToControllerAsync(ControllerConnectionDetails details,
         ControllerCredentials credentials, CustomAuthStateProvider auth)
     {
-        Init();
         m_Client = new HttpClient();
         var protocol = details.UseHttps ? "https" : "http";
         m_Client.BaseAddress = new Uri($"{protocol}://{details.Address}:{details.Port}/");
@@ -77,8 +76,8 @@ public class ControllerConnectionManager(IServiceProvider sp)
             case ControllerTokenCredentials tokenCredentials:
                 m_Client.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", tokenCredentials.Token);
-                auth.NotifyUserAuthentication(tokenCredentials.Token);
                 Token = tokenCredentials.Token;
+                auth.NotifyUserAuthentication(tokenCredentials.Token);
                 break;
             case ControllerPasswordCredentials passwordCredentials:
                 var tokenResponse = await m_Api.Login(passwordCredentials.Username, passwordCredentials.Password);
@@ -87,7 +86,7 @@ public class ControllerConnectionManager(IServiceProvider sp)
                     return false;
 
                 await passwordCredentials.Storage
-                    .SetItemAsStringAsync($"authToken-{details.Address.ToString()}:{details.Port}",
+                    .SetItemAsStringAsync($"authToken-{details.Address}:{details.Port}",
                         tokenResponse.Response);
                 m_Client.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", tokenResponse.Response);
@@ -96,7 +95,7 @@ public class ControllerConnectionManager(IServiceProvider sp)
                 break;
             case ControllerStoredCredentials storedCredentials:
                 var token = await storedCredentials.Storage
-                    .GetItemAsStringAsync($"authToken-{details.Address.ToString()}:{details.Port}");
+                    .GetItemAsStringAsync($"authToken-{details.Address}:{details.Port}");
                 if (token is null)
                     return false;
                 m_Client.DefaultRequestHeaders.Authorization =
@@ -112,7 +111,6 @@ public class ControllerConnectionManager(IServiceProvider sp)
 
     public void DisconnectFromController(CustomAuthStateProvider auth)
     {
-        Init();
         Token = null;
         m_Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "");
         m_Connected = false;

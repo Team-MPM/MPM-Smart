@@ -37,5 +37,5 @@ public class UserAccessor
 
     public bool IsAdmin() => GetUsername() == "admin"; // TODO: @Olaf
 
-    public bool HasPermission(string permission) => throw new NotImplementedException(); // TODO: @Olaf
+    public bool HasPermission(string permission) => true; // TODO: @Olaf
 }
