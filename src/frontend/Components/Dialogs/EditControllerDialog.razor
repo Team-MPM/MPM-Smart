@@ -2,20 +2,20 @@
 
 <MudDialog>
     <TitleContent>
-        <MudText Typo="Typo.h6">Connect to a new controller</MudText>
+        <MudText Typo="Typo.h6">Edit controller Connection</MudText>
     </TitleContent>
     <DialogContent>
-        <EditForm Model="@m_Model" OnValidSubmit="OnValidSubmit">
+        <EditForm Model="@Controller" OnValidSubmit="OnValidSubmit">
             <DataAnnotationsValidator/>
-            <MudTextField Class="mb-2" Label="Name" @bind-Value="m_Model.Name" For="@(() => m_Model.Name)"/>
-            <MudTextField Class="mb-2" Label="Description" @bind-Value="m_Model.Desc" For="@(() => m_Model.Desc)"/>
-            <MudTextField Class="mb-2" Label="Address" @bind-Value="m_Model.Address" For="@(() => m_Model.Address)"/>
-            <MudTextField Class="mb-2" Label="Port" @bind-Value="m_Model.Port" For="@(() => m_Model.Port)"/>
+            <MudTextField Class="mb-2" Label="Name" @bind-Value="Controller.Name" For="@(() => Controller.Name)"/>
+            <MudTextField Class="mb-2" Label="Description" @bind-Value="Controller.Desc" For="@(() => Controller.Desc)"/>
+            <MudTextField Class="mb-2" Label="Address" @bind-Value="Controller.Address" For="@(() => Controller.Address)"/>
+            <MudTextField Class="mb-2" Label="Port" @bind-Value="Controller.Port" For="@(() => Controller.Port)"/>
             <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">
-                Submit
+                Save
             </MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="true">
-                Scan for nearby devices
+            <MudButton Variant="Variant.Filled" Color="Color.Warning" OnClick="Delete">
+                Delete
             </MudButton>
         </EditForm>
     </DialogContent>
@@ -24,13 +24,7 @@
 @code {
     [CascadingParameter] public required MudDialogInstance MudDialog { get; set; }
 
-    readonly Model m_Model = new Model
-    {
-        Address = "your-controller.home",
-        Port = 443,
-        Name = "Controller",
-        Desc = "A controller"
-    };
+    [Parameter] public required Model Controller { get; set; }
 
     public class Model
     {
@@ -54,6 +48,12 @@
 
     private void OnValidSubmit(EditContext context)
     {
-        MudDialog.Close(DialogResult.Ok(m_Model));
+        MudDialog.Close(DialogResult.Ok(Controller));
     }
+
+    private void Delete()
+    {
+        MudDialog.Close(DialogResult.Ok<object>(null!));
+    }
+
 }

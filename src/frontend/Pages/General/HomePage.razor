@@ -12,31 +12,33 @@
 @inject ControllerConnectionManager ControllerConnectionManager
 @inject CustomAuthStateProvider AuthStateProvider
 
-<MudContainer Class="card-container">
-    <MudGrid Gutter="3" Spacing="8" Justify="Justify.Center">
-        @foreach (var c in m_Controllers)
-        {
-            <MudItem lg="3" md="4" sm="6" xs="12">
-                <MudCard Hover="true">
-                    <MudCardMedia Image="@c.ImageUrl" Alt="Controller Banner" Height="200"
-                                  @onclick="() => Connect(c)" Style="cursor: pointer"/>
-                    <MudCardContent>
-                        <MudText Typo="Typo.h5" Class="card-title">@c.Name</MudText>
-                        <MudText Typo="Typo.body2" Class="card-description">@c.Description</MudText>
-                    </MudCardContent>
-                    <MudCardActions>
-                        <MudButton OnClick="() => Connect(c)" Color="Color.Primary">
-                            Connect
-                        </MudButton>
-                        <MudButton OnClick="() => OpenEditDialog(c)" Color="Color.Primary">
-                            Edit
-                        </MudButton>
-                    </MudCardActions>
-                </MudCard>
-            </MudItem>
-        }
-    </MudGrid>
-</MudContainer>
+<div style="position: relative; height: calc(100dvh - 64px); width: 100dvw">
+    <MudContainer Style="max-height: 100%; width: 100%; position: absolute; overflow-y: scroll; top: 0; left: 0; right: 0">
+        <MudGrid Gutter="3" Spacing="8" Justify="Justify.Center">
+            @foreach (var c in m_Controllers)
+            {
+                <MudItem lg="3" md="4" sm="6" xs="12">
+                    <MudCard Hover="true">
+                        <MudCardMedia Image="@c.ImageUrl" Alt="Controller Banner" Height="200"
+                                      @onclick="() => Connect(c)" Style="cursor: pointer"/>
+                        <MudCardContent>
+                            <MudText Typo="Typo.h5" Class="card-title">@c.Name</MudText>
+                            <MudText Typo="Typo.body2" Class="card-description">@c.Description</MudText>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton OnClick="() => Connect(c)" Color="Color.Primary">
+                                Connect
+                            </MudButton>
+                            <MudButton OnClick="() => OpenEditDialog(c)" Color="Color.Primary">
+                                Edit
+                            </MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    </MudContainer>
+</div>
 
 <div style="position: absolute; bottom: 20px; right: 10px;">
     <MudButton OnClick="OpenAddDialogAsync" Class="mr-3 mud-theme-primary" Variant="Variant.Filled">
@@ -57,8 +59,8 @@
         int Port
     );
 
-    private List<ControllerInfo> m_Controllers = [];
-    private List<string> m_Banners = [];
+    private readonly List<ControllerInfo> m_Controllers = [];
+    private readonly List<string> m_Banners = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -155,7 +157,44 @@
 
     private async Task OpenEditDialog(ControllerInfo controllerInfo)
     {
-        // TODO: Implement edit dialog
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            FullWidth = true,
+            CloseButton = true,
+            BackdropClick = true,
+            MaxWidth = MaxWidth.Medium
+        };
+
+        var parameters = new DialogParameters<EditControllerDialog>
+        {
+            {
+                x => x.Controller,
+                new EditControllerDialog.Model
+                {
+                    Address = controllerInfo.Address,
+                    Desc = controllerInfo.Description,
+                    Name = controllerInfo.Name,
+                    Port = controllerInfo.Port
+                }
+            },
+        };
+
+        var dialog = await DialogService.ShowAsync<EditControllerDialog>(null, parameters, options);
+        var result = await dialog.Result;
+
+        if (result?.Data is AddControllerDialog.Model model)
+        {
+            if (m_Controllers.FirstOrDefault(c => c.Name == model.Name) is { } controller)
+                m_Controllers.Remove(controller);
+            m_Controllers.Add(
+                new ControllerInfo(model.Name, model.Desc, controllerInfo.ImageUrl, model.Address, model.Port)
+            );
+        }
+        else if (result?.Data is null && !result!.Canceled)
+        {
+            m_Controllers.Remove(controllerInfo);
+        }
     }
 
 }
