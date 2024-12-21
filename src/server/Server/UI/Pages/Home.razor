@@ -3,8 +3,19 @@
 @using Server.UI.Layout
 @attribute [Authorize]
 
+@inject NavigationManager NavigationManager
 
-asdasdsad
+<MudContainer>
+    <MudPaper>
+        <MudText Typo="Typo.h1" Align="Align.Center" Class="hero-title">Welcome to MPM-Smart</MudText>
+        <MudText Typo="Typo.subtitle1" Align="Align.Center" Class="hero-subtitle">
+            Your one-stop solution for smart home automation.
+        </MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Class="cta-button" OnClick="LaunchApp">
+            Launch
+        </MudButton>
+    </MudPaper>
+</MudContainer>
 
 @code {
 
@@ -13,6 +24,11 @@ asdasdsad
     protected override void OnInitialized()
     {
         MainLayout.Title = "Home";
+    }
+
+    private void LaunchApp()
+    {
+        NavigationManager.NavigateTo("https://app.mpm-smart.g-martin.work");
     }
 
 }
