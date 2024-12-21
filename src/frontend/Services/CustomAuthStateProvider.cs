@@ -11,15 +11,17 @@ public class CustomAuthStateProvider(
     ILogger<CustomAuthStateProvider> logger)
     : AuthenticationStateProvider
 {
+    public ClaimsPrincipal? User { get; private set; }
+
     public override Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        var token = controllerConnectionManager.GetCurrentClient()?
-            .DefaultRequestHeaders.Authorization?.Parameter;
+        var token = controllerConnectionManager.Token;
 
         if (string.IsNullOrEmpty(token))
         {
             logger.LogInformation("No token found, returning anonymous user.");
-            return Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
+            User = new ClaimsPrincipal(new ClaimsIdentity());
+            return Task.FromResult(new AuthenticationState(User));
         }
 
         token = token.Trim('\"');
@@ -27,29 +29,30 @@ public class CustomAuthStateProvider(
         try
         {
             var identity = new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt");
+            User = new ClaimsPrincipal(identity);
             logger.LogInformation("Returning authenticated user.");
-            return Task.FromResult(new AuthenticationState(new ClaimsPrincipal(identity)));
+            return Task.FromResult(new AuthenticationState(User));
         }
         catch (Exception ex)
         {
             logger.LogInformation("Error parsing token: {Message}", ex.Message);
-            return Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
+            User = new ClaimsPrincipal(new ClaimsIdentity());
+            return Task.FromResult(new AuthenticationState(User));
         }
     }
-
 
     public void NotifyUserAuthentication(string token)
     {
         var identity = new ClaimsIdentity(ParseClaimsFromJwt(token), "Bearer");
-        var user = new ClaimsPrincipal(identity);
+        User = new ClaimsPrincipal(identity);
 
-        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
+        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(User)));
     }
 
     public void NotifyUserLogout()
     {
-        var anonymousUser = new ClaimsPrincipal(new ClaimsIdentity());
-        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(anonymousUser)));
+        User = new ClaimsPrincipal(new ClaimsIdentity());
+        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(User)));
     }
 
     private IEnumerable<Claim> ParseClaimsFromJwt(string jwt)

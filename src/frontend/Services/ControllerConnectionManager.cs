@@ -19,8 +19,11 @@ public record ControllerStoredCredentials(ILocalStorageService Storage) : Contro
 public class ControllerConnectionManager(IServiceProvider sp)
 {
     private HttpClient m_Client = new();
+    public string? Token { get; private set; }
     private bool m_Connected = false;
     private ApiAccessor m_Api = null!;
+
+    public event Action? OnChange;
 
     public void Init()
     {
@@ -74,6 +77,7 @@ public class ControllerConnectionManager(IServiceProvider sp)
                 m_Client.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", tokenCredentials.Token);
                 auth.NotifyUserAuthentication(tokenCredentials.Token);
+                Token = tokenCredentials.Token;
                 break;
             case ControllerPasswordCredentials passwordCredentials:
                 var tokenResponse = await m_Api.Login(passwordCredentials.Username, passwordCredentials.Password);
@@ -86,6 +90,7 @@ public class ControllerConnectionManager(IServiceProvider sp)
                         tokenResponse.Response);
                 m_Client.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", tokenResponse.Response);
+                Token = tokenResponse.Response;
                 auth.NotifyUserAuthentication(tokenResponse.Response);
                 break;
             case ControllerStoredCredentials storedCredentials:
@@ -95,18 +100,22 @@ public class ControllerConnectionManager(IServiceProvider sp)
                     return false;
                 m_Client.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", token);
+                Token = token;
                 auth.NotifyUserAuthentication(token);
                 break;
         }
 
+        OnChange?.Invoke();
         return true;
     }
 
     public void DisconnectFromController(CustomAuthStateProvider auth)
     {
         Init();
+        Token = null;
         m_Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "");
         m_Connected = false;
+        OnChange?.Invoke();
         auth.NotifyUserLogout();
     }
 
