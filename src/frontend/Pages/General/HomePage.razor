@@ -77,7 +77,7 @@
             Description: "Cloud Development instance",
             ImageUrl: m_Banners[4],
             Address: "test-instance.mpm-smart.g-martin.work",
-            Port: 54321));
+            Port: 443));
 
         await Storage.GetItemAsync<List<ControllerInfo>>("controllers").AsTask()
             .ContinueWith(task =>
