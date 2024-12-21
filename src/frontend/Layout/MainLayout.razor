@@ -1,12 +1,19 @@
 ﻿@using Microsoft.AspNetCore.Authorization
+@using Blazored.LocalStorage
+@using Frontend.Pages.General
+@using Frontend.Services
 @inherits LayoutComponentBase
 @layout MudBaseLayout
 @attribute [Authorize]
 
+@inject ILocalStorageService Storage
+@inject ControllerConnectionManager ConnectionManager
+@inject CustomAuthStateProvider AuthStateProvider
+
 <MudLayout>
     @* ReSharper disable once Html.TagShouldNotBeSelfClosed *@
-    <Header ToggleDrawer="@(() => m_NavOpen = !m_NavOpen)" />
-    <NavBar IsOpen="m_NavOpen" />
+    <Header ToggleDrawer="@(() => m_NavOpen = !m_NavOpen)"/>
+    <NavBar IsOpen="m_NavOpen"/>
     <MudMainContent Class="d-flex flex-row">
         <MudPaper Class="px-6 pt-4 overflow-scroll overflow-x-hidden" Height="90vh" Width="100%">
             @Body
@@ -17,4 +24,17 @@
 @code
 {
     private bool m_NavOpen = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var current = await Storage.GetItemAsync<HomePage.ControllerInfo>("current-controller");
+        if (current is not null)
+        {
+            await ConnectionManager.ConnectToControllerAsync(new ControllerConnectionDetails(
+                Address: current.Address,
+                Port: current.Port,
+                UseHttps: current.UseHttps
+            ), new ControllerStoredCredentials(Storage), AuthStateProvider);
+        }
+    }
 }

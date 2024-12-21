@@ -51,7 +51,7 @@
 
 @code {
 
-    private record ControllerInfo(
+    public record ControllerInfo(
         string Name,
         string Description,
         string ImageUrl,
@@ -102,10 +102,12 @@
     private async Task Connect(ControllerInfo controllerInfo)
     {
         ControllerConnectionManager.DisconnectFromController(AuthStateProvider);
+
         if (await ControllerConnectionManager.ConnectToControllerAsync(
                 new ControllerConnectionDetails(controllerInfo.Address, controllerInfo.Port, controllerInfo.UseHttps),
                 new ControllerStoredCredentials(Storage), AuthStateProvider))
         {
+            await Storage.SetItemAsync("current-controller", controllerInfo);
             NavigationManager.NavigateTo("/home");
             return;
         }
@@ -131,6 +133,7 @@
         var result = await dialog.Result;
         if (!result!.Canceled)
         {
+            await Storage.SetItemAsync("current-controller", controllerInfo);
             NavigationManager.NavigateTo("/home");
         }
     }
