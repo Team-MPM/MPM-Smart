@@ -5,7 +5,7 @@ using Blazored.LocalStorage;
 
 namespace Frontend.Services;
 
-public record ControllerConnectionDetails(IPAddress Address, int Port);
+public record ControllerConnectionDetails(string Address, int Port);
 
 public record ControllerCredentials;
 

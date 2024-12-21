@@ -53,7 +53,7 @@
         string Name,
         string Description,
         string ImageUrl,
-        IPAddress Address,
+        string Address,
         int Port
     );
 
@@ -68,8 +68,15 @@
         m_Controllers.Add(new ControllerInfo(
             Name: "Localhost",
             Description: "Local Development instance",
-            ImageUrl: m_Banners[0],
-            Address: IPAddress.Loopback,
+            ImageUrl: m_Banners[6],
+            Address: IPAddress.Loopback.ToString(),
+            Port: 54321));
+
+        m_Controllers.Add(new ControllerInfo(
+            Name: "Cloud",
+            Description: "Cloud Development instance",
+            ImageUrl: m_Banners[4],
+            Address: "test-instance.mpm-smart.g-martin.work",
             Port: 54321));
 
         await Storage.GetItemAsync<List<ControllerInfo>>("controllers").AsTask()
@@ -84,7 +91,7 @@
 
     private void SaveControllers()
     {
-        Storage.SetItemAsync("controllers", m_Controllers[1..]);
+        Storage.SetItemAsync("controllers", m_Controllers[2..]);
     }
 
     private async Task Connect(ControllerInfo controllerInfo)
@@ -132,6 +139,7 @@
 
     private async Task OpenEditDialog(ControllerInfo controllerInfo)
     {
+        // TODO: Implement edit dialog
     }
 
 }
