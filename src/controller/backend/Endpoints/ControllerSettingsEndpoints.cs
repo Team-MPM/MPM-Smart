@@ -1,9 +1,9 @@
 ﻿using ApiSchema.Settings;
 using Backend.Services.Identity;
-using Backend.Extensions;
 using Data.System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PluginBase.Services.Permissions;
 
 namespace Backend.Endpoints;
 

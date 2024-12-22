@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace Backend.Services.Identity;
+namespace PluginBase.Services.Permissions;
 
 public class PermissionRequirement(string permission) : IAuthorizationRequirement
 {

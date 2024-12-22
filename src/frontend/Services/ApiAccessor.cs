@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Json;
 using ApiSchema.Enums;
 using ApiSchema.Identity;
+using ApiSchema.Plugins;
 using ApiSchema.Settings;
 using ApiSchema.Usermanagement;
 using PermissionsModel = ApiSchema.Usermanagement.PermissionsModel;
@@ -181,4 +182,12 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
             {
                 UseDarkMode = useDarkMode
             }));
+
+    // ---------------------------- Plugins ----------------------------
+
+    public async Task<ResponseModel<List<PluginInfoDto>>> GetAllPlugins() =>
+        await GetResponseModel<List<PluginInfoDto>>(client => client.GetAsync("/api/plugins"));
+
+    public async Task<ResponseModel<List<PluginOptionsDto>>> GetPluginOptions(string pluginGuid) =>
+        await GetResponseModel<List<PluginOptionsDto>>(client => client.GetAsync($"/api/plugins/{pluginGuid}/options"));
 }

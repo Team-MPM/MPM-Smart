@@ -4,7 +4,6 @@ using ApiSchema.Enums;
 using ApiSchema.Identity;
 using ApiSchema.Settings;
 using ApiSchema.Usermanagement;
-using Backend.Extensions;
 using Backend.Services.Identity;
 using Data.System;
 using LanguageExt;
@@ -12,6 +11,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PluginBase.Services.Permissions;
 using PermissionsModel = ApiSchema.Identity.PermissionsModel;
 
 namespace Backend.Endpoints;

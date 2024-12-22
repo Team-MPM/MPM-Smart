@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PluginBase;
+using PluginBase.Options;
 using TelemetryPlugin.Data;
 using TelemetryPlugin.Services;
 
@@ -34,5 +35,10 @@ public class TelemetryPlugin : PluginBase<TelemetryPlugin>
 
     protected override void SystemStart()
     {
+    }
+
+    protected override void OnOptionBuilding(OptionsBuilder builder)
+    {
+
     }
 }

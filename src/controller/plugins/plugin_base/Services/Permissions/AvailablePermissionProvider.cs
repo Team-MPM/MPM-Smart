@@ -1,5 +1,4 @@
-﻿
-namespace Shared.Services.Permissions;
+﻿namespace PluginBase.Services.Permissions;
 
 public class AvailablePermissionProvider
 {

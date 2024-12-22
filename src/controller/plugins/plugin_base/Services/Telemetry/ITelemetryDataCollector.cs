@@ -3,7 +3,7 @@ using System.Threading.Channels;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 
-namespace Shared.Services.Telemetry;
+namespace PluginBase.Services.Telemetry;
 
 public interface ITelemetryDataCollector
 {

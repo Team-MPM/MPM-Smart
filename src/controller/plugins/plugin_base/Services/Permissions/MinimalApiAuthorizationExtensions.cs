@@ -1,8 +1,7 @@
-﻿using Backend.Services.Identity;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 
-namespace Backend.Extensions;
+namespace PluginBase.Services.Permissions;
 
 public static class MinimalApiAuthorizationExtensions
 {

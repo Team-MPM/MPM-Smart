@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Shared.Services.Telemetry;
+namespace PluginBase.Services.Telemetry;
 
 public class TelemetryCollection<T> : ICollection<T>
 {

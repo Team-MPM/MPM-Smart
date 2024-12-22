@@ -9,15 +9,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using PluginBase.Services.Permissions;
+using PluginBase.Services.Telemetry;
 using Serilog;
-using Shared.Services.Permissions;
-using Shared.Services.Telemetry;
 
 // ----------------------- Load Key -------------------------------
 
@@ -174,7 +173,7 @@ app.UseAuthorization();
 app.UseCors(x => x
     .AllowAnyMethod()
     .AllowAnyHeader()
-    .SetIsOriginAllowed(origin => true)
+    .SetIsOriginAllowed(_ => true)
     .AllowCredentials());
 
 // ----------------------------------------------------------------
@@ -191,6 +190,7 @@ app.MapUserManagementEndpoint();
 app.MapSettingsEndpoints();
 app.MapPermissionEndpoints();
 app.MapRoleManagementEndpoint();
+app.MapPluginEndpoints();
 
 app.MapGet("/", () => "Hello World!");
 app.MapGet("/info", () => new

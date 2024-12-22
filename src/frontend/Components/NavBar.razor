@@ -37,11 +37,14 @@
                 Logs
             </MudNavLink>
             <MudNavLink Href="/Settings/DeviceSettings" Match="NavLinkMatch.Prefix">
-                Device
+                Devices
+            </MudNavLink>
+            <MudNavLink Href="/settings/plugins" Match="NavLinkMatch.Prefix">
+                Plugins
             </MudNavLink>
             @if (m_IsAdmin)
             {
-                <MudNavLink Href="/Settings/User-Management" Match="NavLinkMatch.Prefix">User-Management
+                <MudNavLink Href="/Settings/User-Management" Match="NavLinkMatch.Prefix">User Management
                 </MudNavLink>
             }
         </MudNavGroup>
