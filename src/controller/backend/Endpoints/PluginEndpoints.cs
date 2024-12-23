@@ -21,6 +21,7 @@ public static class PluginEndpoints
         return Results.Json(pluginManager.Plugins.Select(p => new PluginInfoDto(
             p.Guid.ToString(),
             p.Name,
+            p.RegistryName,
             p.Description,
             p.Version,
             p.Author,

@@ -19,6 +19,11 @@ public interface IPlugin : IDisposable
     string Name { get; }
 
     /// <summary>
+    /// Gets the normalized name of the plugin in the registry.
+    /// </summary>
+    string RegistryName { get; }
+
+    /// <summary>
     /// Gets the description of the plugin.
     /// </summary>
     string Description { get; }

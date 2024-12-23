@@ -1,0 +1,79 @@
+@using ApiSchema.Devices
+@using Frontend.Services
+@using Microsoft.AspNetCore.SignalR.Client
+
+@inject ControllerConnectionManager ConnectionManager
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">Connect new Devices</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTable Items="@m_Devices">
+            <HeaderContent>
+                <MudTh>Device Name</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>
+                    <MudTooltip Text="@context.Description">
+                        @context.Name
+                    </MudTooltip>
+                </MudTd>
+                <MudTd>
+                    <MudButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary">
+                        Connect
+                    </MudButton>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+        @if (m_IsLoading)
+        {
+            <MudText Class="mt-4">Searching...</MudText>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="StartSearch" Color="Color.Info" Disabled="@m_IsLoading">Scan Again</MudButton>
+        <MudButton OnClick="Close" Color="Color.Surface">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] public required MudDialogInstance MudDialog { get; set; }
+
+    private readonly List<DeviceInfoDto> m_Devices = [];
+    private HubConnection? m_Connection;
+    private bool m_IsLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        m_Connection = ConnectionManager.GetSignalRClient("/hubs/devices").Build();
+
+        m_Connection.On("DeviceFound", (DeviceInfoDto deviceInfo) =>
+        {
+            m_Devices.Add(deviceInfo);
+            StateHasChanged();
+        });
+
+        m_Connection.On("DeviceScanFinished", () =>
+        {
+            m_IsLoading = false;
+            StateHasChanged();
+        });
+
+        await m_Connection.StartAsync();
+        await m_Connection.SendAsync("Scan");
+    }
+
+    private void Close() => MudDialog.Close();
+
+    private async Task StartSearch()
+    {
+        if (m_Connection is not null && m_Connection.State == HubConnectionState.Connected)
+        {
+            m_IsLoading = true;
+            await m_Connection.SendAsync("Scan");
+        }
+    }
+
+}

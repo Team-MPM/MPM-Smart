@@ -14,7 +14,7 @@ public abstract class PluginBase<T> : IPlugin where T : PluginBase<T>, IDisposab
 {
     public Guid Guid { get; } = Guid.NewGuid();
     public string Name { get; private set; } = null!;
-    protected string RegistryName { get; private set; } = null!;
+    public string RegistryName { get; private set; } = null!;
     public string Description { get; private set; } = null!;
     public string Author { get; private set; } = null!;
     public string Version { get; private set; } = null!;

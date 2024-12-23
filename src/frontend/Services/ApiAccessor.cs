@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using ApiSchema.Devices;
 using ApiSchema.Enums;
 using ApiSchema.Identity;
 using ApiSchema.Plugins;
@@ -190,4 +191,12 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
 
     public async Task<ResponseModel<List<PluginOptionsDto>>> GetPluginOptions(string pluginGuid) =>
         await GetResponseModel<List<PluginOptionsDto>>(client => client.GetAsync($"/api/plugins/{pluginGuid}/options"));
+
+    // ---------------------------- Devices ----------------------------
+
+    public async Task<ResponseModel<List<DeviceInfoDto>>> GetConnectedDevices() =>
+        await GetResponseModel<List<DeviceInfoDto>>(client => client.GetAsync("/api/devices"));
+
+    public async Task<ResponseModel<List<DeviceInfoDto>>> ScanForDevices() =>
+        await GetResponseModel<List<DeviceInfoDto>>(client => client.GetAsync("/api/devices/scan"));
 }

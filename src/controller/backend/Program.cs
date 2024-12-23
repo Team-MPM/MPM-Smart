@@ -34,6 +34,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<IFileSystem, FileSystem>();
 builder.Services.AddOpenApi();
+builder.Services.AddSignalR();
 
 // ------------------------ Database ------------------------------
 
