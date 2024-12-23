@@ -1,8 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 
-namespace PluginBase.Options;
+namespace PluginBase.Services.Options;
 
 public class OptionProvider(string path)
 {

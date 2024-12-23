@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using PluginBase.Options;
+using PluginBase.Services.Options;
 
 namespace PluginBase;
 
@@ -96,7 +96,8 @@ public abstract class PluginBase<T> : IPlugin where T : PluginBase<T>, IDisposab
         var optionBuilder = new OptionsBuilder(Name);
         OnOptionBuilding(optionBuilder);
         m_Options = optionBuilder.Build();
-        m_Options.Load().ContinueWith(_ => SystemStart());
+        m_Options.Load().Wait();
+        SystemStart();
     }
 
     /// <summary>

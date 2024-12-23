@@ -2,7 +2,7 @@ using ApiSchema.Plugins;
 using Backend.Services.Plugins;
 using Microsoft.AspNetCore.Mvc;
 using PluginBase;
-using PluginBase.Options;
+using PluginBase.Services.Options;
 using Shared;
 
 namespace Backend.Endpoints;

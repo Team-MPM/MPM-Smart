@@ -14,6 +14,8 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using PluginBase.Services.Devices;
+using PluginBase.Services.Networking;
 using PluginBase.Services.Permissions;
 using PluginBase.Services.Telemetry;
 using Serilog;
@@ -143,7 +145,9 @@ builder.Services.AddOpenTelemetry()
 builder.Services.AddSingleton<IPluginManager, PluginManager>();
 builder.Services.AddSingleton<IPluginLoader, PluginLoader>();
 
-
+builder.Services.AddSingleton<NetworkScanner>();
+builder.Services.AddSingleton<DeviceTypeRegistry>();
+builder.Services.AddSingleton<DeviceManager>();
 
 // ------------------------ Cors ----------------------------------
 
@@ -191,6 +195,7 @@ app.MapSettingsEndpoints();
 app.MapPermissionEndpoints();
 app.MapRoleManagementEndpoint();
 app.MapPluginEndpoints();
+app.MapDeviceEndpoints();
 
 app.MapGet("/", () => "Hello World!");
 app.MapGet("/info", () => new

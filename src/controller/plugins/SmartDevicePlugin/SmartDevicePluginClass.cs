@@ -1,35 +1,35 @@
 ﻿using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using PluginBase;
-using MpmSmart.PluginTemplate.Endpoints;
+using PluginBase.Services.Devices;
 using PluginBase.Services.Options;
 
-namespace MpmSmart.PluginTemplate;
+namespace SmartDevicePlugin;
 
-public class TestPluginClass : PluginBase<TestPluginClass>
+public class SmartDevicePluginClass : PluginBase<SmartDevicePluginClass>
 {
     protected override void Initialize()
     {
-        
     }
 
     protected override void BuildEndpoints(IEndpointRouteBuilder routeBuilder)
     {
-        routeBuilder.MapTestEndpoints();
     }
 
     protected override void ConfigureServices(IServiceCollection services)
     {
-        //services.AddDbContextPool
     }
 
     protected override void SystemStart()
     {
-        
+        var logger = Services!.GetRequiredService<ILogger<SmartDevicePluginClass>>();
+        var deviceRegistry = Services!.GetRequiredService<DeviceTypeRegistry>();
+        logger.LogInformation("Starting Smart Device Plugin");
+        deviceRegistry.RegisterDevice(new SmartDeviceType { Plugin = this });
     }
 
     protected override void OnOptionBuilding(OptionsBuilder builder)
     {
-
     }
 }

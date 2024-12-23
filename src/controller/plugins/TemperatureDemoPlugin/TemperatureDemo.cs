@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PluginBase;
-using PluginBase.Options;
+using PluginBase.Services.Options;
 using PluginBase.Services.Permissions;
 using Shared.Services.Sensors.TempDemo;
 using TemperatureDemoPlugin.Data;

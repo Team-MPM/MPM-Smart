@@ -1,4 +1,6 @@
 using PluginBase;
+using PluginBase.Services.Devices;
+using PluginBase.Services.Networking;
 using PluginBase.Services.Telemetry;
 using Serilog;
 
@@ -68,6 +70,9 @@ public class PluginManager(
         services.AddSingleton<IServiceCollection>(services);
 
         services.AddSingleton(sp.GetRequiredService<ITelemetryDataCollector>());
+        services.AddSingleton(sp.GetRequiredService<NetworkScanner>());
+        services.AddSingleton(sp.GetRequiredService<DeviceTypeRegistry>());
+        services.AddSingleton(sp.GetRequiredService<DeviceManager>());
 
         services.AddLogging(options =>
         {

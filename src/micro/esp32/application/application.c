@@ -225,6 +225,24 @@ static esp_err_t index_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
+const char* info_json = "{"
+        "   \"name\": \"Environment Sensor\","
+        "   \"description\": \"Measures Temperature, Humidity and Sound\","
+        "   \"capabilities\": {"
+        "       \"Measure Temperature\": \"smart-device-environment-sensor-plugin\","
+        "       \"Measure Humidity\": \"smart-device-environment-sensor-plugin\","
+        "       \"Measure Sound\": \"smart-device-environment-sensor-plugin\""
+        "   }"
+        "}";
+
+static esp_err_t info_handler(httpd_req_t *req)
+{
+    ESP_LOGI(TAG, "uri: /info");
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_sendstr(req, info_json);
+    return ESP_OK;
+}
+
 #ifdef CONFIG_DHT
 static int dht11_data[DHT_DATA_SIZE];
 static int dht11_data_valid[DHT_DATA_SIZE];
@@ -263,6 +281,14 @@ static httpd_handle_t start_webserver(void)
     };
 
     httpd_register_uri_handler(server, &index_uri);
+
+    const httpd_uri_t info_uri = {
+        .uri       = "/info",
+        .method    = HTTP_GET,
+        .handler   = info_handler,
+    };
+
+    httpd_register_uri_handler(server, &info_uri);
 
 #ifdef CONFIG_DHT
     const httpd_uri_t dht_uri = {

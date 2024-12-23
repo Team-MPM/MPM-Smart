@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using PluginBase.Options;
+using PluginBase.Services.Options;
 
 namespace PluginBase;
 

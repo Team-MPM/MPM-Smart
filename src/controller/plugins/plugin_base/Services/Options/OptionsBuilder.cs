@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace PluginBase.Options;
+namespace PluginBase.Services.Options;
 
 public class OptionsBuilder(string pluginName)
 {

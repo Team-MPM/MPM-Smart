@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using PluginBase;
-using PluginBase.Options;
+using PluginBase.Services.Options;
 using TestPlugin.Endpoints;
 
 namespace TestPlugin;

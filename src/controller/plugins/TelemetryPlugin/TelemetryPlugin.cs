@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PluginBase;
-using PluginBase.Options;
+using PluginBase.Services.Options;
 using TelemetryPlugin.Data;
 using TelemetryPlugin.Services;
 
