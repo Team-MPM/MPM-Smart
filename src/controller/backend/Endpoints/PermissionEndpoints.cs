@@ -1,14 +1,13 @@
 ﻿using System.Security.Claims;
 using ApiSchema.Identity;
 using ApiSchema.Permissions;
-using Backend.Extensions;
 using Backend.Services.Identity;
 using Data.System;
 using LanguageExt;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Services.Permissions;
+using PluginBase.Services.Permissions;
 
 namespace Backend.Endpoints;
 

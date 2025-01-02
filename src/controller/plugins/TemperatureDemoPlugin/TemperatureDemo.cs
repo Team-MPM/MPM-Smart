@@ -1,5 +1,4 @@
 ﻿using ApiSchema.Sensors.DemoTempSensor;
-using Backend.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +6,8 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PluginBase;
-using Shared.Services.Permissions;
+using PluginBase.Options;
+using PluginBase.Services.Permissions;
 using Shared.Services.Sensors.TempDemo;
 using TemperatureDemoPlugin.Data;
 using TemperatureDemoPlugin.Endpoints;
@@ -118,4 +118,8 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
 
     }
 
+    protected override void OnOptionBuilding(OptionsBuilder builder)
+    {
+
+    }
 }

@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Logs;
-using Shared.Services.Telemetry;
+using PluginBase.Services.Telemetry;
 using TelemetryPlugin.Data;
 using Metric = OpenTelemetry.Metrics.Metric;
 using MetricType = OpenTelemetry.Metrics.MetricType;

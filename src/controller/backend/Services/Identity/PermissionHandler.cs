@@ -1,4 +1,6 @@
-﻿namespace Backend.Services.Identity;
+﻿using PluginBase.Services.Permissions;
+
+namespace Backend.Services.Identity;
 
 using Microsoft.AspNetCore.Authorization;
 using System.Linq;

@@ -1,7 +1,10 @@
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     overflow-y: hidden;
-   
+}
+
+html, body, #app {
+    height: 100%;
 }
 
 h1:focus {

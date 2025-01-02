@@ -1,6 +1,6 @@
 using PluginBase;
+using PluginBase.Services.Telemetry;
 using Serilog;
-using Shared.Services.Telemetry;
 
 namespace Backend.Services.Plugins;
 

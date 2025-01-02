@@ -2,13 +2,13 @@
 using System.Security.Claims;
 using System.Text;
 using ApiSchema.Identity;
-using Backend.Extensions;
 using Backend.Utils;
 using Data.System;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Backend.Services.Identity;
+using PluginBase.Services.Permissions;
 
 namespace Backend.Endpoints;
 

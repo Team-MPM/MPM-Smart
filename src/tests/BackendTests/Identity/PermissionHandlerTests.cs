@@ -2,6 +2,7 @@
 using Backend.Services.Identity;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
+using PluginBase.Services.Permissions;
 using Xunit;
 
 namespace BackendTests.Identity;

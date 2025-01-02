@@ -1,13 +1,38 @@
 ﻿@inherits LayoutComponentBase
-
+@layout MudBaseLayout
+@inject NavigationManager NavigationManager
 
 <MudLayout Class="HomePage">
-    <MudMainContent Style="margin-top: 64px; padding: 16px;">
+    <MudAppBar Color="Color.Primary" Fixed="false">
+        <MudIconButton Icon="@Icons.Material.Filled.Home" Color="Color.Inherit" OnClick="Home"/>
+        <MudText Typo="Typo.h6">Mpm-Smart-App</MudText>
+        <MudSpacer/>
+        <MudToggleIconButton @bind-Toggled="@BaseLayout.IsDarkMode"
+                             Icon="@Icons.Material.Filled.LightMode"
+                             ToggledIcon="@Icons.Material.Filled.DarkMode"
+                             Class="mud-theme-primary"
+                             ToggledColor="@Color.Success"
+                             title="@(BaseLayout.IsDarkMode ? "On" : "Off")"/>
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" OnClick="GitHub"/>
+    </MudAppBar>
+    <MudMainContent>
         @Body
     </MudMainContent>
 </MudLayout>
 
+@code {
 
+    [CascadingParameter]
+    public required MudBaseLayout BaseLayout { get; set; }
 
+    private void Home()
+    {
+        NavigationManager.NavigateTo("https://mpm-smart.g-martin.work");
+    }
 
+    private void GitHub()
+    {
+        NavigationManager.NavigateTo("https://github.com/Team-Mpm/Mpm-Smart");
+    }
 
+}

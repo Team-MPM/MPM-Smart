@@ -1,4 +1,5 @@
 ﻿@page "/Settings/User-Management"
+@using Frontend.Components.Dialogs
 @using MudBlazor.Extensions
 @attribute [StreamRendering]
 @inject IDialogService DialogService
@@ -45,32 +46,33 @@ else
 
 @code {
 
-   List<DummyUser> dummyUsers = new List<DummyUser>
-{
-    new DummyUser { Name = "John Doe", IsAdmin = false },
-    new DummyUser { Name = "Jane Smith", IsAdmin = true },
-    new DummyUser { Name = "Alice Johnson", IsAdmin = false },
-    new DummyUser { Name = "Bob Brown", IsAdmin = true },
-    new DummyUser { Name = "Charlie Davis", IsAdmin = false },
-    new DummyUser { Name = "Diana Evans", IsAdmin = true },
-    new DummyUser { Name = "Ethan Harris", IsAdmin = false },
-    new DummyUser { Name = "Fiona Clark", IsAdmin = true },
-    new DummyUser { Name = "George Lewis", IsAdmin = false },
-    new DummyUser { Name = "Hannah Walker", IsAdmin = true }
-};
+    List<DummyUser> dummyUsers = new List<DummyUser>
+    {
+        new DummyUser { Name = "John Doe", IsAdmin = false },
+        new DummyUser { Name = "Jane Smith", IsAdmin = true },
+        new DummyUser { Name = "Alice Johnson", IsAdmin = false },
+        new DummyUser { Name = "Bob Brown", IsAdmin = true },
+        new DummyUser { Name = "Charlie Davis", IsAdmin = false },
+        new DummyUser { Name = "Diana Evans", IsAdmin = true },
+        new DummyUser { Name = "Ethan Harris", IsAdmin = false },
+        new DummyUser { Name = "Fiona Clark", IsAdmin = true },
+        new DummyUser { Name = "George Lewis", IsAdmin = false },
+        new DummyUser { Name = "Hannah Walker", IsAdmin = true }
+    };
+
     DummyUser currentUser = new DummyUser { Name = "Jane Smith", IsAdmin = true };
 
     private async Task AddnewUser()
     {
-        _=AddDialog();
+        _ = AddDialog();
     }
 
     private async Task AddDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true };
-        
+
         var dialog = await DialogService.ShowAsync<AddUserDialog>("Add new User", options);
-              
+
         var result = await dialog.Result;
 
         if (result.Data != null)
@@ -79,17 +81,19 @@ else
             DummyUser user = result.Data.As<DummyUser>();
             dummyUsers.Add(user);
         }
+
         InvokeAsync(StateHasChanged);
         StateHasChanged();
     }
+
     private async Task EditUser(DummyUser user)
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true };
-        
+
         var dialog = await DialogService.ShowAsync<EditUserDialog>("Edit User", options);
-              
+
         var result = await dialog.Result;
-        
+
         var searched_user = dummyUsers.Where(u => user.Name == u.Name).FirstOrDefault();
 
         if (result.Data != null)
@@ -100,14 +104,16 @@ else
             searched_user.Name = newUser.Name;
             searched_user.IsAdmin = newUser.IsAdmin;
         }
+
         //dummyUsers.Add(new () {Name = "Test", IsAdmin = true});
         InvokeAsync(StateHasChanged);
         StateHasChanged();
     }
-    
+
     public void DeleteUser(DummyUser user)
     {
         dummyUsers.Remove(user);
         StateHasChanged();
     }
+
 }

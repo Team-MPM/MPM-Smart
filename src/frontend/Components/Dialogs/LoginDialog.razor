@@ -1,0 +1,53 @@
+﻿@using Blazored.LocalStorage
+@using Frontend.Services
+
+@inject ILocalStorageService Storage
+@inject CustomAuthStateProvider AuthStateProvider
+@inject ControllerConnectionManager ConnectionManager
+
+<MudDialog>
+    <DialogContent>
+        <MudForm Spacing="2" Class="Login-Form" Style="margin-top: -8px; margin-bottom: 10px">
+            <h1 class="Login-Heading">Sign In</h1>
+            <MudTextField @bind-Value="@Model.UserName" T="string" Label="Username" Variant="Variant.Filled"/>
+            <MudTextField @bind-Value="@Model.Password" T="string" Label="Password" InputType="InputType.Password"
+                          Variant="Variant.Filled"/>
+            <div class="Login-RememberMe">
+                <MudLink Href="#">Forgot Password?</MudLink>
+            </div>
+            <MudButton Class="Login-Button" OnClick="async () => await OnSubmit()" Variant="Variant.Filled"
+                       Color="Color.Primary">Login
+            </MudButton>
+        </MudForm>
+        <div class="text-danger">@ErrorMessage</div>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [CascadingParameter] public required MudDialogInstance MudDialog { get; set; }
+    [Parameter] public required ControllerConnectionDetails ConnectionDetails { get; set; }
+
+    private string ErrorMessage { get; set; } = "";
+    private LoginModel Model { get; set; } = new();
+
+    public async Task OnSubmit()
+    {
+        ConnectionManager.DisconnectFromController(AuthStateProvider);
+        var success = await ConnectionManager.ConnectToControllerAsync(ConnectionDetails,
+            new ControllerPasswordCredentials(Model.UserName, Model.Password, Storage), AuthStateProvider);
+
+        if (!success)
+        {
+            ErrorMessage = "Invalid username or password. Check connection!";
+            return;
+        }
+
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    public class LoginModel
+    {
+        public string UserName { get; set; } = "";
+        public string Password { get; set; } = "";
+    }
+}
