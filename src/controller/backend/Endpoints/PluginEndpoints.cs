@@ -35,14 +35,14 @@ public static class PluginEndpoints
             ? Results.Json(plugin.Options.Export())
             : Results.NotFound();
 
-    public static IEnumerable<PluginOptionsDto> Export(this OptionProvider options)
+    public static IEnumerable<OptionsDto> Export(this OptionProvider options)
     {
         var conf = options.GetConfig().Values;
         return conf.Select(c =>
         {
-            PluginOptionDetailsDto details = c.Type switch
+            OptionDetailsDto details = c.Type switch
             {
-                { } t when t == typeof(string) => new TextPluginOptionDetailsDto(
+                { } t when t == typeof(string) => new TextOptionDetailsDto(
                     Value: c.DefaultValue as string,
                     Placeholder: c.Placeholder as string,
                     Lenght: c.Range ?? default,
@@ -51,22 +51,22 @@ public static class PluginEndpoints
                 { } t when t == typeof(int) || t == typeof(long) || t == typeof(short) ||
                            t == typeof(byte) || t == typeof(sbyte) || t == typeof(ushort) ||
                            t == typeof(uint) || t == typeof(ulong) || t == typeof(float) ||
-                           t == typeof(double) || t == typeof(decimal) => new NumberPluginOptionDetailsDto(
+                           t == typeof(double) || t == typeof(decimal) => new NumberOptionDetailsDto(
                     Value: c.DefaultValue as int?,
                     NumberType: NumberOptionType.Number,
                     Min: c.Range?.Start.Value,
                     Max: c.Range?.End.Value,
                     Step: 1),
-                { } t when t == typeof(bool) => new BooleanPluginOptionDetailsDto(
+                { } t when t == typeof(bool) => new BooleanOptionDetailsDto(
                     Value: c.DefaultValue as bool? ?? false),
-                { } t when t == typeof(List<string>) => new SelectPluginOptionDetailsDto(
+                { } t when t == typeof(List<string>) => new SelectOptionDetailsDto(
                     Value: c.DefaultValue as string,
                     Options: c.AllowedValues?.Select(v => v.ToString()).ToList() ?? [],
                     Type: SelectOptionType.Dropdown),
                 _ => throw new ArgumentException("Unsupported type")
             };
 
-            return new PluginOptionsDto(
+            return new OptionsDto(
                 Type: c.ToOptionType(),
                 Details: details,
                 Name: c.Name);

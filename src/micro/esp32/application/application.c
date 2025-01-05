@@ -1,13 +1,16 @@
 #include "application.h"
 
+#include <crypto.h>
 #include <dht.h>
 #include <esp_chip_info.h>
 #include <esp_http_server.h>
 #include <esp_idf_version.h>
 #include <esp_log.h>
 #include <esp_spiffs.h>
+#include <esp_task_wdt.h>
 #include <system_config.h>
 #include <esp_wifi.h>
+#include <file.h>
 #include <nvs_flash.h>
 #include <string.h>
 #include <driver/gpio.h>
@@ -332,6 +335,11 @@ static void connect_handler(void* arg, esp_event_base_t event_base,
     }
 }
 
+unsigned char public_key[1600];
+unsigned char private_key[1600];
+const char* public_key_path = "/spiffs/rsa_public_key.pem";
+const char* private_key_path = "/spiffs/rsa_private_key.pem";
+
 void application_run(void) {
     system_config_t config = {};
     wifi_config_t wifi_config = {};
@@ -366,6 +374,34 @@ void application_run(void) {
     }
     ESP_ERROR_CHECK(ret);
 
+    // Crypto
+    crypto_init();
+
+    memset(public_key, 0, sizeof(public_key));
+    file_read(public_key_path, (char*)public_key, sizeof(public_key));
+    memset(private_key, 0, sizeof(private_key));
+    file_read(private_key_path, (char*)private_key, sizeof(private_key));
+
+    if (public_key[0] == 0 || private_key[0] == 0) {
+        ESP_LOGI(TAG, "Generating new keys...");
+        generate_keys(public_key, private_key);
+        file_write(public_key_path, (char*)public_key);
+        file_write(private_key_path, (char*)private_key);
+    } else {
+        ESP_LOGI(TAG, "Loading keys...");
+        load_keys((char*)private_key, (char*)public_key);
+    }
+
+    ESP_LOGI(TAG, "Public Key: %s", (char*) public_key);
+    ESP_LOGI(TAG, "Private Key: %s", (char*) private_key);
+
+    const char* token = "full-access";
+    unsigned char signature[256];
+    size_t sig_len;
+    sign_token(token, signature, sizeof(signature), &sig_len);
+
+    verify_token(token, signature, sig_len);
+
     // Wifi
     setup_wifi(&wifi_config, &config);
 
@@ -385,4 +421,6 @@ void application_run(void) {
     while (true) {
         vTaskDelay(100 / portTICK_PERIOD_MS);
     }
+
+    crypto_cleanup();
 }

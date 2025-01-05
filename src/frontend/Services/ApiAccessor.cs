@@ -189,8 +189,8 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
     public async Task<ResponseModel<List<PluginInfoDto>>> GetAllPlugins() =>
         await GetResponseModel<List<PluginInfoDto>>(client => client.GetAsync("/api/plugins"));
 
-    public async Task<ResponseModel<List<PluginOptionsDto>>> GetPluginOptions(string pluginGuid) =>
-        await GetResponseModel<List<PluginOptionsDto>>(client => client.GetAsync($"/api/plugins/{pluginGuid}/options"));
+    public async Task<ResponseModel<List<OptionsDto>>> GetPluginOptions(string pluginGuid) =>
+        await GetResponseModel<List<OptionsDto>>(client => client.GetAsync($"/api/plugins/{pluginGuid}/options"));
 
     // ---------------------------- Devices ----------------------------
 

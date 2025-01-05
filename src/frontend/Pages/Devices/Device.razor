@@ -91,9 +91,7 @@
 
     private Task OpenDialogAsync()
     {
-        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true };
-
-        return DialogService.ShowAsync<UpdateDialog>("Update Device", options);
+        return Task.CompletedTask;
     }
 
     string _value;

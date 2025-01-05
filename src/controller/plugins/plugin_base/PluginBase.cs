@@ -93,7 +93,7 @@ public abstract class PluginBase<T> : IPlugin where T : PluginBase<T>, IDisposab
     public void OnSystemStart(IServiceProvider services)
     {
         Services = services;
-        var optionBuilder = new OptionsBuilder(Name);
+        var optionBuilder = new OptionsBuilder(RegistryName);
         OnOptionBuilding(optionBuilder);
         m_Options = optionBuilder.Build();
         m_Options.Load().Wait();
