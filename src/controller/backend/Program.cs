@@ -2,6 +2,7 @@ using System.IO.Abstractions;
 using Backend.Endpoints;
 using Backend.Services.Database;
 using Backend.Services.Identity;
+using Backend.Services.PluginDataQuery;
 using Backend.Services.Plugins;
 using Backend.Utils;
 using Data.System;
@@ -9,7 +10,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
@@ -143,7 +143,7 @@ builder.Services.AddOpenTelemetry()
 
 builder.Services.AddSingleton<IPluginManager, PluginManager>();
 builder.Services.AddSingleton<IPluginLoader, PluginLoader>();
-
+builder.Services.AddSingleton<DataRequester>();
 
 
 // ------------------------ Cors ----------------------------------
@@ -191,6 +191,7 @@ app.MapUserManagementEndpoint();
 app.MapSettingsEndpoints();
 app.MapPermissionEndpoints();
 app.MapRoleManagementEndpoint();
+app.MapDataRequesterEndpoints();
 
 app.MapGet("/", () => "Hello World!");
 

@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Shared.Plugins;
+using Shared.Plugins.DataRequest;
+using Shared.Plugins.DataResponse;
 
 namespace PluginBase;
 
@@ -90,6 +93,16 @@ public abstract class PluginBase<T> : IPlugin where T : PluginBase<T>, IDisposab
     {
         Services = services;
         SystemStart();
+    }
+
+    public virtual async Task<DataResponseInfo> GetDataFromPlugin(DataRequestEntry request)
+    {
+        return null;
+    }
+
+    public virtual bool GetDataFromConnectedDevices()
+    {
+        return false;
     }
 
     public virtual void Dispose()
