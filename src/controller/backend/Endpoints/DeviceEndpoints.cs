@@ -16,7 +16,7 @@ public static class DeviceEndpoints
     }
 
     public static IResult GetAllDevices([FromServices] DeviceManager deviceManager) =>
-        Results.Json(deviceManager.ConnectedDevices.Select(i => i.MapToDto()));
+        Results.Json(deviceManager.ConnectedDevices.Select(i => i.DeviceInfo.MapToDto()));
 
     public static IResult ScanDevices([FromServices] DeviceTypeRegistry deviceTypeRegistry) =>
         Results.Ok(deviceTypeRegistry.ScanDevices().ToBlockingEnumerable().Select(i => i.MapToDto()));

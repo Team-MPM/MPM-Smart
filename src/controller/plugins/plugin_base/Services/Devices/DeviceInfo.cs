@@ -1,5 +1,3 @@
-using System.Collections;
-
 namespace PluginBase.Services.Devices;
 
 public record DeviceInfo
