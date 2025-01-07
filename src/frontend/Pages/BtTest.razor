@@ -1,0 +1,39 @@
+﻿@page "/BtTest"
+@inject IJSRuntime JsRuntime
+
+<h3>Test</h3>
+
+<p>Bluetooth Available: @Available</p>
+
+<br/>
+
+@if (Devices is not null)
+{
+    @foreach (var device in Devices)
+    {
+        <div>
+            <p>@device.Name</p>
+            <p>@device.Id</p>
+        </div>
+    }
+}
+
+<br/>
+
+<button @onclick="Load">Load</button>
+
+@code {
+
+    private bool Available { get; set; } = false;
+    private List<(string Name, string Id)>? Devices { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+    }
+
+    private async Task Load()
+    {
+        await JsRuntime.InvokeVoidAsync("getBluetoothDevices");
+    }
+
+}

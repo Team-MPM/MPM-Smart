@@ -14,22 +14,25 @@
     <MudContainer Class="p-4">
         @foreach (var device in devices)
         {
-        <MudCardContent>
-            <MudGrid Justify="Justify.SpaceBetween" AlignItems="Center">
-                <MudItem Style="display: flex; align-items: center; gap: 10px;">
-                    <text style="color: white;">@device</text>
-                </MudItem>
-                <MudItem Style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-                    <MudIcon Icon="@Icons.Material.Filled.Edit" Style="cursor: pointer;" OnClick="() => EditDevice(device)" />
-                    <MudIcon Icon="@Icons.Material.Filled.Delete" Style="cursor: pointer;" OnClick="() => DeleteDevice(device)" />
-                </MudItem>
-            </MudGrid>
-        </MudCardContent>
+            <MudCardContent>
+                <MudGrid Justify="Justify.SpaceBetween" AlignItems="Center">
+                    <MudItem Style="display: flex; align-items: center; gap: 10px;">
+                        <text style="color: white;">@device</text>
+                    </MudItem>
+                    <MudItem Style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+                        <MudIcon Icon="@Icons.Material.Filled.Edit" Style="cursor: pointer;"
+                                 OnClick="() => EditDevice(device)"/>
+                        <MudIcon Icon="@Icons.Material.Filled.Delete" Style="cursor: pointer;"
+                                 OnClick="() => DeleteDevice(device)"/>
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
         }
     </MudContainer>
 </MudContainer>
 
 @code {
+
     private List<string> devices = new List<string>
     {
         "Olaf's SmartHome",
@@ -45,7 +48,6 @@
 
     private void EditDevice(string device)
     {
-        
     }
 
     private void DeleteDevice(string device)
@@ -53,4 +55,5 @@
         devices.Remove(device);
         StateHasChanged();
     }
+
 }

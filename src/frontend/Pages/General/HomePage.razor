@@ -1,0 +1,206 @@
+﻿@page "/"
+@layout HomePageLayout
+
+@using System.Net
+@using Blazored.LocalStorage
+@using Frontend.Components.Dialogs
+@using Frontend.Services
+
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+@inject ILocalStorageService Storage
+@inject ControllerConnectionManager ControllerConnectionManager
+@inject CustomAuthStateProvider AuthStateProvider
+
+<div style="position: relative; height: calc(100dvh - 64px); width: 100dvw">
+    <MudContainer Style="max-height: 100%; width: 100%; position: absolute; overflow-y: scroll; top: 0; left: 0; right: 0">
+        <MudGrid Gutter="3" Spacing="8" Justify="Justify.Center">
+            @foreach (var c in m_Controllers)
+            {
+                <MudItem lg="3" md="4" sm="6" xs="12">
+                    <MudCard Hover="true">
+                        <MudCardMedia Image="@c.ImageUrl" Alt="Controller Banner" Height="200"
+                                      @onclick="() => Connect(c)" Style="cursor: pointer"/>
+                        <MudCardContent>
+                            <MudText Typo="Typo.h5" Class="card-title">@c.Name</MudText>
+                            <MudText Typo="Typo.body2" Class="card-description">@c.Description</MudText>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton OnClick="() => Connect(c)" Color="Color.Primary">
+                                Connect
+                            </MudButton>
+                            <MudButton OnClick="() => OpenEditDialog(c)" Color="Color.Primary">
+                                Edit
+                            </MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    </MudContainer>
+</div>
+
+<div style="position: absolute; bottom: 20px; right: 10px;">
+    <MudButton OnClick="OpenAddDialogAsync" Class="mr-3 mud-theme-primary" Variant="Variant.Filled">
+        Add
+    </MudButton>
+    <MudButton OnClick="SaveControllers" Class="mr-3 mud-theme-primary" Variant="Variant.Filled">
+        Save
+    </MudButton>
+</div>
+
+@code {
+
+    public record ControllerInfo(
+        string Name,
+        string Description,
+        string ImageUrl,
+        string Address,
+        int Port,
+        bool UseHttps
+    );
+
+    private readonly List<ControllerInfo> m_Controllers = [];
+    private readonly List<string> m_Banners = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        m_Banners.AddRange(Enumerable.Range(1, 7)
+            .Select(i => NavigationManager.BaseUri + $"images/banners/{i}.jpg"));
+
+        m_Controllers.Add(new ControllerInfo(
+            Name: "Localhost",
+            Description: "Local Development instance",
+            ImageUrl: m_Banners[6],
+            Address: IPAddress.Loopback.ToString(),
+            Port: 54321,
+            UseHttps: false));
+
+        m_Controllers.Add(new ControllerInfo(
+            Name: "Cloud",
+            Description: "Cloud Development instance",
+            ImageUrl: m_Banners[4],
+            Address: "test-instance.mpm-smart.g-martin.work",
+            Port: 443,
+            UseHttps: true));
+
+        await Storage.GetItemAsync<List<ControllerInfo>>("controllers").AsTask()
+            .ContinueWith(task =>
+            {
+                if (task.Result != null)
+                {
+                    m_Controllers.AddRange(task.Result);
+                }
+            });
+    }
+
+    private void SaveControllers()
+    {
+        Storage.SetItemAsync("controllers", m_Controllers[2..]);
+    }
+
+    private async Task Connect(ControllerInfo controllerInfo)
+    {
+        ControllerConnectionManager.DisconnectFromController(AuthStateProvider);
+
+        if (await ControllerConnectionManager.ConnectToControllerAsync(
+                new ControllerConnectionDetails(controllerInfo.Address, controllerInfo.Port, controllerInfo.UseHttps),
+                new ControllerStoredCredentials(Storage), AuthStateProvider))
+        {
+            await Storage.SetItemAsync("current-controller", controllerInfo);
+            NavigationManager.NavigateTo("/home");
+            return;
+        }
+
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            FullWidth = true,
+            CloseButton = true,
+            BackdropClick = true,
+            MaxWidth = MaxWidth.Medium
+        };
+
+        var parameters = new DialogParameters<LoginDialog>
+        {
+            {
+                x => x.ConnectionDetails,
+                new ControllerConnectionDetails(controllerInfo.Address, controllerInfo.Port, controllerInfo.UseHttps)
+            },
+        };
+
+        var dialog = await DialogService.ShowAsync<LoginDialog>(null, parameters, options);
+        var result = await dialog.Result;
+        if (!result!.Canceled)
+        {
+            await Storage.SetItemAsync("current-controller", controllerInfo);
+            NavigationManager.NavigateTo("/home");
+        }
+    }
+
+    private async Task OpenAddDialogAsync()
+    {
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            FullWidth = true,
+            CloseButton = true,
+            BackdropClick = true,
+            MaxWidth = MaxWidth.Medium
+        };
+
+        var dialog = await DialogService.ShowAsync<AddControllerDialog>(null, options);
+        var result = await dialog.Result;
+
+        if (result?.Data is AddControllerDialog.Model model)
+        {
+            if (m_Controllers.FirstOrDefault(c => c.Name == model.Name) is { } controller)
+                m_Controllers.Remove(controller);
+            m_Controllers.Add(new ControllerInfo(model.Name, model.Desc,
+                m_Banners[Random.Shared.Next(0, m_Banners.Count)], model.Address, model.Port, model.UseHttps));
+        }
+    }
+
+    private async Task OpenEditDialog(ControllerInfo controllerInfo)
+    {
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            FullWidth = true,
+            CloseButton = true,
+            BackdropClick = true,
+            MaxWidth = MaxWidth.Medium
+        };
+
+        var parameters = new DialogParameters<EditControllerDialog>
+        {
+            {
+                x => x.Controller,
+                new EditControllerDialog.Model
+                {
+                    Address = controllerInfo.Address,
+                    Desc = controllerInfo.Description,
+                    Name = controllerInfo.Name,
+                    Port = controllerInfo.Port
+                }
+            },
+        };
+
+        var dialog = await DialogService.ShowAsync<EditControllerDialog>(null, parameters, options);
+        var result = await dialog.Result;
+
+        if (result?.Data is AddControllerDialog.Model model)
+        {
+            if (m_Controllers.FirstOrDefault(c => c.Name == model.Name) is { } controller)
+                m_Controllers.Remove(controller);
+            m_Controllers.Add(
+                new ControllerInfo(model.Name, model.Desc, controllerInfo.ImageUrl, model.Address, model.Port, model.UseHttps)
+            );
+        }
+        else if (result?.Data is null && !result!.Canceled)
+        {
+            m_Controllers.Remove(controllerInfo);
+        }
+    }
+
+}

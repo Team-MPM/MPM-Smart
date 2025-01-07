@@ -1,0 +1,108 @@
+@using ApiSchema.Plugins
+@using Shared
+
+<MudDialog>
+    <DialogContent>
+        <EditForm Model="@m_FormModel" OnValidSubmit="OnSubmit">
+            @foreach (var option in PluginOptions)
+            {
+                @switch (option.Type)
+                {
+                    case OptionType.Text:
+                        <MudTextField T="string" @bind-Value="m_FormModel.TextValues[option.Name]" Label="@option.Name"
+                                      Variant="Variant.Filled" Class="mb-4"/>
+                        break;
+                    case OptionType.Number:
+                        <MudNumericField T="int" @bind-Value="m_FormModel.NumberValues[option.Name]"
+                                         Label="@option.Name"
+                                         Variant="Variant.Filled" Class="mb-4"/>
+                        break;
+                    case OptionType.Boolean:
+                        <MudSwitch T="bool" @bind-Checked="m_FormModel.BooleanValues[option.Name]" Label="@option.Name"
+                                   Class="mb-4"/>
+                        break;
+                    case OptionType.Select:
+                        <MudSelect T="string" @bind-Value="m_FormModel.SelectValues[option.Name]" Label="@option.Name"
+                                   Variant="Variant.Filled" Class="mb-4">
+                            @foreach (var item in ((SelectPluginOptionDetailsDto)option.Details).Options)
+                            {
+                                <MudSelectItem T="string" Value="@item">@item</MudSelectItem>
+                            }
+                        </MudSelect>
+                        break;
+                    case OptionType.MultiSelect:
+                        <MudSelect T="string"
+                                   @bind-Value="m_WhyDoINeedThis"
+                                   @bind-SelectedValues="m_FormModel.MultiSelectValues[option.Name]"
+                                   Label="@option.Name"
+                                   Variant="Variant.Filled"
+                                   MultiSelection="true"
+                                   Class="mb-4">
+                            @foreach (var item in ((MultiSelectPluginOptionDetailsDto)option.Details).Options)
+                            {
+                                <MudSelectItem T="string" Value="@item">@item</MudSelectItem>
+                            }
+                        </MudSelect>
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+            <MudButton OnClick="async () => await OnSubmit()" Variant="Variant.Filled"
+                       Color="Color.Primary">Submit
+            </MudButton>
+        </EditForm>
+        <div class="text-danger">@m_ErrorMessage</div>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [CascadingParameter] public required MudDialogInstance MudDialog { get; set; }
+    [Parameter] public required List<PluginOptionsDto> PluginOptions { get; set; }
+
+    private string m_ErrorMessage = "";
+    private string m_WhyDoINeedThis = "";
+    private readonly PluginOptionsFormModel m_FormModel = new();
+
+    public class PluginOptionsFormModel
+    {
+        public Dictionary<string, string> TextValues { get; set; } = new();
+        public Dictionary<string, int> NumberValues { get; set; } = new();
+        public Dictionary<string, bool> BooleanValues { get; set; } = new();
+        public Dictionary<string, string> SelectValues { get; set; } = new();
+        public Dictionary<string, IEnumerable<string>> MultiSelectValues { get; set; } = new();
+    }
+
+    protected override void OnInitialized()
+    {
+        foreach (var option in PluginOptions)
+        {
+            switch (option.Type)
+            {
+                case OptionType.Text:
+                    m_FormModel.TextValues[option.Name] = ((TextPluginOptionDetailsDto)option.Details).Value ?? "";
+                    break;
+                case OptionType.Number:
+                    m_FormModel.NumberValues[option.Name] = ((NumberPluginOptionDetailsDto)option.Details).Value ?? 0;
+                    break;
+                case OptionType.Boolean:
+                    m_FormModel.BooleanValues[option.Name] = ((BooleanPluginOptionDetailsDto)option.Details).Value;
+                    break;
+                case OptionType.Select:
+                    m_FormModel.SelectValues[option.Name] = ((SelectPluginOptionDetailsDto)option.Details).Value ?? "";
+                    break;
+                case OptionType.MultiSelect:
+                    m_FormModel.MultiSelectValues[option.Name] = ((MultiSelectPluginOptionDetailsDto)option.Details).Values;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+    }
+
+    public async Task OnSubmit()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+}

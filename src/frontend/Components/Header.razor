@@ -1,19 +1,18 @@
-﻿<MudAppBar Fixed="true">
-    <h3 style="cursor: pointer; margin: 0;" @onclick="NavigateToHome">MPM-Smart</h3>
+﻿@inject NavigationManager NavigationManager
+
+<MudAppBar Fixed="true" Elevation="1">
+    <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit"
+                   Edge="Edge.Start" OnClick="@ToggleDrawer" Class="mr-3"/>
+    <MudButton Variant="Variant.Outlined" Style="cursor: pointer; text-decoration: underline" @onclick="Home">
+        Switch Connection
+    </MudButton>
     <MudSpacer/>
-    <MudIconButton Href="/" Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit" Edge="Edge.Start"/>
-    <MudIconButton Href="/Settings/User" Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" Edge="Edge.Start"/>
+    <MudIconButton Href="/" Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit"/>
+    <MudIconButton Href="/settings/user" Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit"/>
 </MudAppBar>
 
-
-
-
 @code {
-        [Inject]
-        private NavigationManager? NavigationManager { get; set; }
+        private void Home() => NavigationManager.NavigateTo("/");
 
-        private void NavigateToHome()
-        {
-            NavigationManager.NavigateTo("/"); 
-        }
+        [Parameter] public required Action ToggleDrawer { get; set; }
 }

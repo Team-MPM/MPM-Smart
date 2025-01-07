@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using PluginBase;
 using MpmSmart.PluginTemplate.Endpoints;
+using PluginBase.Options;
 
 namespace MpmSmart.PluginTemplate;
 
@@ -25,5 +26,10 @@ public class TestPluginClass : PluginBase<TestPluginClass>
     protected override void SystemStart()
     {
         
+    }
+
+    protected override void OnOptionBuilding(OptionsBuilder builder)
+    {
+
     }
 }

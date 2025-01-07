@@ -1,0 +1,83 @@
+@page "/settings/plugins"
+@using ApiSchema.Plugins
+@using Frontend.Components.Dialogs
+@using Frontend.Services
+
+@inject ApiAccessor Api
+@inject IDialogService DialogService
+
+<MudContainer>
+    <MudText Typo="Typo.h4">Installed Plugins</MudText>
+
+    @if (m_Plugins is null)
+    {
+        <MudProgressCircular Color="Color.Primary"/>
+    }
+    else
+    {
+        <MudTable Items="@m_Plugins" Class="mt-4">
+            <HeaderContent>
+                <MudTh>Plugin Name</MudTh>
+                <MudTh>Version</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.Name</MudTd>
+                <MudTd>@context.Version</MudTd>
+                <MudTd>
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"
+                                   OnClick="@(() => Edit(context.Name, context.Guid))"/>
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"/>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+
+    @if (m_Error != null)
+    {
+        <MudText Typo="Typo.body1" Color="Color.Error">@m_Error</MudText>
+    }
+</MudContainer>
+
+@code {
+    private List<PluginInfoDto>? m_Plugins;
+    private string? m_Error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var res = await Api.GetAllPlugins();
+        if (res.Success)
+            m_Plugins = res.Response;
+        else
+            m_Error = res.Message;
+    }
+
+    private async Task Edit(string name, string guid)
+    {
+        var res = await Api.GetPluginOptions(guid);
+
+        if (!res.Success)
+        {
+            m_Error = res.Message;
+            return;
+        }
+
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            FullWidth = true,
+            CloseButton = true,
+            BackdropClick = true,
+            MaxWidth = MaxWidth.Medium
+        };
+
+        var parameters = new DialogParameters<PluginOptionsDialog>
+        {
+            {
+                x => x.PluginOptions, res.Response!
+            },
+        };
+
+        await DialogService.ShowAsync<PluginOptionsDialog>(name + " Options", parameters, options);
+    }
+}
