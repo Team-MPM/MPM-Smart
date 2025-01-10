@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using PluginBase.Options;
 using Shared.Plugins;
 using Shared.Plugins.DataInfo;
 using Shared.Plugins.DataRequest;
@@ -23,6 +24,7 @@ public abstract class PluginBase<T> : IPlugin where T : PluginBase<T>, IDisposab
     public string Version { get; private set; } = null!;
     public string IconUrl => $"https://mpm-smart.g-martin.work/plugins/{RegistryName}/icon.png";
     public string PluginUrl => $"https://mpm-smart.g-martin.work/plugins/{RegistryName}";
+    public OptionProvider Options => m_Options ?? throw new InvalidOperationException("Options not initialized");
 
     protected IServiceProvider ApplicationServices { get; private set; } = null!;
     protected IServiceProvider? Services { get; private set; }
@@ -30,6 +32,8 @@ public abstract class PluginBase<T> : IPlugin where T : PluginBase<T>, IDisposab
 
     protected string PluginPath { get; private set; } = null!;
     protected string HostPath { get; private set; } = null!;
+
+    private OptionProvider? m_Options;
 
     /// <summary>
     /// Initialize the plugin.
@@ -86,14 +90,23 @@ public abstract class PluginBase<T> : IPlugin where T : PluginBase<T>, IDisposab
     }
 
     /// <summary>
-    /// Starts the system for the plugin. Services are already configured and built here.
+    /// Starts the system for the plugin. Services and Options are available.
     /// </summary>
     protected abstract void SystemStart();
+
+    /// <summary>
+    /// Specify and map the options for the plugin.
+    /// Services are already configured and built here.
+    /// </summary>
+    protected abstract void OnOptionBuilding(OptionsBuilder builder);
 
     public void OnSystemStart(IServiceProvider services)
     {
         Services = services;
-        SystemStart();
+        var optionBuilder = new OptionsBuilder(Name);
+        OnOptionBuilding(optionBuilder);
+        m_Options = optionBuilder.Build();
+        m_Options.Load().ContinueWith(_ => SystemStart());
     }
 
     public virtual async Task<DataResponseInfo> GetDataFromPlugin(DataRequestEntry request)

@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using ApiSchema.Sensors.DemoTempSensor;
 using Backend.Extensions;
 using Microsoft.AspNetCore.Builder;

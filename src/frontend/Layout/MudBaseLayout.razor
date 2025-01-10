@@ -1,0 +1,34 @@
+@using Blazored.LocalStorage
+@inherits LayoutComponentBase
+
+@inject ILocalStorageService Storage
+
+<CascadingValue Value="this">
+    @Body
+</CascadingValue>
+
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
+<MudThemeProvider IsDarkMode="@m_IsDarkMode" />
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (await Storage.ContainKeyAsync("darkMode"))
+            m_IsDarkMode = await Storage.GetItemAsync<bool>("darkMode");
+    }
+
+    private bool m_IsDarkMode = true;
+    public bool IsDarkMode
+    {
+        get => m_IsDarkMode;
+        set
+        {
+            m_IsDarkMode = value;
+            StateHasChanged();
+            Storage.SetItemAsync("darkMode", value);
+        }
+    }
+}

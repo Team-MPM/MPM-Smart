@@ -1,0 +1,62 @@
+﻿@using System.ComponentModel.DataAnnotations
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">Edit controller Connection</MudText>
+    </TitleContent>
+    <DialogContent>
+        <EditForm Model="@Controller" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator/>
+            <MudTextField Class="mb-2" Label="Name" @bind-Value="Controller.Name" For="@(() => Controller.Name)"/>
+            <MudTextField Class="mb-2" Label="Description" @bind-Value="Controller.Desc" For="@(() => Controller.Desc)"/>
+            <MudTextField Class="mb-2" Label="Address" @bind-Value="Controller.Address" For="@(() => Controller.Address)"/>
+            <MudTextField Class="mb-2" Label="Port" @bind-Value="Controller.Port" For="@(() => Controller.Port)"/>
+            <MudSwitch Class="mb-2" Label="Use HTTPS" @bind-Value="Controller.UseHttps" For="@(() => Controller.UseHttps)"/>
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">
+                Save
+            </MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Warning" OnClick="Delete">
+                Delete
+            </MudButton>
+        </EditForm>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [CascadingParameter] public required MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public required Model Controller { get; set; }
+
+    public class Model
+    {
+        [Required(ErrorMessage = "Address is required.")]
+        [RegularExpression(@"^(?:(?:[0-9]{1,3}\.){3}[0-9]{1,3}|(?:[a-fA-F0-9:]+:+)+[a-fA-F0-9]+|(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})$",
+            ErrorMessage = "Address must be a valid IPv4, IPv6, or domain name.")]
+        public required string Address { get; set; }
+
+        [Required(ErrorMessage = "Port is required.")]
+        [Range(1, 65535, ErrorMessage = "Port must be in the range of 1 to 65535.")]
+        public required int Port { get; set; }
+
+        [Required(ErrorMessage = "Name is required.")]
+        [StringLength(50, MinimumLength = 3, ErrorMessage = "Name must be between 3 and 50 characters long.")]
+        public required string Name { get; set; }
+
+        [Required(ErrorMessage = "Description is required.")]
+        [StringLength(100, ErrorMessage = "Description must be at most 100 characters long.")]
+        public required string Desc { get; set; }
+
+        public bool UseHttps { get; set; }
+    }
+
+    private void OnValidSubmit(EditContext context)
+    {
+        MudDialog.Close(DialogResult.Ok(Controller));
+    }
+
+    private void Delete()
+    {
+        MudDialog.Close(DialogResult.Ok<object>(null!));
+    }
+
+}

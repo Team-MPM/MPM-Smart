@@ -1,16 +1,20 @@
 ﻿@using Microsoft.AspNetCore.Authorization
 @inherits LayoutComponentBase
+@layout MudBaseLayout
 @attribute [Authorize]
-<MudLayout Class="pt-3">
-    <Header/>
-    <MudMainContent Class="d-flex flex-row">
-        <MudContainer Class="pl-0 ml-0 mr-0" Style="max-width: 300px">
-            <NavBar/>
-        </MudContainer>
 
-        <MudPaper Class="pl-3 pt-3 overflow-scroll overflow-x-hidden" Height="90vh" Width="100%">
+<MudLayout>
+    @* ReSharper disable once Html.TagShouldNotBeSelfClosed *@
+    <Header ToggleDrawer="@(() => m_NavOpen = !m_NavOpen)"/>
+    <NavBar IsOpen="m_NavOpen"/>
+    <MudMainContent Class="d-flex flex-row">
+        <MudPaper Class="px-6 pt-8 overflow-y-scroll overflow-x-hidden" Width="100%" Style="height: calc(100vh - 64px)">
             @Body
         </MudPaper>
     </MudMainContent>
 </MudLayout>
 
+@code
+{
+    private bool m_NavOpen = true;
+}

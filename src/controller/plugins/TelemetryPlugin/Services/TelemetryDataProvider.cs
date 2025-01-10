@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
-using Shared.Services.Telemetry;
+using PluginBase.Services.Telemetry;
 
 namespace TelemetryPlugin.Services;
 

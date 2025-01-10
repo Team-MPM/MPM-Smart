@@ -15,9 +15,9 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using PluginBase.Services.Permissions;
+using PluginBase.Services.Telemetry;
 using Serilog;
-using Shared.Services.Permissions;
-using Shared.Services.Telemetry;
 
 // ----------------------- Load Key -------------------------------
 
@@ -174,7 +174,7 @@ app.UseAuthorization();
 app.UseCors(x => x
     .AllowAnyMethod()
     .AllowAnyHeader()
-    .SetIsOriginAllowed(origin => true)
+    .SetIsOriginAllowed(_ => true)
     .AllowCredentials());
 
 // ----------------------------------------------------------------
@@ -191,10 +191,14 @@ app.MapUserManagementEndpoint();
 app.MapSettingsEndpoints();
 app.MapPermissionEndpoints();
 app.MapRoleManagementEndpoint();
+app.MapPluginEndpoints();
 app.MapDataRequesterEndpoints();
 
 app.MapGet("/", () => "Hello World!");
-
+app.MapGet("/info", () => new
+{
+    Version = "1.0.0", System = "Mpm Smart Backend", Id = key.Rsa.ExportRSAPublicKey()
+});
 app.MapGet("/kys", (IHostApplicationLifetime env) => env.StopApplication());
 
 await app.RunAsync("http://*:54321");

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using PluginBase.Options;
 using Shared.Plugins;
 using Shared.Plugins.DataInfo;
 using Shared.Plugins.DataRequest;
@@ -45,6 +46,8 @@ public interface IPlugin : IDisposable
     /// Gets the URL of the plugin Page.
     /// </summary>
     string PluginUrl { get; }
+
+    OptionProvider Options { get; }
 
     /// <summary>
     /// Initializes the Plugin. Might throw if the Plugin is not correctly configured.
