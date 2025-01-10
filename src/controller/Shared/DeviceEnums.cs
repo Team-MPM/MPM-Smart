@@ -2,8 +2,9 @@ namespace Shared;
 
 public enum DeviceState
 {
+    Disconnected = 0,
     Connected,
-    Disconnected,
     Disabled,
-    Error
+    Error,
+    Unauthorized
 }

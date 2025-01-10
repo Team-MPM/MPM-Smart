@@ -3,9 +3,11 @@ using Microsoft.Extensions.DependencyInjection;
 using PluginBase;
 using PluginBase.Services.Devices;
 using PluginBase.Services.Networking;
+using Shared;
 
 namespace SmartDevicePlugin;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public record MpmSmartDeviceInfo(
     string Id,
     string Name,
@@ -17,22 +19,30 @@ public record MpmSmartDeviceInfo(
 
 public class SmartDeviceType : IDeviceType
 {
-    public IPlugin Plugin { get; init; }
+    public required IPlugin Plugin { get; init; }
+    public required IServiceProvider ServiceProvider { get; init; }
 
-    public static SmartDeviceType Instance { get; } = new();
+    private readonly DeviceManager m_DeviceManager;
+    private readonly NetworkScanner m_NetworkScanner;
+    private readonly IHttpClientFactory m_HttpClientFactory;
 
-    public async IAsyncEnumerable<DeviceInfo> ScanAsync(IServiceProvider services)
+    public SmartDeviceType()
     {
-        var scanner = services.GetRequiredService<NetworkScanner>();
-        var devices = services.GetRequiredService<DeviceManager>();
-        var client = new HttpClient();
+        m_DeviceManager = ServiceProvider!.GetRequiredService<DeviceManager>();
+        m_NetworkScanner = ServiceProvider!.GetRequiredService<NetworkScanner>();
+        m_HttpClientFactory = ServiceProvider!.GetRequiredService<IHttpClientFactory>();
+    }
+
+    public async IAsyncEnumerable<DeviceInfo> ScanAsync()
+    {
+        var client = m_HttpClientFactory.CreateClient();
         client.Timeout = TimeSpan.FromSeconds(2);
 
-        await foreach (var ip in scanner.ScanTcpAsync(80))
+        await foreach (var ip in m_NetworkScanner.ScanTcpAsync(80))
         {
-            if (devices.ConnectedDevices.Any(d =>
+            if (m_DeviceManager.ConnectedDevices.Any(d =>
                 {
-                    d.Info.Info.TryGetValue("ip", out var existingIp);
+                    d.Info.Details.TryGetValue("ip", out var existingIp);
                     return existingIp == ip;
                 }))
             {
@@ -62,7 +72,7 @@ public class SmartDeviceType : IDeviceType
                 Serial = info.Serial,
                 Parameters = new Dictionary<string, object>(),
                 Capabilities = info.Capabilities,
-                Info = new Dictionary<string, string>()
+                Details = new Dictionary<string, string>()
                 {
                     { "ip", ip }
                 }
@@ -71,35 +81,34 @@ public class SmartDeviceType : IDeviceType
     }
 
     public async Task<Device?> ConnectAsync(DeviceInfo deviceInfo, DeviceMeta metadata,
-        IDictionary<string, object> parameters, IServiceProvider sp)
+        IDictionary<string, object> parameters)
     {
-        var client = new HttpClient();
-        var deviceManager = sp.GetRequiredService<DeviceManager>();
+        var client = m_HttpClientFactory.CreateClient();
 
-        if (deviceManager.ConnectedDevices.Any(d =>
+        if (m_DeviceManager.ConnectedDevices.Any(d =>
             {
-                d.Info.Info.TryGetValue("ip", out var existingIp);
-                return existingIp == deviceInfo.Info["ip"];
+                d.Info.Details.TryGetValue("ip", out var existingIp);
+                return existingIp == deviceInfo.Details["ip"];
             }))
         {
             return null;
         }
 
-        var infoResponse = await client.GetAsync($"http://{deviceInfo.Info["ip"]}/info");
+        var infoResponse = await client.GetAsync($"http://{deviceInfo.Details["ip"]}/info");
 
         if (!infoResponse.IsSuccessStatusCode)
             return null;
 
         var info = await infoResponse.Content.ReadFromJsonAsync<MpmSmartDeviceInfo>();
 
-        var connectResponse = await client.GetAsync($"http://{deviceInfo.Info["ip"]}/connect");
+        var connectResponse = await client.GetAsync($"http://{deviceInfo.Details["ip"]}/connect");
 
         if (!connectResponse.IsSuccessStatusCode)
             return null;
 
         var key = await connectResponse.Content.ReadAsStringAsync();
 
-        var connectAkkResponse = await client.GetAsync($"http://{deviceInfo.Info["ip"]}/connect-akk");
+        var connectAkkResponse = await client.GetAsync($"http://{deviceInfo.Details["ip"]}/connect-akk");
 
         if (!connectAkkResponse.IsSuccessStatusCode)
             return null;
@@ -109,77 +118,46 @@ public class SmartDeviceType : IDeviceType
         return new Device
         {
             Info = deviceInfo,
+            State = DeviceState.Connected,
             MetaData = metadata
         };
     }
 
-    public async Task<bool> PollAsync(Device device)
+    public async Task PollAsync(Device device)
     {
-        var client = new HttpClient();
-        client.BaseAddress = new Uri($"http://{device.Info.Info["ip"]}");
+        var client = m_HttpClientFactory.CreateClient();
+        client.BaseAddress = new Uri($"http://{device.Info.Details["ip"]}");
 
-        var infoResponse = await client.GetAsync("/info");
+        try
+        {
+            var infoResponse = await client.GetAsync("/info");
+            if (!infoResponse.IsSuccessStatusCode)
+                goto disconnect;
 
-        if (!infoResponse.IsSuccessStatusCode)
-            return false;
+            var info = await infoResponse.Content.ReadFromJsonAsync<MpmSmartDeviceInfo>();
 
-        var info = await infoResponse.Content.ReadFromJsonAsync<MpmSmartDeviceInfo>();
+            if (info is not { Status: "connected" })
+                goto disconnect;
 
-        var response = await infoResponse.Content.ReadFromJsonAsync<MpmSmartDeviceInfo>();
+            // TODO check if key is still valid
+            var key = device.MetaData.ConnectionDetails.GetValueOrDefault("key");
 
-        if (response is not { Status: "connected" })
-            return false;
+            if (key is null)
+                goto authFailure;
+        }
+        catch (Exception)
+        {
+            goto disconnect;
+        }
 
-        // TODO check if key is still valid
-        var key = device.MetaData.ConnectionDetails.GetValueOrDefault("key");
+        device.State = DeviceState.Connected;
+        return;
 
-        if (key is null)
-            return false;
+        disconnect:
+        device.State = DeviceState.Disconnected;
+        return;
 
-        return true;
-    }
-
-    public async Task ReconnectAsync(IServiceProvider sp)
-    {
-        // var devices = SmartDeviceIndex.Entries;
-        // var deviceManager = sp.GetRequiredService<DeviceManager>();
-        // var deviceTypeRegistry = sp.GetRequiredService<DeviceTypeRegistry>();
-        // var client = new HttpClient();
-        // client.Timeout = TimeSpan.FromSeconds(2);
-        //
-        // foreach (var device in devices.Where(d => deviceManager.ConnectedDevices.All(
-        //              cd => cd.ConnectionDetails.GetValueOrDefault("ip") != d.Ip
-        //                    || cd.Type.GetType() != typeof(SmartDeviceType))))
-        // {
-        //     client.BaseAddress = new Uri($"http://{device.Ip}");
-        //     var infoResponse = await client.GetAsync("/info");
-        //
-        //     if (!infoResponse.IsSuccessStatusCode)
-        //         continue;
-        //
-        //     var info = await infoResponse.Content.ReadFromJsonAsync<MpmSmartDeviceInfo>();
-        //
-        //     if (info is null)
-        //         continue;
-        //
-        //     deviceManager.AddConnectedDevice(new Device()
-        //     {
-        //         ConnectionDetails = { { "key", device.Key }, { "ip", device.Ip } },
-        //         Type = this,
-        //         Info = new DeviceInfo
-        //         {
-        //             Name = info.Name,
-        //             Description = info.Description,
-        //             Type = this,
-        //             Parameters = new Dictionary<string, object>(),
-        //             Capabilities = info.Capabilities,
-        //             Info = new Dictionary<string, string>()
-        //             {
-        //                 { "ip", device.Ip }
-        //             }
-        //         },
-        //         MetaData = {}
-        //     });
-        // }
+        authFailure:
+        device.State = DeviceState.Unauthorized;
     }
 }

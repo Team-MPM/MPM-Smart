@@ -4,17 +4,14 @@ namespace PluginBase.Services.Devices;
 
 public class DeviceRegistry
 {
-    public const string BasePath = "./devices";
+    private const string BasePath = "./devices";
 
     public IReadOnlyList<Device> Devices => m_Devices.AsReadOnly();
 
     private readonly List<Device> m_Devices = [];
-    private readonly DeviceTypeRegistry m_DeviceTypeRegistry;
 
-    public DeviceRegistry(DeviceTypeRegistry deviceTypeRegistry)
+    public DeviceRegistry()
     {
-        m_DeviceTypeRegistry = deviceTypeRegistry;
-
         if (!Directory.Exists(BasePath))
             Directory.CreateDirectory(BasePath);
 

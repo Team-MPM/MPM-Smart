@@ -5,10 +5,10 @@ namespace PluginBase.Services.Devices;
 
 public class Device
 {
-    public DeviceInfo Info { get; set; }
+    public required DeviceInfo Info { get; init; }
 
     [JsonIgnore]
-    public DeviceState State { get; set; }
+    public required DeviceState State { get; set; }
 
-    public DeviceMeta MetaData { get; set; }
+    public required DeviceMeta MetaData { get; init; }
 }

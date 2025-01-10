@@ -1,9 +1,8 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace PluginBase.Services.Devices;
 
-public class DeviceTypeRegistry(IServiceProvider sp, ILogger<DeviceTypeRegistry> logger)
+public class DeviceTypeRegistry(ILogger<DeviceTypeRegistry> logger)
 {
     private readonly HashSet<IDeviceType> m_RegisteredDevices = [];
 
@@ -48,7 +47,7 @@ public class DeviceTypeRegistry(IServiceProvider sp, ILogger<DeviceTypeRegistry>
         foreach (var device in m_RegisteredDevices)
         {
             logger.LogInformation("Scanning for devices of type {DeviceType}", device.GetType().Name);
-            await foreach (var deviceInfo in device.ScanAsync(sp))
+            await foreach (var deviceInfo in device.ScanAsync())
             {
                 logger.LogInformation("Found device {DeviceName}", deviceInfo.Name);
                 yield return deviceInfo;

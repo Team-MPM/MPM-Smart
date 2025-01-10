@@ -7,11 +7,10 @@ public interface IDeviceType
 {
     public IPlugin Plugin { get; }
 
-    public IAsyncEnumerable<DeviceInfo> ScanAsync(IServiceProvider services);
+    public IAsyncEnumerable<DeviceInfo> ScanAsync();
 
     public Task<Device?> ConnectAsync(DeviceInfo deviceInfo, DeviceMeta metadata,
-        IDictionary<string, object> parameters, IServiceProvider sp);
+        IDictionary<string, object> parameters);
 
-    public Task<bool> PollAsync(Device device);
-    public Task ReconnectAsync(IServiceProvider sp);
+    public Task PollAsync(Device device);
 }
