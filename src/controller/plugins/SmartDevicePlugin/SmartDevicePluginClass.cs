@@ -25,9 +25,8 @@ public class SmartDevicePluginClass : PluginBase<SmartDevicePluginClass>
     {
         var logger = Services!.GetRequiredService<ILogger<SmartDevicePluginClass>>();
         var deviceRegistry = Services!.GetRequiredService<DeviceTypeRegistry>();
-        SmartDeviceIndex.Load();
         logger.LogInformation("Starting Smart Device Plugin");
-        deviceRegistry.RegisterDevice(new SmartDeviceType { Plugin = this });
+        deviceRegistry.RegisterDeviceType(new SmartDeviceType { Plugin = this });
     }
 
     protected override void OnOptionBuilding(OptionsBuilder builder)

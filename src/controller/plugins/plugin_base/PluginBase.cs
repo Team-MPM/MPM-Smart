@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using PluginBase.Services.Devices;
 using PluginBase.Services.Options;
 
 namespace PluginBase;

@@ -1,3 +1,7 @@
 namespace PluginBase.Services.Devices;
 
-public record DeviceMeta(string? Location = null);
+public class DeviceMeta
+{
+    public string? Location { get; init; }
+    public Dictionary<string, string> ConnectionDetails { get; set; } = [];
+}

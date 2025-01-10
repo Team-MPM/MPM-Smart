@@ -16,7 +16,7 @@ public static class DeviceEndpoints
     }
 
     public static IResult GetAllDevices([FromServices] DeviceManager deviceManager) =>
-        Results.Json(deviceManager.ConnectedDevices.Select(i => i.DeviceInfo.MapToDto()));
+        Results.Json(deviceManager.ConnectedDevices.Select(i => i.MapToDto()));
 
     public static IResult ScanDevices([FromServices] DeviceTypeRegistry deviceTypeRegistry) =>
         Results.Ok(deviceTypeRegistry.ScanDevices().ToBlockingEnumerable().Select(i => i.MapToDto()));
@@ -25,8 +25,14 @@ public static class DeviceEndpoints
         => new(
             Name: into.Name,
             Description: into.Description,
-            Parameters: into.Parameters,
             Capabilities: into.Capabilities
+        );
+
+    public static DeviceDto MapToDto(this Device device)
+        => new(
+            device.Info.MapToDto(),
+            device.State,
+            device.MetaData.Location
         );
 }
 

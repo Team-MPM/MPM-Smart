@@ -12,7 +12,7 @@ public class DeviceTypeRegistry(IServiceProvider sp, ILogger<DeviceTypeRegistry>
     /// </summary>
     /// <typeparam name="TDevice">The device types to register.</typeparam>
     /// <exception cref="InvalidOperationException">Thrown if the device type is already registered.</exception>
-    public void RegisterDevice<TDevice>(TDevice device) where TDevice : IDeviceType
+    public void RegisterDeviceType<TDevice>(TDevice device) where TDevice : IDeviceType
     {
         if (!m_RegisteredDevices.Add(device))
             throw new InvalidOperationException($"Device type '{typeof(TDevice).Name}' is already registered.");
@@ -23,7 +23,7 @@ public class DeviceTypeRegistry(IServiceProvider sp, ILogger<DeviceTypeRegistry>
     /// </summary>
     /// <typeparam name="TDevice">The device type to check.</typeparam>
     /// <returns>True if the device type is registered, otherwise false.</returns>
-    public bool IsDeviceRegistered<TDevice>() where TDevice : IDeviceType =>
+    public bool IsDeviceTypeRegistered<TDevice>() where TDevice : IDeviceType =>
         m_RegisteredDevices.Any(d => d.GetType() == typeof(TDevice));
 
     /// <summary>
@@ -39,6 +39,10 @@ public class DeviceTypeRegistry(IServiceProvider sp, ILogger<DeviceTypeRegistry>
     public IDeviceType? GetDeviceType<TDevice>() where TDevice : IDeviceType =>
         m_RegisteredDevices.FirstOrDefault(d => d.GetType() == typeof(TDevice));
 
+    /// <summary>
+    /// Iterate over all registered device types and yield the devices found.
+    /// </summary>
+    /// <returns>Async Enumerable - use 'await foreach'!</returns>
     public async IAsyncEnumerable<DeviceInfo> ScanDevices()
     {
         foreach (var device in m_RegisteredDevices)

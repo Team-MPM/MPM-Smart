@@ -12,6 +12,7 @@ public record MpmSmartDeviceInfo(
     string Description,
     Dictionary<string, string> Capabilities,
     string Status,
+    string Serial,
     string PublicKey);
 
 public class SmartDeviceType : IDeviceType
@@ -31,7 +32,7 @@ public class SmartDeviceType : IDeviceType
         {
             if (devices.ConnectedDevices.Any(d =>
                 {
-                    d.DeviceInfo.Info.TryGetValue("ip", out var existingIp);
+                    d.Info.Info.TryGetValue("ip", out var existingIp);
                     return existingIp == ip;
                 }))
             {
@@ -58,6 +59,7 @@ public class SmartDeviceType : IDeviceType
                 Name = info.Name,
                 Description = info.Description,
                 Type = this,
+                Serial = info.Serial,
                 Parameters = new Dictionary<string, object>(),
                 Capabilities = info.Capabilities,
                 Info = new Dictionary<string, string>()
@@ -76,7 +78,7 @@ public class SmartDeviceType : IDeviceType
 
         if (deviceManager.ConnectedDevices.Any(d =>
             {
-                d.DeviceInfo.Info.TryGetValue("ip", out var existingIp);
+                d.Info.Info.TryGetValue("ip", out var existingIp);
                 return existingIp == deviceInfo.Info["ip"];
             }))
         {
@@ -102,21 +104,19 @@ public class SmartDeviceType : IDeviceType
         if (!connectAkkResponse.IsSuccessStatusCode)
             return null;
 
-        SmartDeviceIndex.AddEntry(deviceInfo.Info["ip"], info!.Id, key);
+        metadata.ConnectionDetails["key"] = key;
 
         return new Device
         {
-            Type = SmartDeviceType.Instance,
-            DeviceInfo = deviceInfo,
-            MetaData = metadata,
-            ConnectionDetails = { { "key", key }, { "ip", deviceInfo.Info["ip"] } },
+            Info = deviceInfo,
+            MetaData = metadata
         };
     }
 
     public async Task<bool> PollAsync(Device device)
     {
         var client = new HttpClient();
-        client.BaseAddress = new Uri($"http://{device.DeviceInfo.Info["ip"]}");
+        client.BaseAddress = new Uri($"http://{device.Info.Info["ip"]}");
 
         var infoResponse = await client.GetAsync("/info");
 
@@ -131,7 +131,7 @@ public class SmartDeviceType : IDeviceType
             return false;
 
         // TODO check if key is still valid
-        var key = SmartDeviceIndex.GetEntry(device.DeviceInfo.Info["ip"])?.Key;
+        var key = device.MetaData.ConnectionDetails.GetValueOrDefault("key");
 
         if (key is null)
             return false;
@@ -141,45 +141,45 @@ public class SmartDeviceType : IDeviceType
 
     public async Task ReconnectAsync(IServiceProvider sp)
     {
-        var devices = SmartDeviceIndex.Entries;
-        var deviceManager = sp.GetRequiredService<DeviceManager>();
-        var deviceTypeRegistry = sp.GetRequiredService<DeviceTypeRegistry>();
-        var client = new HttpClient();
-        client.Timeout = TimeSpan.FromSeconds(2);
-
-        foreach (var device in devices.Where(d => deviceManager.ConnectedDevices.All(
-                     cd => cd.ConnectionDetails.GetValueOrDefault("ip") != d.Ip
-                           || cd.Type.GetType() != typeof(SmartDeviceType))))
-        {
-            client.BaseAddress = new Uri($"http://{device.Ip}");
-            var infoResponse = await client.GetAsync("/info");
-
-            if (!infoResponse.IsSuccessStatusCode)
-                continue;
-
-            var info = await infoResponse.Content.ReadFromJsonAsync<MpmSmartDeviceInfo>();
-
-            if (info is null)
-                continue;
-
-            deviceManager.AddConnectedDevice(new Device()
-            {
-                ConnectionDetails = { { "key", device.Key }, { "ip", device.Ip } },
-                Type = SmartDeviceType.Instance,
-                DeviceInfo = new DeviceInfo
-                {
-                    Name = info.Name,
-                    Description = info.Description,
-                    Type = this,
-                    Parameters = new Dictionary<string, object>(),
-                    Capabilities = info.Capabilities,
-                    Info = new Dictionary<string, string>()
-                    {
-                        { "ip", device.Ip }
-                    }
-                },
-                MetaData = {}
-            });
-        }
+        // var devices = SmartDeviceIndex.Entries;
+        // var deviceManager = sp.GetRequiredService<DeviceManager>();
+        // var deviceTypeRegistry = sp.GetRequiredService<DeviceTypeRegistry>();
+        // var client = new HttpClient();
+        // client.Timeout = TimeSpan.FromSeconds(2);
+        //
+        // foreach (var device in devices.Where(d => deviceManager.ConnectedDevices.All(
+        //              cd => cd.ConnectionDetails.GetValueOrDefault("ip") != d.Ip
+        //                    || cd.Type.GetType() != typeof(SmartDeviceType))))
+        // {
+        //     client.BaseAddress = new Uri($"http://{device.Ip}");
+        //     var infoResponse = await client.GetAsync("/info");
+        //
+        //     if (!infoResponse.IsSuccessStatusCode)
+        //         continue;
+        //
+        //     var info = await infoResponse.Content.ReadFromJsonAsync<MpmSmartDeviceInfo>();
+        //
+        //     if (info is null)
+        //         continue;
+        //
+        //     deviceManager.AddConnectedDevice(new Device()
+        //     {
+        //         ConnectionDetails = { { "key", device.Key }, { "ip", device.Ip } },
+        //         Type = this,
+        //         Info = new DeviceInfo
+        //         {
+        //             Name = info.Name,
+        //             Description = info.Description,
+        //             Type = this,
+        //             Parameters = new Dictionary<string, object>(),
+        //             Capabilities = info.Capabilities,
+        //             Info = new Dictionary<string, string>()
+        //             {
+        //                 { "ip", device.Ip }
+        //             }
+        //         },
+        //         MetaData = {}
+        //     });
+        // }
     }
 }

@@ -14,6 +14,7 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using PluginBase.Services;
 using PluginBase.Services.Devices;
 using PluginBase.Services.Networking;
 using PluginBase.Services.Permissions;
@@ -148,7 +149,9 @@ builder.Services.AddSingleton<IPluginLoader, PluginLoader>();
 
 builder.Services.AddSingleton<NetworkScanner>();
 builder.Services.AddSingleton<DeviceTypeRegistry>();
+builder.Services.AddSingleton<DeviceRegistry>();
 builder.Services.AddSingleton<DeviceManager>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<DeviceManager>());
 
 // ------------------------ Cors ----------------------------------
 
@@ -157,6 +160,7 @@ builder.Services.AddCors();
 // ----------------------------------------------------------------
 
 var app = builder.Build();
+ServiceProviderHelper.Configure(app.Services);
 
 // ----------------------------------------------------------------
 

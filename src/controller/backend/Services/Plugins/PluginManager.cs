@@ -72,6 +72,7 @@ public class PluginManager(
         services.AddSingleton(sp.GetRequiredService<ITelemetryDataCollector>());
         services.AddSingleton(sp.GetRequiredService<NetworkScanner>());
         services.AddSingleton(sp.GetRequiredService<DeviceTypeRegistry>());
+        services.AddSingleton(sp.GetRequiredService<DeviceRegistry>());
         services.AddSingleton(sp.GetRequiredService<DeviceManager>());
 
         services.AddLogging(options =>
