@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Plugins;
+using Shared.Plugins.DataInfo;
 using Shared.Plugins.DataRequest;
 using Shared.Plugins.DataResponse;
 
@@ -74,5 +75,9 @@ public interface IPlugin : IDisposable
     void OnSystemStart(IServiceProvider services);
 
     public Task<DataResponseInfo> GetDataFromPlugin(DataRequestEntry request);
+
+    public Task<DataInfoPluginResponse> GetPluginDataInfo();
+
+    public Task RequestDataFromSensors();
 
 }

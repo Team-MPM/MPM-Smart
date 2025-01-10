@@ -1,9 +1,11 @@
 ﻿using System.Collections.Concurrent;
+using ApiSchema.Plugins.DataInfo;
 using Backend.Services.Plugins;
 using Data.System;
 using Microsoft.AspNetCore.Mvc;
 using PluginBase;
 using Shared.Plugins;
+using Shared.Plugins.DataInfo;
 using Shared.Plugins.DataRequest;
 using Shared.Plugins.DataResponse;
 using ILogger = Serilog.ILogger;
@@ -12,19 +14,36 @@ namespace Backend.Services.PluginDataQuery;
 
 public class DataRequester(IPluginManager pluginManager, ILogger<DataRequester> logger, IServiceProvider sp)
 {
+    public async Task<DataInfoResponse> RequestPluginInfo()
+    {
+        await pluginManager.WaitForPluginInitializationAsync();
+        DataInfoResponse response = new DataInfoResponse();
+        foreach (var plugin in pluginManager.Plugins)
+        {
+            var result = await plugin.GetPluginDataInfo();
+            response.AddRange(result.SensorEntries.Select(e => new DataInfoPluginEntry
+            {
+                SensorName = e.SensorName,
+                RequestableDataTypes = e.RequestableDataTypes,
+                IsSuccessful = result.IsSuccessful,
+                Plugin = plugin.Name,
+                ErrorMessage = result.ErrorMessage
+            }));
+        }
+
+        return response;
+    }
+
     public async Task<DataResponse> RequestPluginData(DataRequest request)
     {
         await pluginManager.WaitForPluginInitializationAsync();
-        DataResponse response = new DataResponse()
-        {
-            Response = new List<DataResponseInfo>()
-        };
+        DataResponse response = new DataResponse();
 
         foreach (var requestEntry in request.Requests)
         {
             if (pluginManager.Plugins.All(s => s.Name != requestEntry.PluginName))
             {
-                response.Response.Add(new DataResponseInfo()
+                response.Add(new DataResponseInfo()
                 {
                     IsSuccessful = false,
                     ErrorMessage = "The specified plugin is not installed!",
@@ -38,7 +57,7 @@ public class DataRequester(IPluginManager pluginManager, ILogger<DataRequester> 
 
             var plugin = pluginManager.Plugins.First(s => s.Name == requestEntry.PluginName);
             var result = await plugin.GetDataFromPlugin(requestEntry);
-            response.Response.Add(result);
+            response.Add(result);
         }
         return response;
     }
@@ -52,5 +71,9 @@ public static class DataRequesterEndpoints
         group.MapGet("/requestData", async (
             [FromServices] DataRequester requester,
             [FromBody] DataRequest request) => await requester.RequestPluginData(request));
+
+        group.MapGet("/info", async (
+            [FromServices] DataRequester requester) => await requester.RequestPluginInfo());
     }
+
 }

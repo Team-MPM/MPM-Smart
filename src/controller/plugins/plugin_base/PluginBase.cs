@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shared.Plugins;
+using Shared.Plugins.DataInfo;
 using Shared.Plugins.DataRequest;
 using Shared.Plugins.DataResponse;
 
@@ -97,12 +98,32 @@ public abstract class PluginBase<T> : IPlugin where T : PluginBase<T>, IDisposab
 
     public virtual async Task<DataResponseInfo> GetDataFromPlugin(DataRequestEntry request)
     {
-        return null;
+        return new DataResponseInfo
+        {
+            IsSuccessful = false,
+            ErrorMessage = "The given Plugin does support this method.",
+            PluginName = request.PluginName,
+            SensorName = request.SensorName,
+            DataName = null,
+            DataType = null
+        };
+
     }
 
-    public virtual bool GetDataFromConnectedDevices()
+    public virtual async Task<DataInfoPluginResponse> GetPluginDataInfo()
     {
-        return false;
+        return new DataInfoPluginResponse
+        {
+            IsSuccessful = false,
+            SensorEntries = new List<DataInfoSensorEntry>(),
+            ErrorMessage = "The given Plugin does support this method."
+        };
+
+    }
+
+    public virtual async Task RequestDataFromSensors()
+    {
+        return;
     }
 
     public virtual void Dispose()

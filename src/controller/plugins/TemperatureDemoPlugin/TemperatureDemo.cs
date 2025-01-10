@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PluginBase;
 using Shared.Plugins;
+using Shared.Plugins.DataInfo;
 using Shared.Plugins.DataRequest;
 using Shared.Plugins.DataResponse;
 using Shared.Services.Permissions;
@@ -77,9 +78,6 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
             return await controller.GenerateNewToken(context, model);
         });
 
-
-
-
         group.MapGet("/sensorentry", async () =>
         {
             var controller = Services!.GetRequiredService<TemperatureSensorController>();
@@ -117,6 +115,26 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
             await dbContext.SaveChangesAsync();
             logger.LogInformation("Added entry!");
         });
+    }
+
+    public override async Task<DataInfoPluginResponse> GetPluginDataInfo()
+    {
+        var result = new DataInfoPluginResponse()
+        {
+            IsSuccessful = true,
+            SensorEntries = new List<DataInfoSensorEntry>()
+        };
+        var dbContext = Services!.GetRequiredService<TemperatureDemoContext>();
+        var sensors = await dbContext.Sensors.ToListAsync();
+        foreach (var sensor in sensors)
+        {
+            result.SensorEntries.Add(new()
+            {
+                SensorName = sensor.Name,
+                RequestableDataTypes = new List<string>() {"TemperatureC", "HumidityPercent"}
+            });
+        }
+        return result;
     }
 
     public override async Task<DataResponseInfo> GetDataFromPlugin(DataRequestEntry request)
@@ -164,14 +182,6 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
                 CaptureDate = s.CaptureDate
             }).ToList()
         };
-    }
-
-    public override bool GetDataFromConnectedDevices()
-    {
-
-
-
-        return default;
     }
 
     protected override void ConfigureServices(IServiceCollection services)

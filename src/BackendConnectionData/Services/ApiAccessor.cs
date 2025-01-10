@@ -1,5 +1,4 @@
 ﻿using System.Net.Http.Json;
-using System.Text.Json;
 using ApiSchema.Enums;
 using ApiSchema.Identity;
 using ApiSchema.Settings;
@@ -228,6 +227,11 @@ public class ApiAccessor
         var response = await GetResponseModel<object>(async (client) => await Client.PostAsJsonAsync($"api/users/{user}/isdarkmode", new UseDarkModeModel() { UseDarkMode = useDarkMode }));
         return ResponseModel<object>.Parse(response);
     }
+
+
+
+    // ---------------------------- PLUGIN DATA ----------------------------
+    
 }
 
 
