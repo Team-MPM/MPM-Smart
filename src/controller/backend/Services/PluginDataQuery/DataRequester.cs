@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using ApiSchema.Plugins.DataInfo;
 using Backend.Services.Plugins;
 using Data.System;
 using Microsoft.AspNetCore.Mvc;
@@ -68,7 +67,7 @@ public static class DataRequesterEndpoints
     public static void MapDataRequesterEndpoints(this IEndpointRouteBuilder endpoints)
     {
         var group = endpoints.MapGroup("/api/data/");
-        group.MapGet("/requestData", async (
+        group.MapPost("/requestData", async (
             [FromServices] DataRequester requester,
             [FromBody] DataRequest request) => await requester.RequestPluginData(request));
 

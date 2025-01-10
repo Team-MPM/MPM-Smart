@@ -1,4 +1,4 @@
-﻿namespace ApiSchema.Plugins.DataInfo;
+﻿namespace Shared.Plugins.DataInfo;
 
 public class DataInfoPluginEntry
 {

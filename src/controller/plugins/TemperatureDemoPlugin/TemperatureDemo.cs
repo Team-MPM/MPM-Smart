@@ -1,6 +1,5 @@
 using System.Reflection;
 using ApiSchema.Sensors.DemoTempSensor;
-using Backend.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,11 +8,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PluginBase;
+using PluginBase.Options;
+using PluginBase.Services.Permissions;
 using Shared.Plugins;
 using Shared.Plugins.DataInfo;
 using Shared.Plugins.DataRequest;
 using Shared.Plugins.DataResponse;
-using Shared.Services.Permissions;
 using Shared.Services.Sensors.TempDemo;
 using TemperatureDemoPlugin.Data;
 using TemperatureDemoPlugin.Endpoints;
@@ -199,6 +199,11 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
     {
         var permissionProvider = ApplicationServices.GetRequiredService<AvailablePermissionProvider>();
         permissionProvider.AddRange("TemperatureDemo", TemperatureClaims.ExportPermissions());
+
+    }
+
+    protected override void OnOptionBuilding(OptionsBuilder builder)
+    {
 
     }
 }
