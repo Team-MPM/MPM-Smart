@@ -3,6 +3,10 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PluginBase.Options;
+using Shared.Plugins;
+using Shared.Plugins.DataInfo;
+using Shared.Plugins.DataRequest;
+using Shared.Plugins.DataResponse;
 
 namespace PluginBase;
 
@@ -90,6 +94,12 @@ public abstract class PluginBase<T> : IPlugin where T : PluginBase<T>, IDisposab
     /// </summary>
     protected abstract void SystemStart();
 
+    /// <summary>
+    /// Specify and map the options for the plugin.
+    /// Services are already configured and built here.
+    /// </summary>
+    protected abstract void OnOptionBuilding(OptionsBuilder builder);
+
     public void OnSystemStart(IServiceProvider services)
     {
         Services = services;
@@ -99,11 +109,35 @@ public abstract class PluginBase<T> : IPlugin where T : PluginBase<T>, IDisposab
         m_Options.Load().ContinueWith(_ => SystemStart());
     }
 
-    /// <summary>
-    /// Specify and map the options for the plugin.
-    /// Services are already configured and built here.
-    /// </summary>
-    protected abstract void OnOptionBuilding(OptionsBuilder builder);
+    public virtual async Task<DataResponseInfo> GetDataFromPlugin(DataRequestEntry request)
+    {
+        return new DataResponseInfo
+        {
+            IsSuccessful = false,
+            ErrorMessage = "The given Plugin does support this method.",
+            PluginName = request.PluginName,
+            SensorName = request.SensorName,
+            DataName = null,
+            DataType = null
+        };
+
+    }
+
+    public virtual async Task<DataInfoPluginResponse> GetPluginDataInfo()
+    {
+        return new DataInfoPluginResponse
+        {
+            IsSuccessful = false,
+            SensorEntries = new List<DataInfoSensorEntry>(),
+            ErrorMessage = "The given Plugin does support this method."
+        };
+
+    }
+
+    public virtual async Task RequestDataFromSensors()
+    {
+        return;
+    }
 
     public virtual void Dispose()
     {

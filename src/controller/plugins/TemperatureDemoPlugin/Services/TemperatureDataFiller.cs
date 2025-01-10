@@ -8,6 +8,7 @@ public class TemperatureDataFiller(TemperatureDemoContext context, ILogger<Tempe
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        return;
         while (!await context.Database.CanConnectAsync(stoppingToken))
         {
             await Task.Delay(1000, stoppingToken);

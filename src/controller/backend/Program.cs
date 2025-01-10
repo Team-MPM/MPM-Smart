@@ -2,6 +2,7 @@ using System.IO.Abstractions;
 using Backend.Endpoints;
 using Backend.Services.Database;
 using Backend.Services.Identity;
+using Backend.Services.PluginDataQuery;
 using Backend.Services.Plugins;
 using Backend.Utils;
 using Data.System;
@@ -142,7 +143,7 @@ builder.Services.AddOpenTelemetry()
 
 builder.Services.AddSingleton<IPluginManager, PluginManager>();
 builder.Services.AddSingleton<IPluginLoader, PluginLoader>();
-
+builder.Services.AddSingleton<DataRequester>();
 
 
 // ------------------------ Cors ----------------------------------
@@ -191,6 +192,7 @@ app.MapSettingsEndpoints();
 app.MapPermissionEndpoints();
 app.MapRoleManagementEndpoint();
 app.MapPluginEndpoints();
+app.MapDataRequesterEndpoints();
 
 app.MapGet("/", () => "Hello World!");
 app.MapGet("/info", () => new
