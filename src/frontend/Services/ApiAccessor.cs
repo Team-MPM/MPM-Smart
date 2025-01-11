@@ -5,6 +5,9 @@ using ApiSchema.Identity;
 using ApiSchema.Plugins;
 using ApiSchema.Settings;
 using ApiSchema.Usermanagement;
+using Shared.Plugins.DataInfo;
+using Shared.Plugins.DataRequest;
+using Shared.Plugins.DataResponse;
 using PermissionsModel = ApiSchema.Usermanagement.PermissionsModel;
 
 namespace Frontend.Services;
@@ -189,6 +192,16 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
     public async Task<ResponseModel<List<PluginInfoDto>>> GetAllPlugins() =>
         await GetResponseModel<List<PluginInfoDto>>(client => client.GetAsync("/api/plugins"));
 
+    public async Task<ResponseModel<List<PluginOptionsDto>>> GetPluginOptions(string pluginGuid) =>
+        await GetResponseModel<List<PluginOptionsDto>>(client => client.GetAsync($"/api/plugins/{pluginGuid}/options"));
+
+    // ---------------------------- PluginData ----------------------------
+
+    public async Task<ResponseModel<DataInfoResponse>> GetPluginDataInfo() =>
+        await GetResponseModel<DataInfoResponse>(client => client.GetAsync("/api/data/info"));
+
+    public async Task<ResponseModel<DataResponse>> GetPluginData(DataRequest request) =>
+        await GetResponseModel<DataResponse>(client => client.PostAsJsonAsync("/api/data/requestData", request));
     public async Task<ResponseModel<List<OptionsDto>>> GetPluginOptions(string pluginGuid) =>
         await GetResponseModel<List<OptionsDto>>(client => client.GetAsync($"/api/plugins/{pluginGuid}/options"));
 

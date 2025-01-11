@@ -4,6 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PluginBase.Services.Devices;
 using PluginBase.Services.Options;
+using PluginBase.Options;
+using Shared.Plugins;
+using Shared.Plugins.DataInfo;
+using Shared.Plugins.DataRequest;
+using Shared.Plugins.DataResponse;
 
 namespace PluginBase;
 
@@ -15,7 +20,7 @@ public abstract class PluginBase<T> : IPlugin where T : PluginBase<T>, IDisposab
 {
     public Guid Guid { get; } = Guid.NewGuid();
     public string Name { get; private set; } = null!;
-    public string RegistryName { get; private set; } = null!;
+    protected string RegistryName { get; private set; } = null!;
     public string Description { get; private set; } = null!;
     public string Author { get; private set; } = null!;
     public string Version { get; private set; } = null!;
@@ -91,6 +96,12 @@ public abstract class PluginBase<T> : IPlugin where T : PluginBase<T>, IDisposab
     /// </summary>
     protected abstract void SystemStart();
 
+    /// <summary>
+    /// Specify and map the options for the plugin.
+    /// Services are already configured and built here.
+    /// </summary>
+    protected abstract void OnOptionBuilding(OptionsBuilder builder);
+
     public void OnSystemStart(IServiceProvider services)
     {
         Services = services;
@@ -101,11 +112,35 @@ public abstract class PluginBase<T> : IPlugin where T : PluginBase<T>, IDisposab
         SystemStart();
     }
 
-    /// <summary>
-    /// Specify and map the options for the plugin.
-    /// Services are already configured and built here.
-    /// </summary>
-    protected abstract void OnOptionBuilding(OptionsBuilder builder);
+    public virtual async Task<DataResponseInfo> GetDataFromPlugin(DataRequestEntry request)
+    {
+        return new DataResponseInfo
+        {
+            IsSuccessful = false,
+            ErrorMessage = "The given Plugin does support this method.",
+            PluginName = request.PluginName,
+            SensorName = request.SensorName,
+            DataName = null,
+            DataType = null
+        };
+
+    }
+
+    public virtual async Task<DataInfoPluginResponse> GetPluginDataInfo()
+    {
+        return new DataInfoPluginResponse
+        {
+            IsSuccessful = false,
+            SensorEntries = new List<DataInfoSensorEntry>(),
+            ErrorMessage = "The given Plugin does support this method."
+        };
+
+    }
+
+    public virtual async Task RequestDataFromSensors()
+    {
+        return;
+    }
 
     public virtual void Dispose()
     {

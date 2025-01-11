@@ -2,6 +2,7 @@ using System.IO.Abstractions;
 using Backend.Endpoints;
 using Backend.Services.Database;
 using Backend.Services.Identity;
+using Backend.Services.PluginDataQuery;
 using Backend.Services.Plugins;
 using Backend.Utils;
 using Data.System;
@@ -154,6 +155,8 @@ builder.Services.AddSingleton<DeviceTypeRegistry>();
 builder.Services.AddSingleton<DeviceRegistry>();
 builder.Services.AddSingleton<DeviceManager>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<DeviceManager>());
+builder.Services.AddSingleton<DataRequester>();
+
 
 // ------------------------ Cors ----------------------------------
 
@@ -202,6 +205,7 @@ app.MapSettingsEndpoints();
 app.MapPermissionEndpoints();
 app.MapRoleManagementEndpoint();
 app.MapPluginEndpoints();
+app.MapDataRequesterEndpoints();
 app.MapDeviceEndpoints();
 
 app.MapGet("/", () => "Hello World!");
