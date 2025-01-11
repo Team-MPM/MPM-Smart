@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using Microsoft.Extensions.DependencyInjection;
 using PluginBase;
+using PluginBase.Services;
 using PluginBase.Services.Devices;
 using PluginBase.Services.Networking;
 using Shared;
@@ -20,7 +21,6 @@ public record MpmSmartDeviceInfo(
 public class SmartDeviceType : IDeviceType
 {
     public required IPlugin Plugin { get; init; }
-    public required IServiceProvider ServiceProvider { get; init; }
 
     private readonly DeviceManager m_DeviceManager;
     private readonly NetworkScanner m_NetworkScanner;
@@ -28,9 +28,9 @@ public class SmartDeviceType : IDeviceType
 
     public SmartDeviceType()
     {
-        m_DeviceManager = ServiceProvider!.GetRequiredService<DeviceManager>();
-        m_NetworkScanner = ServiceProvider!.GetRequiredService<NetworkScanner>();
-        m_HttpClientFactory = ServiceProvider!.GetRequiredService<IHttpClientFactory>();
+        m_DeviceManager = ServiceProviderHelper.GetService<DeviceManager>();
+        m_NetworkScanner = ServiceProviderHelper.GetService<NetworkScanner>();
+        m_HttpClientFactory = ServiceProviderHelper.GetService<IHttpClientFactory>();
     }
 
     public async IAsyncEnumerable<DeviceInfo> ScanAsync()

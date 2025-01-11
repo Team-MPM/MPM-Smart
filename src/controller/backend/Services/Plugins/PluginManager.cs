@@ -17,7 +17,7 @@ public class PluginManager(
 
     private readonly TaskCompletionSource m_PluginsLoaded = new();
 
-    public Task WaitForPluginInitializationAsync() => m_PluginsLoaded.Task;
+    public Task PluginInitializationComplete() => m_PluginsLoaded.Task;
     
     public bool RegisterPlugin(IPlugin plugin, string path)
     {

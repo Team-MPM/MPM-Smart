@@ -8,7 +8,7 @@ public class Device
     public required DeviceInfo Info { get; init; }
 
     [JsonIgnore]
-    public required DeviceState State { get; set; }
+    public DeviceState State { get; set; }
 
     public required DeviceMeta MetaData { get; init; }
 }

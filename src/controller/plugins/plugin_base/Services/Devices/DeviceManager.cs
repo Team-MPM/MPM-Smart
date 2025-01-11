@@ -70,6 +70,8 @@ public class DeviceManager(
                 {
                     logger.LogError(e, "Failed to poll device {Serial}", device.Info.Serial);
                 }
+
+            await deviceRegistry.PersistAllAsync();
         }
         // ReSharper disable once FunctionNeverReturns
     }

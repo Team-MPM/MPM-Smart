@@ -14,6 +14,7 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using PluginBase;
 using PluginBase.Services;
 using PluginBase.Services.Devices;
 using PluginBase.Services.Networking;
@@ -36,6 +37,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<IFileSystem, FileSystem>();
 builder.Services.AddOpenApi();
 builder.Services.AddSignalR();
+builder.Services.AddHttpClient();
 
 // ------------------------ Database ------------------------------
 
