@@ -35,8 +35,12 @@ public class DeviceRegistry
             return;
 
         var path = Path.Combine(BasePath, $"{device.Info.Serial}.json");
-        await using var fs = new FileStream(path, FileMode.OpenOrCreate);
+        var tempPath = Path.Combine(BasePath, $"{device.Info.Serial}.json.tmp");
+
+        await using var fs = new FileStream(tempPath, FileMode.Create, FileAccess.Write);
         await JsonSerializer.SerializeAsync(fs, device);
+
+        File.Move(tempPath, path, overwrite: true);
     }
 
     public async Task PersistAllAsync()
@@ -45,8 +49,12 @@ public class DeviceRegistry
         foreach (var device in m_Devices)
         {
             var path = Path.Combine(BasePath, $"{device.Info.Serial}.json");
-            await using var fs = new FileStream(path, FileMode.OpenOrCreate);
+            var tempPath = Path.Combine(BasePath, $"{device.Info.Serial}.json.tmp");
+
+            await using var fs = new FileStream(tempPath, FileMode.Create, FileAccess.Write);
             await JsonSerializer.SerializeAsync(fs, device);
+
+            File.Move(tempPath, path, overwrite: true);
         }
     }
 
