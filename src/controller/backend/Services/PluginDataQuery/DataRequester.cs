@@ -15,7 +15,7 @@ public class DataRequester(IPluginManager pluginManager, ILogger<DataRequester> 
 {
     public async Task<DataInfoResponse> RequestPluginInfo()
     {
-        await pluginManager.WaitForPluginInitializationAsync();
+        await pluginManager.PluginInitializationComplete();
         DataInfoResponse response = new DataInfoResponse();
         foreach (var plugin in pluginManager.Plugins)
         {
@@ -25,7 +25,7 @@ public class DataRequester(IPluginManager pluginManager, ILogger<DataRequester> 
                 SensorName = e.SensorName,
                 RequestableDataTypes = e.RequestableDataTypes,
                 IsSuccessful = result.IsSuccessful,
-                Plugin = plugin.Name,
+                Plugin = plugin.RegistryName,
                 ErrorMessage = result.ErrorMessage
             }));
         }
@@ -35,7 +35,7 @@ public class DataRequester(IPluginManager pluginManager, ILogger<DataRequester> 
 
     public async Task<DataResponse> RequestPluginData(DataRequest request)
     {
-        await pluginManager.WaitForPluginInitializationAsync();
+        await pluginManager.PluginInitializationComplete();
         DataResponse response = new DataResponse();
 
         foreach (var requestEntry in request.Requests)

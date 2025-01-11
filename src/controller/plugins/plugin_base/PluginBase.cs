@@ -2,10 +2,7 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using PluginBase.Services.Devices;
 using PluginBase.Services.Options;
-using PluginBase.Options;
-using Shared.Plugins;
 using Shared.Plugins.DataInfo;
 using Shared.Plugins.DataRequest;
 using Shared.Plugins.DataResponse;
@@ -20,7 +17,7 @@ public abstract class PluginBase<T> : IPlugin where T : PluginBase<T>, IDisposab
 {
     public Guid Guid { get; } = Guid.NewGuid();
     public string Name { get; private set; } = null!;
-    protected string RegistryName { get; private set; } = null!;
+    public string RegistryName { get; private set; } = null!;
     public string Description { get; private set; } = null!;
     public string Author { get; private set; } = null!;
     public string Version { get; private set; } = null!;

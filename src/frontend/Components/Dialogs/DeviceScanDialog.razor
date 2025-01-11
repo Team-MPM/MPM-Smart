@@ -21,7 +21,8 @@
                     </MudTooltip>
                 </MudTd>
                 <MudTd>
-                    <MudButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary">
+                    <MudButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary"
+                               OnClick="async () => await Connect(context)">
                         Connect
                     </MudButton>
                 </MudTd>
@@ -31,10 +32,14 @@
         {
             <MudText Class="mt-4">Searching...</MudText>
         }
+        @if (m_Error is not null)
+        {
+            <MudText Typo="Typo.body1" Color="Color.Error">@m_Error</MudText>
+        }
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="StartSearch" Color="Color.Info" Disabled="@m_IsLoading">Scan Again</MudButton>
-        <MudButton OnClick="Close" Color="Color.Surface">Close</MudButton>
+        <MudButton OnClick="CloseFail" Color="Color.Surface">Close</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -44,6 +49,7 @@
     private List<DeviceInfoDto> m_Devices = [];
     private HubConnection? m_Connection;
     private bool m_IsLoading = true;
+    private string? m_Error;
 
     protected override async Task OnInitializedAsync()
     {
@@ -61,11 +67,23 @@
             StateHasChanged();
         });
 
+        m_Connection.On("ConnectionFailed", () =>
+        {
+            m_Error = "Connection failed";
+            StateHasChanged();
+        });
+
+        m_Connection.On("ConnectionSucceeded", (DeviceDto device) =>
+        {
+            CloseSuc(device);
+        });
+
         await m_Connection.StartAsync();
         await m_Connection.SendAsync("Scan");
     }
 
-    private void Close() => MudDialog.Close();
+    private void CloseSuc(DeviceDto device) => MudDialog.Close(device);
+    private void CloseFail() => MudDialog.Close();
 
     private async Task StartSearch()
     {
@@ -75,6 +93,18 @@
             m_Devices = [];
             await m_Connection.SendAsync("Scan");
         }
+    }
+
+    private async Task Connect(DeviceInfoDto deviceInfo)
+    {
+        if (m_Connection is null)
+            return;
+
+        // TODO: Implement parameter UI for device connection
+        var parameters = new Dictionary<string, object>();
+        var location = "Living Room";
+
+        await m_Connection.SendAsync("TryConnect", deviceInfo, parameters, location);
     }
 
 }

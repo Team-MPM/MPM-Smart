@@ -7,6 +7,9 @@ public interface IDeviceType
 {
     public IPlugin Plugin { get; }
 
+    public IDictionary<string, string> Parameters { get; }
+    public bool IsSensor { get; }
+
     public IAsyncEnumerable<DeviceInfo> ScanAsync();
 
     public Task<Device?> ConnectAsync(DeviceInfo deviceInfo, DeviceMeta metadata,

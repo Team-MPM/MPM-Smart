@@ -1,6 +1,5 @@
 ﻿@page "/settings/devices"
 @using ApiSchema.Devices
-@using ApiSchema.Plugins
 @using Frontend.Components.Dialogs
 @using Frontend.Services
 @using Microsoft.AspNetCore.SignalR.Client
@@ -11,13 +10,13 @@
 <MudContainer>
     <MudText Typo="Typo.h4">Connected Devices</MudText>
 
-    @if (m_Devices is null)
+    @if (m_Devices.Count == 0)
     {
         <MudProgressCircular Color="Color.Primary"/>
     }
     else
     {
-        <MudTable Items="@m_Devices" Class="mt-4">
+        <MudTable Items="@m_Devices.Values" Class="mt-4">
             <HeaderContent>
                 <MudTh>Device Name</MudTh>
                 <MudTh>Capabilities</MudTh>
@@ -25,12 +24,12 @@
             </HeaderContent>
             <RowTemplate>
                 <MudTd>
-                    <MudTooltip Text="@context.Description">
-                        @context.Name
+                    <MudTooltip Text="@context.DeviceInfo.Description">
+                        @context.DeviceInfo.Name
                     </MudTooltip>
                 </MudTd>
                 <MudTd>
-                    @foreach (var item in context.Capabilities)
+                    @foreach (var item in context.DeviceInfo.Capabilities)
                     {
                         <MudTooltip Text="@item.Value">
                             <MudChip T="string" Label="true" Text="@item.Key"
@@ -61,17 +60,18 @@
 
 @code {
 
-    private List<DeviceInfoDto>? m_Devices;
+    private readonly Dictionary<string, DeviceDto> m_Devices = [];
     private HubConnection? m_Connection;
     private string? m_Error;
 
     protected override async Task OnInitializedAsync()
     {
-        // var res = await Api.GetConnectedDevices();
-        // if (res.Success)
-        //     m_Devices = res.Response;
-        // else
-        //     m_Error = res.Message;
+        var res = await Api.GetConnectedDevices();
+        if (res is { Success: true, Response: not null })
+            foreach (var device in res.Response)
+                m_Devices[device.DeviceInfo.Serial] = device;
+        else
+            m_Error = res.Message;
     }
 
     private async Task OpenDeviceScanDialog(MouseEventArgs obj)
@@ -88,14 +88,7 @@
         var dialog = await DialogService.ShowAsync<DeviceScanDialog>(null, options);
         var result = await dialog.Result;
 
-        if (result?.Canceled is false)
-        {
-            // var res = await Api.GetConnectedDevices();
-            // if (res.Success)
-            //     m_Devices = res.Response;
-            // else
-            //     m_Error = res.Message;
-        }
+        if (result is { Canceled: false, Data: DeviceDto device })
+            m_Devices[device.DeviceInfo.Serial] = device;
     }
-
 }

@@ -1,5 +1,4 @@
 using System.Net.Http.Json;
-using Microsoft.Extensions.DependencyInjection;
 using PluginBase;
 using PluginBase.Services;
 using PluginBase.Services.Devices;
@@ -21,17 +20,12 @@ public record MpmSmartDeviceInfo(
 public class SmartDeviceType : IDeviceType
 {
     public required IPlugin Plugin { get; init; }
+    public IDictionary<string, string> Parameters => new Dictionary<string, string>();
+    public bool IsSensor => true;
 
-    private readonly DeviceManager m_DeviceManager;
-    private readonly NetworkScanner m_NetworkScanner;
-    private readonly IHttpClientFactory m_HttpClientFactory;
-
-    public SmartDeviceType()
-    {
-        m_DeviceManager = ServiceProviderHelper.GetService<DeviceManager>();
-        m_NetworkScanner = ServiceProviderHelper.GetService<NetworkScanner>();
-        m_HttpClientFactory = ServiceProviderHelper.GetService<IHttpClientFactory>();
-    }
+    private readonly DeviceRegistry m_DeviceRegistry = ServiceProviderHelper.GetService<DeviceRegistry>();
+    private readonly NetworkScanner m_NetworkScanner = ServiceProviderHelper.GetService<NetworkScanner>();
+    private readonly IHttpClientFactory m_HttpClientFactory = ServiceProviderHelper.GetService<IHttpClientFactory>();
 
     public async IAsyncEnumerable<DeviceInfo> ScanAsync()
     {
@@ -40,7 +34,7 @@ public class SmartDeviceType : IDeviceType
 
         await foreach (var ip in m_NetworkScanner.ScanTcpAsync(80))
         {
-            if (m_DeviceManager.ConnectedDevices.Any(d =>
+            if (m_DeviceRegistry.Devices.Any(d =>
                 {
                     d.Info.Details.TryGetValue("ip", out var existingIp);
                     return existingIp == ip;
@@ -70,7 +64,6 @@ public class SmartDeviceType : IDeviceType
                 Description = info.Description,
                 Type = this,
                 Serial = info.Serial,
-                Parameters = new Dictionary<string, object>(),
                 Capabilities = info.Capabilities,
                 Details = new Dictionary<string, string>()
                 {
@@ -85,7 +78,7 @@ public class SmartDeviceType : IDeviceType
     {
         var client = m_HttpClientFactory.CreateClient();
 
-        if (m_DeviceManager.ConnectedDevices.Any(d =>
+        if (m_DeviceRegistry.Devices.Any(d =>
             {
                 d.Info.Details.TryGetValue("ip", out var existingIp);
                 return existingIp == deviceInfo.Details["ip"];

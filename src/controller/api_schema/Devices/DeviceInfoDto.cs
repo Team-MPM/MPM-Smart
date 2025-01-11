@@ -2,5 +2,9 @@ namespace ApiSchema.Devices;
 
 public record DeviceInfoDto(
     string Name,
+    string Serial,
     string Description,
-    IDictionary<string, string> Capabilities);
+    string Type,
+    IDictionary<string, string> Capabilities,
+    IDictionary<string, string> Parameters,
+    IDictionary<string, string> Details);

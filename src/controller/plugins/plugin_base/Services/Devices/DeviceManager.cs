@@ -7,20 +7,6 @@ public class DeviceManager(
     DeviceRegistry deviceRegistry,
     ILogger<DeviceManager> logger) : BackgroundService
 {
-    public IReadOnlyList<Device> ConnectedDevices => m_Devices.AsReadOnly();
-
-    private readonly List<Device> m_Devices = [];
-
-    public void AddConnectedDevice(Device device)
-    {
-        m_Devices.Add(device);
-    }
-
-    public bool ConnectToDevice(DeviceInfo deviceInfo)
-    {
-        return true;
-    }
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         // await Task.Delay(2000, stoppingToken);
