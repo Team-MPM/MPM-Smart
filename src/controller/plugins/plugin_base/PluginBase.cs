@@ -109,34 +109,28 @@ public abstract class PluginBase<T> : IPlugin where T : PluginBase<T>, IDisposab
         SystemStart();
     }
 
-    public virtual async Task<DataResponseInfo> GetDataFromPlugin(DataRequestEntry request)
-    {
-        return new DataResponseInfo
+    public virtual Task<DataResponseInfo> GetDataFromPlugin(DataRequestEntry request) =>
+        Task.FromResult(new DataResponseInfo
         {
             IsSuccessful = false,
             ErrorMessage = "The given Plugin does support this method.",
             PluginName = request.PluginName,
-            SensorName = request.SensorName,
-            DataName = null,
-            DataType = null
-        };
+            DataPoint = request.DataPoint,
+            DataName = null!,
+            DataType = null!
+        });
 
-    }
-
-    public virtual async Task<DataInfoPluginResponse> GetPluginDataInfo()
-    {
-        return new DataInfoPluginResponse
+    public virtual Task<DataInfoPluginResponse> GetPluginDataInfo() =>
+        Task.FromResult(new DataInfoPluginResponse
         {
             IsSuccessful = false,
-            SensorEntries = new List<DataInfoSensorEntry>(),
+            SensorEntries = [],
             ErrorMessage = "The given Plugin does support this method."
-        };
+        });
 
-    }
-
-    public virtual async Task RequestDataFromSensors()
+    public virtual Task RequestDataFromSensors()
     {
-        return;
+        return Task.CompletedTask;
     }
 
     public virtual void Dispose()

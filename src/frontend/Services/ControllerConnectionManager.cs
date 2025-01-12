@@ -39,7 +39,7 @@ public class ControllerConnectionManager(IServiceProvider sp)
         var protocol = details.UseHttps ? "https" : "http";
         m_Uri = new Uri($"{protocol}://{details.Address}:{details.Port}/");
         m_Client.BaseAddress = m_Uri;
-        m_Client.Timeout = TimeSpan.FromSeconds(5);
+        m_Client.Timeout = TimeSpan.FromMinutes(1);
 
         HttpResponseMessage res;
 

@@ -22,7 +22,7 @@ public class DataRequester(IPluginManager pluginManager, ILogger<DataRequester> 
             var result = await plugin.GetPluginDataInfo();
             response.AddRange(result.SensorEntries.Select(e => new DataInfoPluginEntry
             {
-                SensorName = e.SensorName,
+                DataPoint = e.DataPoint,
                 RequestableDataTypes = e.RequestableDataTypes,
                 IsSuccessful = result.IsSuccessful,
                 Plugin = plugin.RegistryName,
@@ -40,7 +40,7 @@ public class DataRequester(IPluginManager pluginManager, ILogger<DataRequester> 
 
         foreach (var requestEntry in request.Requests)
         {
-            if (pluginManager.Plugins.All(s => s.Name != requestEntry.PluginName))
+            if (pluginManager.Plugins.All(s => s.RegistryName != requestEntry.PluginName))
             {
                 response.Add(new DataResponseInfo()
                 {
@@ -49,12 +49,12 @@ public class DataRequester(IPluginManager pluginManager, ILogger<DataRequester> 
                     DataName = "",
                     DataType = "",
                     PluginName = requestEntry.PluginName,
-                    SensorName = ""
+                    DataPoint = ""
                 });
                 continue;
             }
 
-            var plugin = pluginManager.Plugins.First(s => s.Name == requestEntry.PluginName);
+            var plugin = pluginManager.Plugins.First(s => s.RegistryName == requestEntry.PluginName);
             var result = await plugin.GetDataFromPlugin(requestEntry);
             response.Add(result);
         }

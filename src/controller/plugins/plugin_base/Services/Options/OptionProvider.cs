@@ -40,7 +40,7 @@ public class OptionProvider(string path)
             OptionValues = options!;
             Validate();
         }
-        catch (Exception e)
+        catch (Exception)
         {
             // ignored
         }
@@ -62,7 +62,7 @@ public class OptionProvider(string path)
             await using var file = new StreamWriter(path);
             await JsonSerializer.SerializeAsync(file.BaseStream, OptionValues);
         }
-        catch (Exception e)
+        catch (Exception)
         {
             // ignored
         }
