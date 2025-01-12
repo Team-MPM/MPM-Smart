@@ -2,8 +2,7 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using PluginBase.Options;
-using Shared.Plugins;
+using PluginBase.Services.Options;
 using Shared.Plugins.DataInfo;
 using Shared.Plugins.DataRequest;
 using Shared.Plugins.DataResponse;
@@ -18,7 +17,7 @@ public abstract class PluginBase<T> : IPlugin where T : PluginBase<T>, IDisposab
 {
     public Guid Guid { get; } = Guid.NewGuid();
     public string Name { get; private set; } = null!;
-    protected string RegistryName { get; private set; } = null!;
+    public string RegistryName { get; private set; } = null!;
     public string Description { get; private set; } = null!;
     public string Author { get; private set; } = null!;
     public string Version { get; private set; } = null!;
@@ -103,40 +102,35 @@ public abstract class PluginBase<T> : IPlugin where T : PluginBase<T>, IDisposab
     public void OnSystemStart(IServiceProvider services)
     {
         Services = services;
-        var optionBuilder = new OptionsBuilder(Name);
+        var optionBuilder = new OptionsBuilder(RegistryName);
         OnOptionBuilding(optionBuilder);
         m_Options = optionBuilder.Build();
-        m_Options.Load().ContinueWith(_ => SystemStart());
+        m_Options.Load().Wait();
+        SystemStart();
     }
 
-    public virtual async Task<DataResponseInfo> GetDataFromPlugin(DataRequestEntry request)
-    {
-        return new DataResponseInfo
+    public virtual Task<DataResponseInfo> GetDataFromPlugin(DataRequestEntry request) =>
+        Task.FromResult(new DataResponseInfo
         {
             IsSuccessful = false,
             ErrorMessage = "The given Plugin does support this method.",
             PluginName = request.PluginName,
-            SensorName = request.SensorName,
-            DataName = null,
-            DataType = null
-        };
+            DataPoint = request.DataPoint,
+            DataName = null!,
+            DataType = null!
+        });
 
-    }
-
-    public virtual async Task<DataInfoPluginResponse> GetPluginDataInfo()
-    {
-        return new DataInfoPluginResponse
+    public virtual Task<DataInfoPluginResponse> GetPluginDataInfo() =>
+        Task.FromResult(new DataInfoPluginResponse
         {
             IsSuccessful = false,
-            SensorEntries = new List<DataInfoSensorEntry>(),
+            SensorEntries = [],
             ErrorMessage = "The given Plugin does support this method."
-        };
+        });
 
-    }
-
-    public virtual async Task RequestDataFromSensors()
+    public virtual Task RequestDataFromSensors()
     {
-        return;
+        return Task.CompletedTask;
     }
 
     public virtual void Dispose()

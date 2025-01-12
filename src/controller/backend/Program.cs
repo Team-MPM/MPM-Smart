@@ -15,6 +15,10 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using PluginBase;
+using PluginBase.Services;
+using PluginBase.Services.Devices;
+using PluginBase.Services.Networking;
 using PluginBase.Services.Permissions;
 using PluginBase.Services.Telemetry;
 using Serilog;
@@ -33,6 +37,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<IFileSystem, FileSystem>();
 builder.Services.AddOpenApi();
+builder.Services.AddSignalR();
+builder.Services.AddHttpClient();
 
 // ------------------------ Database ------------------------------
 
@@ -143,6 +149,12 @@ builder.Services.AddOpenTelemetry()
 
 builder.Services.AddSingleton<IPluginManager, PluginManager>();
 builder.Services.AddSingleton<IPluginLoader, PluginLoader>();
+
+builder.Services.AddSingleton<NetworkScanner>();
+builder.Services.AddSingleton<DeviceTypeRegistry>();
+builder.Services.AddSingleton<DeviceRegistry>();
+builder.Services.AddSingleton<DeviceManager>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<DeviceManager>());
 builder.Services.AddSingleton<DataRequester>();
 
 
@@ -153,6 +165,7 @@ builder.Services.AddCors();
 // ----------------------------------------------------------------
 
 var app = builder.Build();
+ServiceProviderHelper.Configure(app.Services);
 
 // ----------------------------------------------------------------
 
@@ -193,6 +206,7 @@ app.MapPermissionEndpoints();
 app.MapRoleManagementEndpoint();
 app.MapPluginEndpoints();
 app.MapDataRequesterEndpoints();
+app.MapDeviceEndpoints();
 
 app.MapGet("/", () => "Hello World!");
 app.MapGet("/info", () => new

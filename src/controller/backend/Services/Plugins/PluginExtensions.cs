@@ -1,4 +1,6 @@
-﻿namespace Backend.Services.Plugins;
+﻿using PluginBase;
+
+namespace Backend.Services.Plugins;
 
 public static class PluginExtensions
 {

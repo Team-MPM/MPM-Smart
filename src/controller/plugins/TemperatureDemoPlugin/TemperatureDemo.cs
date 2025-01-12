@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PluginBase;
-using PluginBase.Options;
+using PluginBase.Services.Options;
 using PluginBase.Services.Permissions;
 using Shared.Plugins;
 using Shared.Plugins.DataInfo;
@@ -122,7 +122,7 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
         var result = new DataInfoPluginResponse()
         {
             IsSuccessful = true,
-            SensorEntries = new List<DataInfoSensorEntry>()
+            SensorEntries = new List<DataPointEntry>()
         };
         var dbContext = Services!.GetRequiredService<TemperatureDemoContext>();
         var sensors = await dbContext.Sensors.ToListAsync();
@@ -130,7 +130,7 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
         {
             result.SensorEntries.Add(new()
             {
-                SensorName = sensor.Name,
+                DataPoint = sensor.Name,
                 RequestableDataTypes = new List<string>() {"TemperatureC", "HumidityPercent"}
             });
         }
@@ -143,7 +143,7 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
         Type? dataType = Type.GetType("string");
         var data = await dbContext.DataEntries
             .Include(s => s.Sensor)
-            .Where(s => s.Sensor.Name == request.SensorName)
+            .Where(s => s.Sensor.Name == request.DataPoint)
             .Where(s => s.CaptureTime > request.StartDate && s.CaptureTime < request.EndDate)
             .ToListAsync();
 
@@ -173,13 +173,13 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
         {
             IsSuccessful = true,
             PluginName = Name,
-            SensorName = request.SensorName,
+            DataPoint = request.DataPoint,
             DataName = request.RequestedDataType,
             DataType = dataType!.ToString(),
             Data = propertyValues.Select(s => new DataResponseEntry
             {
                 Data = s.Data!,
-                CaptureDate = s.CaptureDate
+                TimeStampUtc = s.CaptureDate
             }).ToList()
         };
     }

@@ -136,3 +136,15 @@ code {
     display: flex;
    justify-content: space-between;
 }
+
+.text-accent {
+    color: var(--mud-palette-accent, #1976d2);
+}
+
+.underline {
+    text-decoration: underline;
+}
+
+.bold {
+    font-weight: bold;
+}

@@ -1,0 +1,136 @@
+﻿@page "/device"
+@using ApiSchema.Devices
+@using Frontend.Services
+@using Shared
+@inject IDialogService DialogService
+@inject ApiAccessor Api
+@inject NavigationManager Nav
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudText Typo="Typo.h4" Class="mb-3">
+            Device: @Name
+        </MudText>
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudCard>
+            <MudCardContent>
+                <MudGrid>
+                    <MudItem xs="12" lg="8">
+                        <MudText Typo="Typo.body1" Class="mb-2">
+                            <span class="bold">Serial:</span> @Serial
+                        </MudText>
+                        @if (DeviceDto is not null)
+                        {
+                            <MudText Typo="Typo.body1" Class="mb-2">
+                                <span class="bold">Type:</span> @DeviceDto.DeviceInfo.Type
+                            </MudText>
+                            <MudText Typo="Typo.body1" Class="mb-2">
+                                <span class="bold">Location:</span> @DeviceDto.Location
+                            </MudText>
+                            <MudHidden Breakpoint="Breakpoint.MdAndUp">
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Class="mb-3">
+                                    <MudIcon Style="font-size: 1rem"
+                                             Icon="@Icons.Material.Filled.Circle"
+                                             Color="@(GetStateColor(DeviceDto.State))"/>
+                                    <MudText Typo="Typo.body1" Class="state-text">
+                                        <span class="bold">State:</span> @DeviceDto.State
+                                    </MudText>
+                                </MudStack>
+                                <MudChipSet T="string">
+                                    @foreach (var item in DeviceDto.DeviceInfo.Capabilities)
+                                    {
+                                        <MudChip T="string" Label="true" Text="@item.Key" Color="Color.Success"/>
+                                    }
+                                </MudChipSet>
+                            </MudHidden>
+                        }
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        @if (DeviceDto is not null)
+                        {
+                            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Class="my-3">
+                                    <MudIcon Style="font-size: 1rem"
+                                             Icon="@Icons.Material.Filled.Circle"
+                                             Color="@(GetStateColor(DeviceDto.State))"/>
+                                    <MudText Typo="Typo.body1" Class="state-text">
+                                        <span class="bold">State:</span> @DeviceDto.State
+                                    </MudText>
+                                </MudStack>
+                                <MudChipSet T="string">
+                                    @foreach (var item in DeviceDto.DeviceInfo.Capabilities)
+                                    {
+                                        <MudChip T="string" Label="true" Text="@item.Key" Color="Color.Success"/>
+                                    }
+                                </MudChipSet>
+                            </MudHidden>
+                        }
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    @foreach (var item in Enumerable.Range(1, 30))
+    {
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard>
+                <MudCardContent>
+                    <MudText Typo="Typo.subtitle1">Chart @item</MudText>
+                    <MudChart ChartType="ChartType.Line" ChartSeries="@m_Data" XAxisLabels="@m_XAxisLabels"
+                              Width="100%"/>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    }
+</MudGrid>
+
+@code {
+
+    private readonly List<ChartSeries> m_Data =
+    [
+        new() { Name = "Fossil", Data = [90, 79, 72, 69, 62, 62, 55, 65, 70] },
+        new() { Name = "Renewable", Data = [10, 41, 35, 51, 49, 62, 69, 91, 148] }
+    ];
+
+    private readonly string[] m_XAxisLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"];
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "name")]
+    public string? Name { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "serial")]
+    public string? Serial { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "plugin")]
+    public string? PluginRegistryName { get; set; }
+
+    private DeviceDto? DeviceDto { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Serial is null)
+        {
+            Nav.NavigateTo("/error");
+            return;
+        }
+
+        var res = await Api.GetDevice(Serial);
+        DeviceDto = res is { Success: true, Response: not null } ? res.Response : null;
+    }
+
+    private Color GetStateColor(DeviceState state) =>
+        state switch
+        {
+            DeviceState.Disconnected => Color.Warning,
+            DeviceState.Connected => Color.Success,
+            DeviceState.Disabled => Color.Dark,
+            DeviceState.Error => Color.Error,
+            DeviceState.Unauthorized => Color.Error,
+            _ => throw new ArgumentOutOfRangeException(nameof(state), state, null)
+        };
+
+}

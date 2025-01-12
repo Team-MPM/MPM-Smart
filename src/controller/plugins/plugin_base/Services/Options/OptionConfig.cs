@@ -1,4 +1,4 @@
-namespace PluginBase.Options;
+namespace PluginBase.Services.Options;
 
 public enum OptionUiElement
 {

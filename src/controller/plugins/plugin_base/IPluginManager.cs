@@ -1,6 +1,6 @@
-﻿using PluginBase;
+﻿using Microsoft.AspNetCore.Routing;
 
-namespace Backend.Services.Plugins;
+namespace PluginBase;
 
 public interface IPluginManager : IDisposable
 {
@@ -39,5 +39,5 @@ public interface IPluginManager : IDisposable
     /// Can be used to wait for the Plugin System to finish initializing.
     /// </summary>
     /// <returns>Task representing the wait operation</returns>
-    public Task WaitForPluginInitializationAsync();
+    public Task PluginInitializationComplete();
 }

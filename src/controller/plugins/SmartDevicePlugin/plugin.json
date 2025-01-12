@@ -1,0 +1,7 @@
+﻿{
+  "Name": "Smart Devices Core",
+  "RegistryName": "mpm-smart-devices-core",
+  "Description": "Enables the use of first party Mpm Smart Devices.",
+  "Author": "Gabriel Martin",
+  "Version": "0.0.1"
+}

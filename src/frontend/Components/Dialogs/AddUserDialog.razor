@@ -1,5 +1,4 @@
-﻿@using ApiSchema.DeviceOptions
-@inject IDialogService DialogService
+﻿@inject IDialogService DialogService
 
 <MudDialog>
     <TitleContent>
@@ -21,7 +20,6 @@
 
 @code {
     [CascadingParameter] private MudDialogInstance? MudDialog { get; set; }
-    [Parameter] public required DeviceOptions DeviceOptions { get; set; }
 
     private string NameBinding { get; set; } = "Enter username";
     private bool IsAdminBinding { get; set; } = false;

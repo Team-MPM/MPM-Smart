@@ -1,8 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 
-namespace PluginBase.Options;
+namespace PluginBase.Services.Options;
 
 public class OptionProvider(string path)
 {
@@ -41,7 +40,7 @@ public class OptionProvider(string path)
             OptionValues = options!;
             Validate();
         }
-        catch (Exception e)
+        catch (Exception)
         {
             // ignored
         }
@@ -63,7 +62,7 @@ public class OptionProvider(string path)
             await using var file = new StreamWriter(path);
             await JsonSerializer.SerializeAsync(file.BaseStream, OptionValues);
         }
-        catch (Exception e)
+        catch (Exception)
         {
             // ignored
         }

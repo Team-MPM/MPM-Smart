@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
+using PluginBase;
 using PluginBase.Services.Telemetry;
 
 namespace PluginTests.Fixtures;

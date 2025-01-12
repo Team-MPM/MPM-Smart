@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using PluginBase;
 using MpmSmart.PluginTemplate.Endpoints;
-using PluginBase.Options;
+using PluginBase.Services.Options;
 
 namespace MpmSmart.PluginTemplate;
 

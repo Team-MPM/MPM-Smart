@@ -2,6 +2,9 @@
   <Folder Name="/Src/">
     <Project Path="src\frontend\Frontend.csproj" Type="Classic C#" />
   </Folder>
+  <Folder Name="/Src/BuildTasks/">
+    <Project Path="src\build-tasks\ReadJsonFileTask\ReadJsonFileTask.csproj" Type="Classic C#" />
+  </Folder>
   <Folder Name="/Src/Controller/">
     <Project Path="src\controller\api_schema\ApiSchema.csproj" Type="Classic C#" />
     <Project Path="src\controller\backend\Backend.csproj" Type="Classic C#" />
@@ -9,11 +12,21 @@
     <Project Path="src\controller\data\Data.csproj" Type="Classic C#" />
     <Project Path="src\controller\Shared\Shared.csproj" Type="Classic C#" />
   </Folder>
-  <Folder Name="/Src/Controller/Plugins/">
+  <Folder Name="/Src/Controller/Plugins/" />
+  <Folder Name="/Src/Controller/Plugins/Core/">
     <Project Path="src\controller\plugins\MigrationHost\MigrationHost.csproj" Type="Classic C#" />
+    <Project Path="src\controller\plugins\PluginTemplate\PluginTemplate.csproj" Type="Classic C#" />
     <Project Path="src\controller\plugins\plugin_base\PluginBase.csproj" Type="Classic C#" />
-    <Project Path="src\controller\plugins\TelemetryPlugin\TelemetryPlugin.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/Src/Controller/Plugins/Demo/">
+    <Project Path="src\controller\plugins\TemperatureDemoPlugin\TemperatureDemoPlugin.csproj" Type="Classic C#" />
     <Project Path="src\controller\plugins\test_plugin\TestPlugin.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/Src/Controller/Plugins/Other/">
+    <Project Path="src\controller\plugins\TelemetryPlugin\TelemetryPlugin.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/Src/Controller/Plugins/SmartDevices/">
+    <Project Path="src\controller\plugins\SmartDevicePlugin\SmartDevicePlugin.csproj" Type="Classic C#" />
   </Folder>
   <Folder Name="/Src/Server/">
     <Project Path="src\server\ServerHost\ServerHost.csproj" Type="Classic C#" />

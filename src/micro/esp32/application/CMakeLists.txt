@@ -3,6 +3,7 @@ idf_component_register(
             "application.c"
             "system_config.c"
             "file.c"
+            "crypto.c"
         INCLUDE_DIRS "include"
         REQUIRES
             "dht"

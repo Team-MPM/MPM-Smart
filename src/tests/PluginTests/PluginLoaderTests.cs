@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
+using PluginBase;
 using PluginTests.Fixtures;
 using Xunit;
 

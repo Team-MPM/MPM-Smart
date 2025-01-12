@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using PluginBase.Options;
-using Shared.Plugins;
 using Shared.Plugins.DataInfo;
 using Shared.Plugins.DataRequest;
 using Shared.Plugins.DataResponse;
+using PluginBase.Services.Options;
 
 namespace PluginBase;
 
@@ -21,6 +20,11 @@ public interface IPlugin : IDisposable
     /// Gets the formatted name of the plugin.
     /// </summary>
     string Name { get; }
+
+    /// <summary>
+    /// Gets the normalized name of the plugin in the registry.
+    /// </summary>
+    string RegistryName { get; }
 
     /// <summary>
     /// Gets the description of the plugin.
