@@ -213,4 +213,7 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
 
     public async Task<ResponseModel<List<SensorDto>>> GetAllSensors() =>
         await GetResponseModel<List<SensorDto>>(client => client.GetAsync("/api/sensors"));
+
+    public async Task<ResponseModel<DeviceDto>> GetDevice(string serial) =>
+        await GetResponseModel<DeviceDto>(client => client.GetAsync($"/api/device/{serial}"));
 }

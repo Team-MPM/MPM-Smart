@@ -11,11 +11,17 @@ public static class DeviceEndpoints
     public static IEndpointRouteBuilder MapDeviceEndpoints(this IEndpointRouteBuilder endpoints)
     {
         endpoints.MapGet("/api/devices", GetAllDevices);
+        endpoints.MapGet("/api/device/{serial}", GetDeviceBySerial);
         endpoints.MapGet("/api/sensors", GetAllSensors);
         endpoints.MapGet("/api/devices/scan", ScanDevices);
         endpoints.MapHub<DeviceHub>("/hubs/devices");
         return endpoints;
     }
+
+    private static IResult GetDeviceBySerial([FromRoute] string serial, [FromServices] DeviceRegistry registry) =>
+        registry.Devices.FirstOrDefault(d => d.Info.Serial == serial) is not Device device
+            ? Results.NotFound()
+            : Results.Json(device.MapToDto());
 
     private static IResult GetAllSensors([FromServices] DeviceRegistry registry) =>
         Results.Json(registry.Devices
