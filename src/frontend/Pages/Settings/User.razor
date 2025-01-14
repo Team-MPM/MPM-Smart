@@ -1,54 +1,36 @@
 ﻿@page "/Settings/User"
+@using Frontend.Services
+@using MudBlazor
 
-<MudContainer Class="p-4" MaxWidth="MaxWidth.Large">
-    <MudText Typo="Typo.h4">User-Settings</MudText>
-    <MudAvatar Style="margin: 10px" Color="Color.Primary">D</MudAvatar>
+@inject ApiAccessor accessor
 
-    <MudCard Class="m-3" Style=" width: 30%; background-color: #3b3432; margin: 10px">
-        <MudCardContent>
-            <MudTextField Label="Benutzername" Placeholder="Enter username" Value="username"/>
-        </MudCardContent>
-    </MudCard>
-    <MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
-        <MudCardContent>
-            <MudTextField Label="Passwort" Placeholder="Enter password" Value="passwort"/>
-        </MudCardContent>
-    </MudCard>
-    <MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
-        <MudCardContent>
-            <MudGrid Justify="Justify.SpaceBetween" AlignItems="Center" AlginContent="Center">
-                <MudItem>
-                    <text style="color: white;">Light Modus</text>
-                </MudItem>
-                <MudItem Style="display: flex; justify-content: center; align-items: center;">
-                    <MudIcon Icon="@Icons.Material.Filled.ToggleOn"/>
-                </MudItem>
-            </MudGrid>
-        </MudCardContent>
-    </MudCard>
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-6">
+    
+    <MudText Typo="Typo.h5" Align="Align.Left" Class="mb-4">Benutzer Einstellungen</MudText>
 
+    <MudPaper Class="p-2 mb-4" Elevation="2">
+        <MudStack Spacing="1" Row="true" AlignItems="AlignItems.Start" Justify="Justify.FlexStart">
+            <MudTextField Label="Benutzername" Variant="Variant.Outlined" @bind-Value="username" FullWidth="true"/>
+        </MudStack>
+    </MudPaper>
 
-    <MudCard Style="width: 30%; background-color: #3b3432; margin: 10px;">
-        <MudCardContent>
-            <MudRadio Color="Color.Primary" Value="true">
-                <MudText Style="font-size: 0.8rem;">Deutsch</MudText>
-            </MudRadio>
-        </MudCardContent>
-        <MudCardContent>
-            <MudRadio Color="Color.Primary" Value="true">
-                <MudText Style="font-size: 0.8rem;">Englisch</MudText>
-            </MudRadio>
-        </MudCardContent>
-        <MudCardContent>
-            <MudRadio Color="Color.Primary" Value="true">
-                <MudText Style="font-size: 0.8rem;">Polnisch</MudText>
-            </MudRadio>
-        </MudCardContent>
-    </MudCard>
+    <MudPaper Class="p-2 mb-4" Elevation="2">
+        <MudStack Spacing="1" Row="true" AlignItems="AlignItems.Start" Justify="Justify.FlexStart">
+            <MudTextField Label="Passwort" Variant="Variant.Outlined" InputType="InputType.Password" @bind-Value="password" FullWidth="true"/>
+        </MudStack>
+    </MudPaper>
+
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" OnClick="SaveSettings">Einstellungen speichern</MudButton>
+
 </MudContainer>
 
 @code {
-    string username = "detrax";
-    string passwort = "*************";
-    bool Label_Switch1 = false;
+    private string username = "detrax";
+    private string password = "********";
+
+    private async Task SaveSettings()
+    {
+        await accessor.SetUsername(username);
+        await accessor.SetPassword(password, password);
+    }
 }
