@@ -1,4 +1,5 @@
 ﻿@page "/Settings/User"
+@using ApiSchema.Enums
 @using Frontend.Services
 @using MudBlazor
 
@@ -20,17 +21,56 @@
         </MudStack>
     </MudPaper>
 
+    <MudPaper Class="p-2 mb-4" Elevation="2">
+        <MudStack Spacing="1" Row="true" AlignItems="AlignItems.Start" Justify="Justify.FlexStart">
+            <MudSelect T="string" Label="Zeitzone auswählen" Variant="Variant.Outlined" @bind-Value="selectedLanguage">
+                @foreach (var language in Languages)
+                {
+                    <MudSelectItem T="string" Value="language">@language</MudSelectItem>
+                }
+            </MudSelect>
+        </MudStack>
+    </MudPaper>
+
     <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" OnClick="SaveSettings">Einstellungen speichern</MudButton>
 
 </MudContainer>
-
+<div>@ErrorMessageUserName</div>
+<div>@ErrorMessagePassword</div>
 @code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        var responeUsername = await accessor.GetUserData();
+        if (responeUsername.Response is null)
+            return;
+        username = responeUsername.Response.Username;
+        selectedLanguage = responeUsername.Response.Language.ToString();
+
+    }
+
+
     private string username = "detrax";
     private string password = "********";
+    private string selectedLanguage = "Deutsch";
+    private string ErrorMessageUserName = "";
+    private string ErrorMessagePassword = "";
+    
+    
+    private List<string> Languages = new()
+    {
+        "Deutsch", "Englisch", "Polnisch"
+    };
 
+    
     private async Task SaveSettings()
     {
-        await accessor.SetUsername(username);
-        await accessor.SetPassword(password, password);
+        var responseU = await accessor.SetUsername(username);
+        if (!responseU.Success)
+            ErrorMessageUserName = responseU.Message!;
+        var responseP = await accessor.SetPassword(password, password);
+        if (!responseP.Success)
+            ErrorMessagePassword = responseP.Message!;
     }
+    
 }
