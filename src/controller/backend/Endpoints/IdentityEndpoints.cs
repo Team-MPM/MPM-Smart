@@ -46,7 +46,7 @@ public static class IdentityEndpoints
             var token = handler.CreateToken(new SecurityTokenDescriptor
             {
                 Subject = claims,
-                Expires = DateTime.UtcNow.AddDays(1),
+                Expires = DateTime.UtcNow.AddDays(2),
                 SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.RsaSha256)
             });
 

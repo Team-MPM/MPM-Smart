@@ -56,11 +56,11 @@ public class ResponseModel<T> : ResponseModel where T : class
         return this;
     }
 
-    public new ResponseModel<T> ServerError(HttpResponseMessage? response)
+    public new async Task<ResponseModel<T>> ServerError(HttpResponseMessage? response)
     {
         Success = false;
         StatusCode = response?.StatusCode;
-        Message = response?.ReasonPhrase;
+        Message = await response?.Content.ReadAsStringAsync();
         return this;
     }
 

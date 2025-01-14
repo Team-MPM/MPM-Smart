@@ -43,7 +43,7 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         {
             var response = await request(Client);
             return !response.IsSuccessStatusCode
-                ? new ResponseModel<T>().ServerError(response)
+                ? await new ResponseModel<T>().ServerError(response)
                 : await new ResponseModel<T>().SuccessResultAsync(response);
         }
         catch (Exception e)

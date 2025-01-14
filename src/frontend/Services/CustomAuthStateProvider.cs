@@ -2,13 +2,15 @@
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Frontend.Services;
 
 public class CustomAuthStateProvider(
     ControllerConnectionManager controllerConnectionManager,
-    ILogger<CustomAuthStateProvider> logger)
+    ILogger<CustomAuthStateProvider> logger,
+    NavigationManager Nav)
     : AuthenticationStateProvider
 {
     public ClaimsPrincipal? User { get; private set; }
@@ -28,6 +30,13 @@ public class CustomAuthStateProvider(
 
         try
         {
+            var jwtToken = new JwtSecurityToken(token);
+            if(!CheckTokenValidity(jwtToken))
+            {
+                logger.LogInformation("Token expired, returning anonymous user.");
+                User = new ClaimsPrincipal(new ClaimsIdentity());
+                return Task.FromResult(new AuthenticationState(User));
+            }
             var identity = new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt");
             User = new ClaimsPrincipal(identity);
             logger.LogInformation("Returning authenticated user.");
@@ -41,8 +50,20 @@ public class CustomAuthStateProvider(
         }
     }
 
+    private bool CheckTokenValidity(JwtSecurityToken token) => token.ValidTo > DateTime.UtcNow;
+
     public void NotifyUserAuthentication(string token)
     {
+        Console.WriteLine(token);
+        token = token.Replace("\"", "");
+        Console.WriteLine(token);
+        if (!CheckTokenValidity(new JwtSecurityToken(token.Replace("\"", ""))))
+        {
+            logger.LogInformation("Token expired, returning anonymous user.");
+            User = new ClaimsPrincipal(new ClaimsIdentity());
+            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(User)));
+            return;
+        }
         var identity = new ClaimsIdentity(ParseClaimsFromJwt(token), "Bearer");
         User = new ClaimsPrincipal(identity);
 
