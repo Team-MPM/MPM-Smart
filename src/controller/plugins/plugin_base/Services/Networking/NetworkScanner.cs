@@ -28,7 +28,7 @@ public partial class NetworkScanner(ILogger<NetworkScanner> logger)
         var output = await process.StandardOutput.ReadToEndAsync();
         await process.WaitForExitAsync();
 
-        logger.LogInformation("'ip a' output: {output}", output);
+        logger.LogInformation("'ip a' output: {Output}", output);
 
         foreach (Match match in Ipv4Regex().Matches(output))
             if (match.Groups.Count > 2)
@@ -52,7 +52,7 @@ public partial class NetworkScanner(ILogger<NetworkScanner> logger)
                 continue;
             }
 
-            logger.LogInformation("Scanning subnet: {subnet}", subnet);
+            logger.LogInformation("Scanning subnet: {Subnet}", subnet);
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -70,13 +70,16 @@ public partial class NetworkScanner(ILogger<NetworkScanner> logger)
             var output = await process.StandardOutput.ReadToEndAsync();
             await process.WaitForExitAsync();
 
-            logger.LogInformation("Nmap output: {output}", output);
+            logger.LogInformation("Nmap output: {Output}", output);
 
             var regex = NmapRegex();
 
             foreach (Match match in regex.Matches(output))
-                if (match.Groups.Count > 1)
-                    yield return match.Groups[1].Value;
+            {
+                if (match.Groups.Count <= 1) continue;
+                logger.LogInformation("Nmap result entry: {Entry}", match.Groups[1].Value);
+                yield return match.Groups[1].Value;
+            }
         }
     }
 

@@ -21,8 +21,11 @@
                     </MudTooltip>
                 </MudTd>
                 <MudTd>
+                    @{
+                        var localContext = context;
+                    }
                     <MudButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary"
-                               OnClick="async () => await Connect(context)">
+                               OnClick="async () => await Connect(localContext)">
                         Connect
                     </MudButton>
                 </MudTd>
@@ -97,14 +100,20 @@
 
     private async Task Connect(DeviceInfoDto deviceInfo)
     {
-        if (m_Connection is null)
+        Console.WriteLine("Connecting to device: " + deviceInfo.Name);
+        
+        if (m_Connection?.State is not HubConnectionState.Connected)
             return;
+
+        Console.WriteLine("hi");
 
         // TODO: Implement parameter UI for device connection
         var parameters = new Dictionary<string, object>();
         var location = "Living Room";
 
         await m_Connection.SendAsync("TryConnect", deviceInfo, parameters, location);
+
+        Console.WriteLine("hi");
     }
 
 }

@@ -53,7 +53,7 @@ public static class DeviceEndpoints
         );
 }
 
-public class DeviceHub(DeviceTypeRegistry deviceTypeRegistry) : Hub
+public class DeviceHub(DeviceTypeRegistry deviceTypeRegistry, ILogger<DeviceHub> logger) : Hub
 {
     [HubMethodName("Scan")]
     public async Task ScanDevices()
@@ -69,6 +69,8 @@ public class DeviceHub(DeviceTypeRegistry deviceTypeRegistry) : Hub
     [HubMethodName("TryConnect")]
     public async Task TryConnect(DeviceInfoDto deviceInfoDto, IDictionary<string, object> parameters, string location)
     {
+        logger.LogInformation("Attempting to connect to device {DeviceName}", deviceInfoDto.Name);
+        
         var deviceType = deviceTypeRegistry.GetRegisteredDevices()
             .FirstOrDefault(t => t.GetType().Name == deviceInfoDto.Type);
 

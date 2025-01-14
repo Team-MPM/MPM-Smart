@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 3.29)
 
+string(TIMESTAMP NOW "%s")
+math(EXPR RANDOM_NUMBER "${NOW} * 32719 + 3")
+string(SUBSTRING ${RANDOM_NUMBER} 0 12 RANDOM_NUMBER)
+message(STATUS "Generated Serial: ${RANDOM_NUMBER}")
+add_compile_definitions(SERIAL=\"${RANDOM_NUMBER}\")
+
 set(EXTRA_COMPONENT_DIRS
     application
     shared

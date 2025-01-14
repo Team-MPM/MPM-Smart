@@ -14,6 +14,7 @@
 #include <nvs_flash.h>
 #include <string.h>
 #include <driver/gpio.h>
+#include <lwip/sockets.h>
 
 #define TAG "Application"
 
@@ -23,6 +24,18 @@ esp_vfs_spiffs_conf_t conf = {
     .max_files = 5,
     .format_if_mount_failed = true
 };
+
+unsigned char public_key[1600];
+unsigned char private_key[1600];
+const char* public_key_path = "/spiffs/rsa_public_key.pem";
+const char* private_key_path = "/spiffs/rsa_private_key.pem";
+
+char* serial = SERIAL;
+const char* token = "full-access";
+const char* config_path = "/spiffs/system.cfg";
+
+system_config_t config = {};
+wifi_config_t wifi_config = {};
 
 void init_spiffs() {
     esp_err_t ret = esp_vfs_spiffs_register(&conf);
@@ -228,21 +241,99 @@ static esp_err_t index_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
-const char* info_json = "{"
-        "   \"name\": \"Environment Sensor\","
-        "   \"description\": \"Measures Temperature, Humidity and Sound\","
-        "   \"capabilities\": {"
-        "       \"Measure Temperature\": \"smart-device-environment-sensor-plugin\","
-        "       \"Measure Humidity\": \"smart-device-environment-sensor-plugin\","
-        "       \"Measure Sound\": \"smart-device-environment-sensor-plugin\""
-        "   }"
+const char info_json_template[] = "{"
+        "   \"name\": \"%s\","
+        "   \"description\": \"%s\","
+        "   \"status\": \"%s\","
+        "   \"serial\": \"%s\","
+        "   \"publicKey\": \"%s\""
         "}";
+
+char info_json_buffer[3000];
 
 static esp_err_t info_handler(httpd_req_t *req)
 {
     ESP_LOGI(TAG, "uri: /info");
     httpd_resp_set_type(req, "application/json");
-    httpd_resp_sendstr(req, info_json);
+    sniprintf(info_json_buffer, sizeof(info_json_buffer), info_json_template,
+        "Environment Sensor", "ESP32 Environment Sensor, MPM-Smart-Device", config.status, serial, "not implemented"/*(char*)public_key*/);
+    httpd_resp_sendstr(req, info_json_buffer);
+    return ESP_OK;
+}
+
+unsigned char signature_out_buffer[256];
+char* client_ip_buffer[128];
+
+static esp_err_t sensor_connect_handler(httpd_req_t *req)
+{
+    ESP_LOGI(TAG, "uri: /connect");
+    if (strcmp(config.status, "ready") == 0) {
+        int sockfd = httpd_req_to_sockfd(req);
+        if (sockfd < 0) {
+            ESP_LOGE(TAG, "Failed to get socket from request");
+            httpd_resp_send_500(req);
+            return ESP_FAIL;
+        }
+
+        struct sockaddr_in client_addr;
+        socklen_t addr_len = sizeof(client_addr);
+
+        if (getpeername(sockfd, (struct sockaddr *)&client_addr, &addr_len) < 0) {
+            ESP_LOGE(TAG, "Failed to get peer address");
+            httpd_resp_send_500(req);
+            return ESP_FAIL;
+        }
+
+        const char *client_ip = inet_ntoa(client_addr.sin_addr);
+        strcpy(client_ip_buffer, client_ip);
+
+        ESP_LOGI(TAG, "Client IP trying to connect: %s", client_ip);
+
+        httpd_resp_set_type(req, "text/plain");
+        size_t sig_len;
+        sign_token(token, signature_out_buffer, sizeof(signature_out_buffer), &sig_len);
+        httpd_resp_sendstr(req, (char*)signature_out_buffer);
+    } else {
+        httpd_resp_send_err(req, 403, "Device is already connected");
+    }
+    return ESP_OK;
+}
+
+unsigned char signature_in_buffer[256];
+
+static esp_err_t sensor_connect_akk_handler(httpd_req_t *req)
+{
+    ESP_LOGI(TAG, "uri: /connect_akk");
+
+    int sockfd = httpd_req_to_sockfd(req);
+    if (sockfd < 0) {
+        ESP_LOGE(TAG, "Failed to get socket from request");
+        httpd_resp_send_500(req);
+        return ESP_FAIL;
+    }
+
+    struct sockaddr_in client_addr;
+    socklen_t addr_len = sizeof(client_addr);
+
+    if (getpeername(sockfd, (struct sockaddr *)&client_addr, &addr_len) < 0) {
+        ESP_LOGE(TAG, "Failed to get peer address");
+        httpd_resp_send_500(req);
+        return ESP_FAIL;
+    }
+
+    const char *client_ip = inet_ntoa(client_addr.sin_addr);
+
+    if (strcmp(client_ip, client_ip_buffer) != 0) {
+        ESP_LOGE(TAG, "Client IP does not match");
+        httpd_resp_send_err(req, 403, "Client IP does not match");
+        return ESP_FAIL;
+    }
+
+    config.status = "connected";
+    system_config_save_to_file(&config, config_path);
+
+    httpd_resp_sendstr(req, "success");
+
     return ESP_OK;
 }
 
@@ -293,6 +384,22 @@ static httpd_handle_t start_webserver(void)
 
     httpd_register_uri_handler(server, &info_uri);
 
+    const httpd_uri_t connect_uri = {
+        .uri       = "/connect",
+        .method    = HTTP_GET,
+        .handler   = sensor_connect_handler,
+    };
+
+    httpd_register_uri_handler(server, &connect_uri);
+
+    const httpd_uri_t connect_akk_uri = {
+        .uri       = "/connect-akk",
+        .method    = HTTP_GET,
+        .handler   = sensor_connect_akk_handler,
+    };
+
+    httpd_register_uri_handler(server, &connect_akk_uri);
+
 #ifdef CONFIG_DHT
     const httpd_uri_t dht_uri = {
         .uri       = "/dht",
@@ -335,15 +442,7 @@ static void connect_handler(void* arg, esp_event_base_t event_base,
     }
 }
 
-unsigned char public_key[1600];
-unsigned char private_key[1600];
-const char* public_key_path = "/spiffs/rsa_public_key.pem";
-const char* private_key_path = "/spiffs/rsa_private_key.pem";
-
 void application_run(void) {
-    system_config_t config = {};
-    wifi_config_t wifi_config = {};
-
     // System Info
     printf("ESP32 System Information:\n");
     printf("Chip Model: %s\n", esp_get_idf_version());
@@ -362,8 +461,11 @@ void application_run(void) {
 
     // System Config
     char config_buffer[512];
-    config = system_config_from_file("/spiffs/system.cfg", config_buffer, sizeof(config_buffer));
+    config = system_config_from_file(config_path, config_buffer, sizeof(config_buffer));
     system_config_print(&config);
+
+    if (strcmp("connected", config.status) != 0)
+        config.status = "ready";
 
     // NVS
     esp_err_t ret = nvs_flash_init();
@@ -395,7 +497,6 @@ void application_run(void) {
     ESP_LOGI(TAG, "Public Key: %s", (char*) public_key);
     ESP_LOGI(TAG, "Private Key: %s", (char*) private_key);
 
-    const char* token = "full-access";
     unsigned char signature[256];
     size_t sig_len;
     sign_token(token, signature, sizeof(signature), &sig_len);

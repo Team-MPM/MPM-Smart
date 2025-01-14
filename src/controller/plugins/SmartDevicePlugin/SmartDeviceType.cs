@@ -9,10 +9,8 @@ namespace SmartDevicePlugin;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public record MpmSmartDeviceInfo(
-    string Id,
     string Name,
     string Description,
-    Dictionary<string, string> Capabilities,
     string Status,
     string Serial,
     string PublicKey);
@@ -34,6 +32,7 @@ public class SmartDeviceType : IDeviceType
 
         await foreach (var ip in m_NetworkScanner.ScanTcpAsync(80))
         {
+            Console.WriteLine("Trying to connect: "+ip);
             if (m_DeviceRegistry.Devices.Any(d =>
                 {
                     d.Info.Details.TryGetValue("ip", out var existingIp);
@@ -53,8 +52,9 @@ public class SmartDeviceType : IDeviceType
                     continue;
                 info = res;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine("Error reading device info: " + e.Message);
                 continue;
             }
 
@@ -64,7 +64,11 @@ public class SmartDeviceType : IDeviceType
                 Description = info.Description,
                 Type = this,
                 Serial = info.Serial,
-                Capabilities = info.Capabilities,
+                Capabilities = new Dictionary<string, string>
+                {
+                    { "Smart Device", info.Name },
+                    { "Sensor", info.Name }
+                },
                 Details = new Dictionary<string, string>()
                 {
                     { "ip", ip }
