@@ -60,7 +60,7 @@ public class ResponseModel<T> : ResponseModel where T : class
     {
         Success = false;
         StatusCode = response?.StatusCode;
-        Message = await response?.Content.ReadAsStringAsync();
+        Message =  response?.Content is not null ? await response!.Content.ReadAsStringAsync() : "";
         return this;
     }
 
