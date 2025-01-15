@@ -1,8 +1,11 @@
 ﻿@page "/Settings/General"
+@using System.Runtime.InteropServices.JavaScript
 @using Frontend.Services
 @layout MainLayout
 
 @inject ApiAccessor accessor
+
+
 <MudContainer MaxWidth="MaxWidth.Small" Class="mt-6">
 
     <MudText Typo="Typo.h5" Align="Align.Left" Class="mb-4">Allgemeine Einstellungen</MudText>
@@ -27,24 +30,39 @@
     <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" OnClick="SaveSettings">Einstellungen speichern</MudButton>
 
 </MudContainer>
-
+<div></div>
 @code {
     private string systemname = "Localhost";
-    private string selectedTimeZone = "UTC"; 
-    
-    
-    private List<string> TimeZones = new()
+    private string selectedTimeZone = "";
+    public string ErrorMessage = "";
+
+    protected override async Task OnInitializedAsync()
     {
-        "UTC", "CET", "EET", "EST", "CST", "MST", "PST", "GMT", "IST", "JST",
-        "AEST", "AEDT", "ACST", "AKST", "ART", "AST", "AWST", "BRT", "CAT",
-        "CCT", "CDT", "CEST", "CLT", "CST6CDT", "EAT", "ECT", "EDT", "HKT",
-        "HST", "IRKT", "KST", "MDT", "MSK", "NZST", "PKT", "PHT", "SAST",
-        "SGT", "UTC12", "WAT", "WET"
-    };
+        var response = await accessor.GetTimeZones();
+        if (response.Response is null)
+            return;
+        TimeZones = response.Response.Select(s => s.Key).ToList();
+
+        var response1 = await accessor.GetTimeZone();
+        if (response.Response is null)
+            return;
+        selectedTimeZone = response1.Response!;
+
+        var response2 = await accessor.GetSettings();
+        systemname = response2.Response.SystemName;
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private List<string> TimeZones { get; set; } = new();
     
     private async Task SaveSettings()
     {
         await accessor.SetSystemName(systemname);
+        var result = await accessor.SetTimeZone(selectedTimeZone);
+        if (!result.Success)
+            ErrorMessage = result.Message!;
+
     }
 }
 

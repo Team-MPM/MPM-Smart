@@ -2,6 +2,7 @@
 using ApiSchema.Usermanagement;
 using Backend.Services.Identity;
 using Data.System;
+using LanguageExt.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -120,7 +121,18 @@ public static class ControllerSettingsEndpoints
             return Results.Ok();
         }).RequirePermission(UserClaims.SettingsChangeTimeBetweenUpdates);
 
-        group.MapGet("/timeZones", () => Results.Ok(TimeZoneList.TimeZones));
+        group.MapGet("/timezones", () => Results.Ok(TimeZoneList.TimeZones));
+
+        group.MapGet("/timezone", async (
+            SystemDbContext dbContext) =>
+        {
+            var config = await dbContext.SystemConfiguration.FirstOrDefaultAsync();
+
+            if (config is null)
+                return Results.InternalServerError();
+            
+            return Results.Ok(config.TimeZoneCode.ToString());
+        }).RequirePermission(UserClaims.SettingsViewSettings);
 
         group.MapPost("/timeZone", async (
             HttpContext context,
