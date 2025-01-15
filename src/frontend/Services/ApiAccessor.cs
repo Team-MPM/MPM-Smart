@@ -122,6 +122,13 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
                 TimeBetweenUpdatesSeconds = newTimeBetweenUpdates
             }));
 
+    public async Task<ResponseModel> SetTimeZone(string timezoneCode) =>
+        await GetResponseModel(client => client.PostAsJsonAsync("api/settings/timezone",
+            new ChangeTimeZoneModel()
+            {
+                TimeZoneCode = timezoneCode
+            }));
+
     // ---------------------------- Permissions ----------------------------
 
     public async Task<ResponseModel<Dictionary<string, List<string>>>> GetAllPermissions() =>

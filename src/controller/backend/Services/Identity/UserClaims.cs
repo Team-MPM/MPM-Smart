@@ -45,6 +45,7 @@ public static class UserClaims
             SettingsChangeHostName,
             SettingsChangeSystemTime,
             SettingsChangeTimeBetweenUpdates,
+            SettingsChangeTimeZone,
 
             // Profile
             AllOnProfile,
@@ -95,6 +96,7 @@ public static class UserClaims
     public const string SettingsChangeHostName = "Permissions.Settings.ChangeHostName";
     public const string SettingsChangeSystemTime = "Permissions.Settings.ChangeSystemTime";
     public const string SettingsChangeTimeBetweenUpdates = "Permissions.Settings.ChangeTimeBetweenUpdates";
+    public const string SettingsChangeTimeZone = "Permissions.Profile.ChangeTimeZone";
 
     // ------------------ Profile ------------------
 
@@ -105,6 +107,7 @@ public static class UserClaims
     public const string ProfileChangeProfilePicture = "Permissions.Profile.ChangeProfilePicture";
     public const string ProfileChangeUsername = "Permissions.Profile.ChangeUsername";
     public const string ProfileChangePassword = "Permissions.Profile.ChangePassword";
+
 
 
 }

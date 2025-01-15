@@ -168,6 +168,5 @@ public static class UserProfileEndpoints
                 RolePermissions = roleClaims
             });
         }).RequirePermission(UserClaims.ProfileViewProfile);
-
     }
 }

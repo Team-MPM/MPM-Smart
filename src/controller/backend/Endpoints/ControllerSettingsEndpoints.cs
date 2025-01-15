@@ -1,6 +1,8 @@
 ﻿using ApiSchema.Settings;
+using ApiSchema.Usermanagement;
 using Backend.Services.Identity;
 using Data.System;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PluginBase.Services.Permissions;
@@ -117,5 +119,23 @@ public static class ControllerSettingsEndpoints
 
             return Results.Ok();
         }).RequirePermission(UserClaims.SettingsChangeTimeBetweenUpdates);
+
+        group.MapGet("/timeZones", () => Results.Ok(TimeZoneList.TimeZones));
+
+        group.MapPost("/timeZone", async (
+            HttpContext context,
+            SystemDbContext dbContext,
+            [FromBody] ChangeTimeZoneModel model) =>
+        {
+            var systemConfig = await dbContext.SystemConfiguration.FirstAsync();
+            TimeZoneCode code;
+            var valid = Enum.TryParse<TimeZoneCode>(model.TimeZoneCode, out code);
+            if(!valid)
+                return Results.BadRequest("Invalid timezone code");
+            systemConfig.TimeZoneCode = code;
+            await dbContext.SaveChangesAsync();
+            return Results.Ok();
+
+        }).RequirePermission(UserClaims.SettingsChangeTimeZone);
     }
 }
