@@ -18,11 +18,11 @@ public class ResponseModel
         return this;
     }
 
-    public ResponseModel ServerError(HttpResponseMessage? response)
+    public async Task<ResponseModel> ServerError(HttpResponseMessage? response)
     {
         Success = false;
         StatusCode = response?.StatusCode;
-        Message = response?.ReasonPhrase;
+        Message = response?.Content is not null ? await response!.Content.ReadAsStringAsync() : "";
         return this;
     }
 
