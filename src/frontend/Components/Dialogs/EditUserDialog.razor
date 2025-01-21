@@ -1,7 +1,9 @@
-﻿@using System.ComponentModel.DataAnnotations
-@using ApiSchema.DeviceOptions
+﻿@using ApiSchema.DeviceOptions
 @using ApiSchema.Usermanagement
-@inject IDialogService DialogService
+@using Frontend.Services
+@inject ApiAccessor accessor
+@attribute [StreamRendering]
+
 
 <MudDialog>
     <TitleContent>
@@ -13,32 +15,69 @@
             <MudPaper Class="pa-3 ma-2">
                 @if (User.CanChangeUsername)
                 {
-                    <MudTextField  @bind-Value="@User.Username" Label="Username" Variant="Variant.Filled"></MudTextField>
+                    <MudTextField T="string" @bind-Value="@User.Username" Label="Username" Variant="Variant.Filled">@User.Username</MudTextField>
                 }
                 else
                 {
-                    <MudTextField disabled @bind-Value="@User.Username" Label="Filled" Variant="Variant.Filled"></MudTextField>
+                    <MudTextField T="string" disabled @bind-Value="@User.Username" Label="Username" Variant="Variant.Filled">@User.Username</MudTextField>
                 }
             </MudPaper>
+            @if (User.Username != "admin" && User.Username != "Visitor")
+            {
+                <MudPaper Class="pa-3 ma-2">
+                    <MudCheckBox Label="Can change Username" @bind-Value="@User.CanChangeUsername"></MudCheckBox>
+                </MudPaper>
+            }
+
             <MudPaper Class="pa-3 ma-2">
-                <MudCheckBox Label="Is active" @bind-Value="@User.IsActive"></MudCheckBox>
+                <MudCheckBox Label="Change Password For User" @bind-Value="@ChangePassword"/>
+                @if (ChangePassword)
+                {
+                    <MudTextField T="string" Label="New Password" @bind-Value="@NewPassword"/>
+                }
             </MudPaper>
+
+            @if (User.Username != "admin")
+            {
+                <MudPaper Class="pa-3 ma-2">
+                    <MudCheckBox Label="Is active" @bind-Value="@User.IsActive"></MudCheckBox>
+                </MudPaper>
+            }
+
             <MudPaper Class="pa-3 ma-2">
-                <MudStack @bind-Value="@User.IsActive">
+                <MudStack>
                     <MudSelect T="string" Label="Sprache" @bind-Value="@User.Language">
-                        @foreach(var language in Languages)
+                        @foreach(var language in m_Languages)
                         {
                             <MudSelectItem T="string" Value="language">@language</MudSelectItem>
                         }
                     </MudSelect>
                 </MudStack>
             </MudPaper>
+
             <MudPaper Class="pa-3 ma-2">
                 <MudCheckBox Label="Use dark Mode" @bind-Value="@User.UseDarkMode"></MudCheckBox>
             </MudPaper>
-            <MudPaper>
 
+            <MudPaper>
+                <MudText Color="Color.Error">@ErrorMessage</MudText>
             </MudPaper>
+
+            @if (User.Username != "admin")
+            {
+                <MudPaper Class="pa-3 ma-2">
+                    @foreach (var kvp in AllPermissions)
+                    {
+                        <MudText>@kvp.Key</MudText>
+                        foreach (var permission in kvp.Value)
+                        {
+                            <MudPaper Class="d-flex flex-wrap">
+                                <MudCheckBox Label="@RemovePrefix(permission)" @bind-Value="@IsPermissionSet[permission]"></MudCheckBox>
+                            </MudPaper>
+                        }
+                    }
+                </MudPaper>
+            }
         </MudContainer>
     </DialogContent>
 
@@ -52,36 +91,56 @@
     [CascadingParameter] private MudDialogInstance? MudDialog { get; set; }
     [Parameter] public DeviceOptions DeviceOptions { get; set; }
     [Parameter] public UsersModel User { get; set; }
-    private UserInputModel Model { get; set; }
-    private List<string> Languages = new List<string> { "Deutsch", "English", "Polish" };
+    private Dictionary<string, List<string>> AllPermissions { get; set; } = new Dictionary<string, List<string>>();
+    private string m_OldUsername = "";
+    private readonly List<string> m_Languages = new List<string> { "Deutsch", "English", "Polish" };
+    private string ErrorMessage = "";
+    private Dictionary<string, bool> IsPermissionSet { get; set; } = new Dictionary<string, bool>();
+    private bool ChangePassword { get; set; }
+    private string NewPassword { get; set; }
 
-    private string NameBinding { get; set; } = "Enter username";
-    private bool IsAdminBinding { get; set; } = false;
-
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        m_OldUsername = User.Username;
+        var result = await accessor.GetAllPermissions();
+        if(result.Success)
+            AllPermissions = result.Response!;
+        AllPermissions.SelectMany(s => s.Value).ToList().ForEach(p => IsPermissionSet.Add(p, User.Permissions.Contains(p)));
     }
 
+    private string RemovePrefix(string permission) => permission.Replace("Permissions.", "");
 
-    private void Submit()
+    private async Task Submit()
     {
-        User.Username = NameBinding;
-        StateHasChanged();
+        if (ChangePassword)
+        {
+            var resultPw = await accessor.SetPasswordForUser(User.Username, NewPassword);
+            if (!resultPw.Success)
+            {
+                ErrorMessage = resultPw.Message!;
+                Console.WriteLine(ErrorMessage);
+                await InvokeAsync(StateHasChanged);
+                return;
+            }
+        }
+        User.Permissions = IsPermissionSet.Where(p => p.Value).Select(p => p.Key).ToList();
+        var result = await accessor.UpdateUser(m_OldUsername, User);
+        if (!result.Success)
+        {
+            if(ErrorMessage != "")
+                ErrorMessage += ", ";
+            ErrorMessage = result.Message!;
+            Console.WriteLine(ErrorMessage);
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+        await accessor.UpdateUser(m_OldUsername, User);
         MudDialog.Close(DialogResult.Ok(User));
     }
+
 
     private void Cancel()
     {
         MudDialog.Cancel();
-    }
-
-    public class UserInputModel
-    {
-        public required string Username { get; set; }
-        public required bool CanChangeUsername { get; set; }
-        public required bool IsActive { get; set; }
-        public required string Language { get; set; }
-        public required bool UseDarkMode { get; set; }
-        public required List<string> Permissions { get; set; }
     }
 }

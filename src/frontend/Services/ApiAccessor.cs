@@ -170,6 +170,8 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
             {
                 Username = newUsername
             }));
+    public async Task<ResponseModel> UpdateUser(string user, UsersModel model) =>
+        await GetResponseModel(client => client.PostAsJsonAsync($"api/users/{user}", model));
 
     public async Task<ResponseModel> SetPasswordForUser(string user, string newPassword) =>
         await GetResponseModel(client => client.PostAsJsonAsync($"api/users/{user}/password",

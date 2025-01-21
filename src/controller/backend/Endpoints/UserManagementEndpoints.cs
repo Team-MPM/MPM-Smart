@@ -1,6 +1,9 @@
-﻿using ApiSchema.Usermanagement;
+﻿using System.Security.Claims;
+using ApiSchema.Enums;
+using ApiSchema.Usermanagement;
 using Backend.Services.Identity;
 using Data.System;
+using LanguageExt.ClassInstances;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +38,39 @@ public static class UserManagementEndpoints
             });
         }).RequirePermission(UserClaims.UserViewUsers);
 
+        group.MapPost("/users/{user}", async (
+            UserManager<SystemUser> userManager,
+            [FromServices] SystemDbContext dbContext,
+            string user,
+            [FromBody] UsersModel model) =>
+        {
+            string? ErrorMessage = "";
+            var userEntity = await dbContext.Users
+                .Include(s => s.UserProfile).FirstOrDefaultAsync(s => s.UserName == user);
+            if(user != model.Username && await dbContext.Users.AnyAsync(s => s.UserName == model.Username))
+                ErrorMessage += "Username already exists";
+            if (userEntity is null)
+                return Results.NotFound();
+            if(userEntity.CanChangeUsername)
+                userEntity.UserName = model.Username;
+            if (userEntity.UserName != "admin")
+                userEntity.CanChangeUsername = model.CanChangeUsername;
+            userEntity.IsActive = model.IsActive;
+            var claims = await userManager.GetClaimsAsync(userEntity);
+            claims.ToList().ForEach(c => userManager.RemoveClaimAsync(userEntity, c));
+            model.Permissions.ForEach(p => userManager.AddClaimAsync(userEntity, new Claim("Permissions", p)));
+            bool parsable = Enum.TryParse<Language>(model.Language.ToString(), out var language);
+            if(parsable)
+                userEntity.UserProfile!.Language = language;
+            else
+                ErrorMessage += ErrorMessage == "" ? "Language not found" : ", Language not found";
+            userEntity.UserProfile.UseDarkMode = model.UseDarkMode;
+            if(ErrorMessage != "")
+                return Results.BadRequest(ErrorMessage);
+            await dbContext.SaveChangesAsync();
+            return Results.Ok();
+        }).RequirePermission(UserClaims.UserChangeUserUsername);
+
         group.MapPost("/users/{user}/username", async (
             [FromRoute] string user,
             [FromBody] ChangeUsernameModel model,
@@ -45,7 +81,7 @@ public static class UserManagementEndpoints
             if (userEntity is null)
                 return Results.NotFound("User not found");
             if (!userEntity.CanChangeUsername)
-                return Results.Forbid();
+                return Results.Unauthorized();
             userEntity.UserName = model.Username;
             var result = await context.SaveChangesAsync();
             return result == 1 ? Results.Ok() : Results.InternalServerError();
@@ -116,17 +152,19 @@ public static class UserManagementEndpoints
                 if (user is null)
                     return Results.Unauthorized();
                 var users = await userManager.Users.Include(s => s.UserProfile).ToListAsync();
-                var usersInAdmin = await userManager.GetUsersInRoleAsync("admin");
-                var userPermissions = await userManager.GetClaimsAsync(user);
-                return Results.Ok(users.Select(u => new UsersModel
+                Dictionary<string, List<string>> permissions = new Dictionary<string, List<string>>();
+                users.ForEach(u => permissions.Add(u.UserName!, userManager.GetClaimsAsync(u).Result.Select(s => s.Value).ToList()));
+                List<UsersModel> allUsers = new();
+                users.ForEach(u => allUsers.Add(new()
                 {
                     Username = u.UserName!,
-                    Language = u.UserProfile!.Language.ToString(),
-                    UseDarkMode = u.UserProfile.UseDarkMode,
                     CanChangeUsername = u.CanChangeUsername,
                     IsActive = u.IsActive,
-                    Permissions = userPermissions.Select(s => s.Value).ToList()
+                    Language = u.UserProfile!.Language.ToString(),
+                    UseDarkMode = u.UserProfile.UseDarkMode,
+                    Permissions = permissions[u.UserName!]
                 }));
+                return Results.Ok(allUsers);
             }).RequirePermission(UserClaims.UserViewUsers);
 
         group.MapPost("/users", async (
@@ -138,9 +176,6 @@ public static class UserManagementEndpoints
             var user = await userManager.GetUserAsync(context.User);
             if (user is null)
                 return Results.Unauthorized();
-            var usersInAdmin = await userManager.GetUsersInRoleAsync("admin");
-            if (!usersInAdmin.Contains(user))
-                return Results.Forbid();
             var newUser = await userManager.FindByNameAsync(model.Username);
             if (newUser is not null)
                 return Results.BadRequest("User already exists");
