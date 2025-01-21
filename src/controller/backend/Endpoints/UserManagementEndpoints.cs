@@ -23,13 +23,15 @@ public static class UserManagementEndpoints
                 .Include(s => s.UserProfile).FirstOrDefaultAsync(s => s.UserName == user);
             if (userEntity is null)
                 return Results.NotFound();
-            return Results.Ok(new UsersModel()
+            var userPermissions = await userManager.GetClaimsAsync(userEntity);
+            return Results.Ok(new UsersModel
             {
                 Username = userEntity.UserName!,
                 CanChangeUsername = userEntity.CanChangeUsername,
                 IsActive = userEntity.IsActive,
-                Language = (int)userEntity.UserProfile!.Language,
-                UseDarkMode = userEntity.UserProfile.UseDarkMode
+                Language = userEntity.UserProfile!.Language.ToString(),
+                UseDarkMode = userEntity.UserProfile.UseDarkMode,
+                Permissions = userPermissions.Select(s => s.Value).ToList(),
             });
         }).RequirePermission(UserClaims.UserViewUsers);
 
@@ -107,20 +109,23 @@ public static class UserManagementEndpoints
 
         group.MapGet("/users", async (
                 HttpContext context,
-                UserManager<SystemUser> userManager) =>
+                UserManager<SystemUser> userManager,
+                RoleManager<IdentityRole> roleManager) =>
             {
                 var user = await userManager.GetUserAsync(context.User);
                 if (user is null)
                     return Results.Unauthorized();
                 var users = await userManager.Users.Include(s => s.UserProfile).ToListAsync();
                 var usersInAdmin = await userManager.GetUsersInRoleAsync("admin");
-                return Results.Ok(users.Select(u => new UsersModel()
+                var userPermissions = await userManager.GetClaimsAsync(user);
+                return Results.Ok(users.Select(u => new UsersModel
                 {
                     Username = u.UserName!,
-                    Language = (int) u.UserProfile!.Language,
+                    Language = u.UserProfile!.Language.ToString(),
                     UseDarkMode = u.UserProfile.UseDarkMode,
                     CanChangeUsername = u.CanChangeUsername,
                     IsActive = u.IsActive,
+                    Permissions = userPermissions.Select(s => s.Value).ToList()
                 }));
             }).RequirePermission(UserClaims.UserViewUsers);
 

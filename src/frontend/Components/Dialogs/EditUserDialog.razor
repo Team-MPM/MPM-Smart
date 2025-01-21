@@ -1,5 +1,6 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @using ApiSchema.DeviceOptions
+@using ApiSchema.Usermanagement
 @inject IDialogService DialogService
 
 <MudDialog>
@@ -8,9 +9,36 @@
     </TitleContent>
 
     <DialogContent>
-        <MudContainer Style="height: 600px" Class="d-flex flex-row">
-            <MudTextField @bind-Value="NameBinding" Label="Filled" Variant="Variant.Filled"></MudTextField>
-            <MudCheckBox @bind-Value="IsAdminBinding">IsAdmin</MudCheckBox>
+        <MudContainer Class="d-flex flex-column">
+            <MudPaper Class="pa-3 ma-2">
+                @if (User.CanChangeUsername)
+                {
+                    <MudTextField  @bind-Value="@User.Username" Label="Username" Variant="Variant.Filled"></MudTextField>
+                }
+                else
+                {
+                    <MudTextField disabled @bind-Value="@User.Username" Label="Filled" Variant="Variant.Filled"></MudTextField>
+                }
+            </MudPaper>
+            <MudPaper Class="pa-3 ma-2">
+                <MudCheckBox Label="Is active" @bind-Value="@User.IsActive"></MudCheckBox>
+            </MudPaper>
+            <MudPaper Class="pa-3 ma-2">
+                <MudStack @bind-Value="@User.IsActive">
+                    <MudSelect T="string" Label="Sprache" @bind-Value="@User.Language">
+                        @foreach(var language in Languages)
+                        {
+                            <MudSelectItem T="string" Value="language">@language</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudStack>
+            </MudPaper>
+            <MudPaper Class="pa-3 ma-2">
+                <MudCheckBox Label="Use dark Mode" @bind-Value="@User.UseDarkMode"></MudCheckBox>
+            </MudPaper>
+            <MudPaper>
+
+            </MudPaper>
         </MudContainer>
     </DialogContent>
 
@@ -23,26 +51,21 @@
 @code {
     [CascadingParameter] private MudDialogInstance? MudDialog { get; set; }
     [Parameter] public DeviceOptions DeviceOptions { get; set; }
+    [Parameter] public UsersModel User { get; set; }
+    private UserInputModel Model { get; set; }
+    private List<string> Languages = new List<string> { "Deutsch", "English", "Polish" };
 
     private string NameBinding { get; set; } = "Enter username";
     private bool IsAdminBinding { get; set; } = false;
 
     protected override void OnInitialized()
     {
-        User = new DummyUser()
-        {
-            Name = NameBinding,
-            IsAdmin = IsAdminBinding
-        };
     }
-
-    public DummyUser User { get; set; }
 
 
     private void Submit()
     {
-        User.Name = NameBinding;
-        User.IsAdmin = IsAdminBinding;
+        User.Username = NameBinding;
         StateHasChanged();
         MudDialog.Close(DialogResult.Ok(User));
     }
@@ -52,5 +75,13 @@
         MudDialog.Cancel();
     }
 
-
+    public class UserInputModel
+    {
+        public required string Username { get; set; }
+        public required bool CanChangeUsername { get; set; }
+        public required bool IsActive { get; set; }
+        public required string Language { get; set; }
+        public required bool UseDarkMode { get; set; }
+        public required List<string> Permissions { get; set; }
+    }
 }

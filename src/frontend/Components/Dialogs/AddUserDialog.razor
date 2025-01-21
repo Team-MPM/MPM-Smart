@@ -1,4 +1,5 @@
 ﻿@using ApiSchema.DeviceOptions
+@using ApiSchema.Usermanagement
 @inject IDialogService DialogService
 
 <MudDialog>
@@ -28,20 +29,23 @@
 
     protected override void OnInitialized()
     {
-        User = new DummyUser
+        User = new UsersModel
         {
-            Name = NameBinding,
-            IsAdmin = IsAdminBinding
+            Username = null,
+            CanChangeUsername = false,
+            IsActive = false,
+            Language = "English",
+            UseDarkMode = false,
+            Permissions = null,
         };
     }
 
-    public DummyUser User { get; set; }
+    public UsersModel User { get; set; }
 
 
     private void Submit()
     {
-        User.Name = NameBinding;
-        User.IsAdmin = IsAdminBinding;
+        User.Username = NameBinding;
         StateHasChanged();
         MudDialog.Close(DialogResult.Ok(User));
     }

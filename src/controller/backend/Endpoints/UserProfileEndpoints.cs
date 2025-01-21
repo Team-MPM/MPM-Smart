@@ -139,7 +139,7 @@ public static class UserProfileEndpoints
                 return Results.BadRequest("Invalid language");
 
             var userProfile = await dbContext.UserProfiles.FindAsync(user.UserProfileId);
-            userProfile!.Language = (Language) model.Language;
+            userProfile!.Language = Enum.Parse<Language>(model.Language);
             await dbContext.SaveChangesAsync();
             return Results.Ok();
         }).RequirePermission(UserClaims.ProfileEditProfile);

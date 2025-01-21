@@ -85,7 +85,7 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
                 CurrentPassword = currentPassword, NewPassword = newPassword
             }));
 
-    public async Task<ResponseModel> SetLanguage(int language) =>
+    public async Task<ResponseModel> SetLanguage(string language) =>
         await GetResponseModel(client => client.PostAsJsonAsync("/api/profile/language",
             new LanguageModel
             {
@@ -153,7 +153,7 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
     // ---------------------------- USER MANAGEMENT ----------------------------
 
     public async Task<ResponseModel<List<UsersModel>>> GetAllUsers() =>
-        await GetResponseModel<List<UsersModel>>(client => client.GetAsync("api/users/all"));
+        await GetResponseModel<List<UsersModel>>(client => client.GetAsync("api/users"));
 
     public async Task<ResponseModel<UsersModel>> GetSpecificUserInfo(string user) =>
         await GetResponseModel<UsersModel>(client => client.GetAsync($"api/users/{user}"));

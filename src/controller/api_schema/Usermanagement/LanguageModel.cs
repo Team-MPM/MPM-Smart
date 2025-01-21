@@ -2,6 +2,6 @@
 
 public class LanguageModel
 {
-    public int Language { get; set; }
+    public string Language { get; set; }
 }
 

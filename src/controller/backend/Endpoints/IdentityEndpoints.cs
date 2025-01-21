@@ -30,8 +30,11 @@ public static class IdentityEndpoints
             if (user is null)
                 return Results.BadRequest(errorMessage);
 
-            if (!await userManager.CheckPasswordAsync(user, model.Password))
-                return Results.BadRequest(errorMessage);
+            if (!string.IsNullOrEmpty(user.PasswordHash))
+            {
+                if (!await userManager.CheckPasswordAsync(user, model.Password))
+                    return Results.BadRequest(errorMessage);
+            }
 
             var handler = new JwtSecurityTokenHandler();
 
