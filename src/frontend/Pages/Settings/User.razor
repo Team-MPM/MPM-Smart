@@ -6,7 +6,6 @@
 @inject ApiAccessor accessor
 
 <MudContainer MaxWidth="MaxWidth.Small" Class="mt-6">
-    
     <MudText Typo="Typo.h5" Align="Align.Left" Class="mb-4">Benutzer Einstellungen</MudText>
 
     <MudPaper Class="p-2 mb-4" Elevation="2">
@@ -17,13 +16,16 @@
 
     <MudPaper Class="p-2 mb-4" Elevation="2">
         <MudStack Spacing="1" Row="true" AlignItems="AlignItems.Start" Justify="Justify.FlexStart">
-            <MudTextField Label="Passwort" Variant="Variant.Outlined" InputType="InputType.Password" @bind-Value="password" FullWidth="true"/>
+            <MudTextField Label="Bestehendes Passwort" Variant="Variant.Outlined" InputType="InputType.Password" @bind-Value="currentPassword" FullWidth="true"/>
+        </MudStack>
+        <MudStack Spacing="1" Row="true" AlignItems="AlignItems.Start" Justify="Justify.FlexStart">
+            <MudTextField Label="Neues Passwort" Variant="Variant.Outlined" InputType="InputType.Password" @bind-Value="password" FullWidth="true"/>
         </MudStack>
     </MudPaper>
 
     <MudPaper Class="p-2 mb-4" Elevation="2">
         <MudStack Spacing="1" Row="true" AlignItems="AlignItems.Start" Justify="Justify.FlexStart">
-            <MudSelect T="string" Label="Zeitzone auswählen" Variant="Variant.Outlined" @bind-Value="selectedLanguage">
+            <MudSelect T="string" Label="Sprache" Variant="Variant.Outlined" @bind-Value="selectedLanguage">
                 @foreach (var language in Languages)
                 {
                     <MudSelectItem T="string" Value="language">@language</MudSelectItem>
@@ -34,43 +36,61 @@
 
     <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" OnClick="SaveSettings">Einstellungen speichern</MudButton>
 
+    <MudPaper>
+        <div>@ErrorMessageUserName</div>
+        <div>@ErrorMessagePassword</div>
+        <div>@ErrorMessageLanguage</div>
+    </MudPaper>
 </MudContainer>
-<div>@ErrorMessageUserName</div>
-<div>@ErrorMessagePassword</div>
+
 @code {
-
-    protected override async Task OnInitializedAsync()
-    {
-        var responeUsername = await accessor.GetUserData();
-        if (responeUsername.Response is null)
-            return;
-        username = responeUsername.Response.Username;
-        selectedLanguage = responeUsername.Response.Language.ToString();
-
-    }
-
-
     private string username = "detrax";
-    private string password = "********";
+    private string password = "";
+    private string currentPassword = "";
     private string selectedLanguage = "Deutsch";
+    private string originalUsername = "";
+    private string originalLanguage = "Deutsch";
+
     private string ErrorMessageUserName = "";
     private string ErrorMessagePassword = "";
-    
-    
+    private string ErrorMessageLanguage = "";
+
     private List<string> Languages = new()
     {
         "Deutsch", "Englisch", "Polnisch"
     };
 
-    
+    protected override async Task OnInitializedAsync()
+    {
+        var responseUsername = await accessor.GetUserData();
+        if (responseUsername.Response is null)
+            return;
+
+        username = responseUsername.Response.Username;
+        originalUsername = username;
+
+        selectedLanguage = responseUsername.Response.Language.ToString();
+        originalLanguage = selectedLanguage;
+    }
+
     private async Task SaveSettings()
     {
-        var responseU = await accessor.SetUsername(username);
-        if (!responseU.Success)
-            ErrorMessageUserName = responseU.Message!;
-        var responseP = await accessor.SetPassword(password, password);
-        if (!responseP.Success)
-            ErrorMessagePassword = responseP.Message!;
+        if (username != originalUsername)
+        {
+            var responseU = await accessor.SetUsername(username);
+            if (!responseU.Success)
+                ErrorMessageUserName = responseU.Message!;
+            else
+                originalUsername = username; 
+        }
+
+        if (!string.IsNullOrWhiteSpace(currentPassword) && !string.IsNullOrWhiteSpace(password))
+        {
+            var responseP = await accessor.SetPassword(currentPassword, password);
+            currentPassword = string.Empty;
+            password = string.Empty;
+            if (!responseP.Success)
+                ErrorMessagePassword = responseP.Message!;
+        }
     }
-    
 }

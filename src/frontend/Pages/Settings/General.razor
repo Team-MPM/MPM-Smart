@@ -5,7 +5,6 @@
 
 @inject ApiAccessor accessor
 
-
 <MudContainer MaxWidth="MaxWidth.Small" Class="mt-6">
 
     <MudText Typo="Typo.h5" Align="Align.Left" Class="mb-4">Allgemeine Einstellungen</MudText>
@@ -30,39 +29,68 @@
     <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" OnClick="SaveSettings">Einstellungen speichern</MudButton>
 
 </MudContainer>
-<div></div>
+<div>@ErrorMessage</div>
+
 @code {
     private string systemname = "Localhost";
     private string selectedTimeZone = "";
+    private string originalSystemName = "";
+    private string originalTimeZone = "";
     public string ErrorMessage = "";
+
+    private List<string> TimeZones { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
         var response = await accessor.GetTimeZones();
-        if (response.Response is null)
-            return;
-        TimeZones = response.Response.Select(s => s.Key).ToList();
+        if (response.Response is not null)
+        {
+            TimeZones = response.Response.Select(s => s.Key).ToList();
+        }
 
         var response1 = await accessor.GetTimeZone();
-        if (response.Response is null)
-            return;
-        selectedTimeZone = response1.Response!;
+        if (response1.Response is not null)
+        {
+            selectedTimeZone = response1.Response!;
+            originalTimeZone = selectedTimeZone; 
+        }
 
         var response2 = await accessor.GetSettings();
-        systemname = response2.Response.SystemName;
+        if (response2.Response is not null)
+        {
+            systemname = response2.Response.SystemName;
+            originalSystemName = systemname; 
+        }
 
         await InvokeAsync(StateHasChanged);
     }
 
-    private List<string> TimeZones { get; set; } = new();
-    
     private async Task SaveSettings()
     {
-        await accessor.SetSystemName(systemname);
-        var result = await accessor.SetTimeZone(selectedTimeZone);
-        if (!result.Success)
-            ErrorMessage = result.Message!;
+        if (systemname != originalSystemName)
+        {
+            var systemNameResult = await accessor.SetSystemName(systemname);
+            if (!systemNameResult.Success)
+            {
+                ErrorMessage = systemNameResult.Message!;
+            }
+            else
+            {
+                originalSystemName = systemname; 
+            }
+        }
 
+        if (selectedTimeZone != originalTimeZone)
+        {
+            var timeZoneResult = await accessor.SetTimeZone(selectedTimeZone);
+            if (!timeZoneResult.Success)
+            {
+                ErrorMessage = timeZoneResult.Message!;
+            }
+            else
+            {
+                originalTimeZone = selectedTimeZone; 
+            }
+        }
     }
 }
-
