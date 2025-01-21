@@ -5,44 +5,40 @@
 @inject IDialogService DialogService
 @inject ILogger<UserManagement> Logger
 
-<h3>UserManagement</h3>
-@if (currentUser.IsAdmin)
-{
-    <MudContainer Class="p-4" MaxWidth="MaxWidth.Large">
-        <MudContainer Style="padding: 20px;">
-            <MudGrid Justify="Justify.FlexEnd" AlignItems="Center">
+<MudContainer>
+    <MudText Typo="Typo.h4">User Management</MudText>
+    @if (currentUser.IsAdmin)
+    {
+        <MudContainer Class="p-4" MaxWidth="MaxWidth.Large">
+            <MudGrid Justify="Justify.FlexEnd" AlignItems="Center" Class="mb-4">
                 <MudItem>
-                    <MudButton Class="mud-theme-primary" Variant="Variant.Filled" OnClick="@AddnewUser">Add</MudButton>
+                    <MudButton Class="mud-theme-primary" Variant="Variant.Filled" OnClick="@AddnewUser">Add User</MudButton>
                 </MudItem>
             </MudGrid>
-        </MudContainer>
 
-        <MudContainer Class="p-4">
-            @foreach (var user in dummyUsers)
-            {
-                <MudCardContent>
-                    <MudGrid Justify="Justify.SpaceBetween" AlignItems="Center">
-                        <MudItem Style="display: flex; align-items: center; gap: 10px;">
-                            <text style="color: white;">@user.Name</text>
-                        </MudItem>
-                        <MudItem Style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-                            <MudButton OnClick="() => EditUser(user)">
-                                <MudIcon Icon="@Icons.Material.Filled.Edit" Style="cursor: pointer;"/>
-                            </MudButton>
-                            <MudButton @onclick="() => DeleteUser(user)">
-                                <MudIcon Icon="@Icons.Material.Filled.Delete" Style="cursor: pointer;"/>
-                            </MudButton>
-                        </MudItem>
-                    </MudGrid>
-                </MudCardContent>
-            }
+            <MudTable Items="@dummyUsers" Class="mt-4">
+                <HeaderContent>
+                    <MudTh>Name</MudTh>
+                    <MudTh>Actions</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.Name</MudTd>
+                    <MudTd>
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"
+                                       OnClick="@(() => EditUser(context))"/>
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
+                                       OnClick="@(() => DeleteUser(context))"/>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
         </MudContainer>
-    </MudContainer>
-}
-else
-{
-    <p>Access denied! Suppn!</p>
-}
+    }
+    else
+    {
+        <p>Access denied!</p>
+    }
+</MudContainer>
+
 
 @code {
 
@@ -52,12 +48,6 @@ else
         new DummyUser { Name = "Jane Smith", IsAdmin = true },
         new DummyUser { Name = "Alice Johnson", IsAdmin = false },
         new DummyUser { Name = "Bob Brown", IsAdmin = true },
-        new DummyUser { Name = "Charlie Davis", IsAdmin = false },
-        new DummyUser { Name = "Diana Evans", IsAdmin = true },
-        new DummyUser { Name = "Ethan Harris", IsAdmin = false },
-        new DummyUser { Name = "Fiona Clark", IsAdmin = true },
-        new DummyUser { Name = "George Lewis", IsAdmin = false },
-        new DummyUser { Name = "Hannah Walker", IsAdmin = true }
     };
 
     DummyUser currentUser = new DummyUser { Name = "Jane Smith", IsAdmin = true };
