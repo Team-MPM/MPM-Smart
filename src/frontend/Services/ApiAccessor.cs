@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using ApiSchema.Devices;
 using ApiSchema.Enums;
 using ApiSchema.Identity;
 using ApiSchema.Plugins;
@@ -191,8 +192,8 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
     public async Task<ResponseModel<List<PluginInfoDto>>> GetAllPlugins() =>
         await GetResponseModel<List<PluginInfoDto>>(client => client.GetAsync("/api/plugins"));
 
-    public async Task<ResponseModel<List<PluginOptionsDto>>> GetPluginOptions(string pluginGuid) =>
-        await GetResponseModel<List<PluginOptionsDto>>(client => client.GetAsync($"/api/plugins/{pluginGuid}/options"));
+    public async Task<ResponseModel<List<OptionsDto>>> GetPluginOptions(string pluginGuid) =>
+        await GetResponseModel<List<OptionsDto>>(client => client.GetAsync($"/api/plugins/{pluginGuid}/options"));
 
     // ---------------------------- PluginData ----------------------------
 
@@ -201,4 +202,18 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
 
     public async Task<ResponseModel<DataResponse>> GetPluginData(DataRequest request) =>
         await GetResponseModel<DataResponse>(client => client.PostAsJsonAsync("/api/data/requestData", request));
+
+    // ---------------------------- Devices ----------------------------
+
+    public async Task<ResponseModel<List<DeviceDto>>> GetConnectedDevices() =>
+        await GetResponseModel<List<DeviceDto>>(client => client.GetAsync("/api/devices"));
+
+    public async Task<ResponseModel<List<DeviceInfoDto>>> ScanForDevices() =>
+        await GetResponseModel<List<DeviceInfoDto>>(client => client.GetAsync("/api/devices/scan"));
+
+    public async Task<ResponseModel<List<SensorDto>>> GetAllSensors() =>
+        await GetResponseModel<List<SensorDto>>(client => client.GetAsync("/api/sensors"));
+
+    public async Task<ResponseModel<DeviceDto>> GetDevice(string serial) =>
+        await GetResponseModel<DeviceDto>(client => client.GetAsync($"/api/device/{serial}"));
 }

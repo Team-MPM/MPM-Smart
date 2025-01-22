@@ -3,5 +3,5 @@
 public class DataResponseEntry
 {
     public required object Data { get; set; }
-    public required DateTime CaptureDate { get; set; }
+    public required DateTime TimeStampUtc { get; set; }
 }

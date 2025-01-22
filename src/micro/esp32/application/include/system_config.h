@@ -10,6 +10,7 @@ typedef struct system_config {
     const char* password;
     const char* controllerAddress;
     const char* token;
+    const char* status;
 } system_config_t;
 
 system_config_t system_config_from_file(const char* path, char* buffer, size_t buffer_size);

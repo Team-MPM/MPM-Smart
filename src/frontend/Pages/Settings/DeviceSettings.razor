@@ -1,59 +1,94 @@
-﻿@page "/Settings/DeviceSettings"
+﻿@page "/settings/devices"
+@using ApiSchema.Devices
+@using Frontend.Components.Dialogs
+@using Frontend.Services
+@using Microsoft.AspNetCore.SignalR.Client
 
-<MudContainer Class="p-4" MaxWidth="MaxWidth.Large">
-    <MudText Typo="Typo.h4">Device-Settings</MudText>
+@inject ApiAccessor Api
+@inject IDialogService DialogService
 
-    <MudContainer Style="padding: 20px;">
-        <MudGrid Justify="Justify.FlexEnd" AlignItems="Center">
-            <MudItem>
-                <MudButton Class="mud-theme-primary" Variant="Variant.Filled" OnClick="AddDevice">Add</MudButton>
-            </MudItem>
-        </MudGrid>
-    </MudContainer>
+<MudContainer>
+    <MudText Typo="Typo.h4">Connected Devices</MudText>
 
-    <MudContainer Class="p-4">
-        @foreach (var device in devices)
-        {
-            <MudCardContent>
-                <MudGrid Justify="Justify.SpaceBetween" AlignItems="Center">
-                    <MudItem Style="display: flex; align-items: center; gap: 10px;">
-                        <text style="color: white;">@device</text>
-                    </MudItem>
-                    <MudItem Style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-                        <MudIcon Icon="@Icons.Material.Filled.Edit" Style="cursor: pointer;"
-                                 OnClick="() => EditDevice(device)"/>
-                        <MudIcon Icon="@Icons.Material.Filled.Delete" Style="cursor: pointer;"
-                                 OnClick="() => DeleteDevice(device)"/>
-                    </MudItem>
-                </MudGrid>
-            </MudCardContent>
-        }
-    </MudContainer>
+    @if (m_Devices.Count == 0)
+    {
+        <MudProgressCircular Color="Color.Primary"/>
+    }
+    else
+    {
+        <MudTable Items="@m_Devices.Values" Class="mt-4">
+            <HeaderContent>
+                <MudTh>Device Name</MudTh>
+                <MudTh>Capabilities</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>
+                    <MudTooltip Text="@context.DeviceInfo.Description">
+                        @context.DeviceInfo.Name
+                    </MudTooltip>
+                </MudTd>
+                <MudTd>
+                    @foreach (var item in context.DeviceInfo.Capabilities)
+                    {
+                        <MudTooltip Text="@item.Value">
+                            <MudChip T="string" Label="true" Text="@item.Key"
+                                     Color="Color.Success"/>
+                        </MudTooltip>
+                    }
+                </MudTd>
+                <MudTd>
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"/>
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"/>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+
+    @if (m_Error != null)
+    {
+        <MudText Typo="Typo.body1" Color="Color.Error">@m_Error</MudText>
+    }
 </MudContainer>
+
+<div style="position: absolute; bottom: 20px; right: 20px;">
+    <MudButton OnClick="OpenDeviceScanDialog" Color="Color.Primary" Variant="Variant.Filled">
+        Add Device
+    </MudButton>
+</div>
+
 
 @code {
 
-    private List<string> devices = new List<string>
-    {
-        "Olaf's SmartHome",
-        "Julian's SmartHome",
-        "Jacob's SmartHome",
-        "Gabriel's SmartHome"
-    };
+    private readonly Dictionary<string, DeviceDto> m_Devices = [];
+    // private HubConnection? m_Connection;
+    private string? m_Error;
 
-    private void AddDevice()
+    protected override async Task OnInitializedAsync()
     {
-        devices.Add("New Device");
+        var res = await Api.GetConnectedDevices();
+        if (res is { Success: true, Response: not null })
+            foreach (var device in res.Response)
+                m_Devices[device.DeviceInfo.Serial] = device;
+        else
+            m_Error = res.Message;
     }
 
-    private void EditDevice(string device)
+    private async Task OpenDeviceScanDialog(MouseEventArgs obj)
     {
-    }
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            FullWidth = true,
+            CloseButton = true,
+            BackdropClick = true,
+            MaxWidth = MaxWidth.Small
+        };
 
-    private void DeleteDevice(string device)
-    {
-        devices.Remove(device);
-        StateHasChanged();
-    }
+        var dialog = await DialogService.ShowAsync<DeviceScanDialog>(null, options);
+        var result = await dialog.Result;
 
+        if (result is { Canceled: false, Data: DeviceDto device })
+            m_Devices[device.DeviceInfo.Serial] = device;
+    }
 }
