@@ -192,7 +192,7 @@ public static class UserManagementEndpoints
                 return Results.InternalServerError();
 
 
-            return Results.Created();
+            return Results.Created(user.UserName, user);
         }).RequirePermission(UserClaims.UserAddUser);
 
         group.MapDelete("/users/{user}", async (
@@ -206,10 +206,12 @@ public static class UserManagementEndpoints
             var usersInAdmin = await userManager.GetUsersInRoleAsync("admin");
             if (!usersInAdmin.Contains(userEntity))
                 return Results.Forbid();
-            var username = context.Request.Query["username"];
             var userToRemove = await userManager.FindByNameAsync(user);
             if (userToRemove is null)
                 return Results.NotFound();
+            List<string> blockesUsernames = new () { "admin", "Visitor" };
+            if (blockesUsernames.Contains(userToRemove.UserName!))
+                return Results.Unauthorized();
             var result = await userManager.DeleteAsync(userToRemove);
             return result.Succeeded ? Results.Ok() : Results.InternalServerError();
         }).RequirePermission(UserClaims.UserRemoveUser);

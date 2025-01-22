@@ -159,7 +159,7 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         await GetResponseModel<UsersModel>(client => client.GetAsync($"api/users/{user}"));
 
     public async Task<ResponseModel> AddNewUser(AddUserModel model) =>
-        await GetResponseModel(client => client.PostAsJsonAsync("api/users/add", model));
+        await GetResponseModel(client => client.PostAsJsonAsync("api/users/", model));
 
     public async Task<ResponseModel> DeleteUser(string user) =>
         await GetResponseModel(client => client.DeleteAsync($"api/users/{user}"));

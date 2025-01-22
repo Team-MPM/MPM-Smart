@@ -32,8 +32,11 @@
                     <MudTd>
                         <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"
                                        OnClick="@(() => EditUser(context))"/>
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
-                                       OnClick="@(() =>DeleteUser(context))"/>
+                        @if (context.Username != "admin" && context.Username != "Visitor")
+                        {
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
+                                           OnClick="@(() =>DeleteUser(context))"/>
+                        }
                     </MudTd>
                 </RowTemplate>
             </MudTable>
@@ -106,6 +109,7 @@ else
             return;
         }
 
+        await ReloadUsers();
         await InvokeAsync(StateHasChanged);
         StateHasChanged();
 

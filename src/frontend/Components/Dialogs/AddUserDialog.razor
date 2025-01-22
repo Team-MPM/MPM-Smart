@@ -1,16 +1,65 @@
-﻿@using ApiSchema.DeviceOptions
+﻿@using System.Text
+@using ApiSchema.DeviceOptions
+@using ApiSchema.Enums
 @using ApiSchema.Usermanagement
-@inject IDialogService DialogService
+@using Frontend.Services
+@inject ApiAccessor accessor
+@attribute [StreamRendering]
+
 
 <MudDialog>
     <TitleContent>
-        Add new User
+        Add User
     </TitleContent>
 
     <DialogContent>
-        <MudContainer Style="height: 600px" Class="d-flex flex-row">
-            <MudTextField @bind-Value="NameBinding" Label="Filled" Variant="Variant.Filled"></MudTextField>
-            <MudCheckBox @bind-Value="IsAdminBinding">IsAdmin</MudCheckBox>
+        <MudContainer Class="d-flex flex-column">
+            <MudPaper Class="pa-3 ma-2">
+                <MudTextField T="string" @bind-Value="@User.Username" Label="Username">@User.Username</MudTextField>
+            </MudPaper>
+            <MudPaper Class="pa-3 ma-2">
+                <MudCheckBox Label="Can change Username" @bind-Value="@User.CanChangeUsername"></MudCheckBox>
+            </MudPaper>
+
+            <MudPaper Class="pa-3 ma-2">
+                <MudTextField T="string" Label="New Password" @bind-Value="@NewPassword"/>
+            </MudPaper>
+
+
+            <MudPaper Class="pa-3 ma-2">
+                <MudStack>
+                    <MudSelect T="string" Label="Sprache" @bind-Value="@User.Language">
+                        @foreach(var language in Enum.GetValues<Language>())
+                        {
+                            <MudSelectItem T="string" Value="language.ToString()">@language</MudSelectItem>
+                        }
+                  </MudSelect>
+                </MudStack>
+            </MudPaper>
+
+            <MudPaper Class="pa-3 ma-2">
+                <MudCheckBox Label="Use dark Mode" @bind-Value="@User.UseDarkMode"></MudCheckBox>
+            </MudPaper>
+
+            <MudPaper>
+                <MudText Color="Color.Error">@m_ErrorMessage</MudText>
+            </MudPaper>
+
+            <MudPaper Class="pa-3 ma-2">
+                <MudText Typo="Typo.h5">Permissions:</MudText>
+                @foreach (var kvp in AllPermissions)
+                {
+                    <MudText Class="pa-2 ma-2" Typo="Typo.h6">@kvp.Key</MudText>
+                    foreach (var permission in kvp.Value)
+                    {
+                        <MudPaper Class="d-flex flex-wrap">
+                            <MudCheckBox Label="@permission" Value="@IsPermissionSet[permission]"
+                                         Disabled="@CheckIfDisabled(permission)"
+                                         ValueChanged="@((bool b) => ApplyExtraPermissions(b, permission))"></MudCheckBox>
+                        </MudPaper>
+                    }
+                }
+            </MudPaper>
         </MudContainer>
     </DialogContent>
 
@@ -22,32 +71,122 @@
 
 @code {
     [CascadingParameter] private MudDialogInstance? MudDialog { get; set; }
-    [Parameter] public required DeviceOptions DeviceOptions { get; set; }
-
-    private string NameBinding { get; set; } = "Enter username";
-    private bool IsAdminBinding { get; set; } = false;
-
-    protected override void OnInitialized()
+    [Parameter] public DeviceOptions? DeviceOptions { get; set; }
+    public UsersModel User { get; set; } = new ()
     {
-        User = new UsersModel
-        {
-            Username = null,
-            CanChangeUsername = false,
-            IsActive = false,
-            Language = "English",
-            UseDarkMode = false,
-            Permissions = null,
-        };
+        Username = "",
+        CanChangeUsername = true,
+        IsActive = true,
+        Language = Language.English.ToString(),
+        UseDarkMode = true,
+        Permissions = new List<string>()
+    };
+    private Dictionary<string, List<string>> AllPermissions { get; set; } = new Dictionary<string, List<string>>();
+    private string? m_ErrorMessage = "";
+    private Dictionary<string, bool> IsPermissionSet { get; set; } = new Dictionary<string, bool>();
+    private string NewPassword { get; set; } = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await accessor.GetAllPermissions();
+        if(result.Success)
+            AllPermissions = result.Response!;
+        AllPermissions.SelectMany(s => s.Value).ToList().ForEach(p => IsPermissionSet.Add(p, User.Permissions.Contains(p)));
     }
 
-    public UsersModel User { get; set; }
 
-
-    private void Submit()
+    private async Task Submit()
     {
-        User.Username = NameBinding;
-        StateHasChanged();
+        m_ErrorMessage = "";
+        if(string.IsNullOrWhiteSpace(User.Username))
+            m_ErrorMessage += "Username cannot be empty\n";
+        if(string.IsNullOrWhiteSpace(NewPassword))
+            m_ErrorMessage += "Password cannot be empty\n";
+
+        if (m_ErrorMessage != "")
+            return;
+        User.Permissions = IsPermissionSet.Where(p => p.Value).Select(p => p.Key).ToList();
+        var addResult = await accessor.AddNewUser(new AddUserModel
+        {
+            Username = User.Username,
+            Password = NewPassword
+        });
+        if (!addResult.Success)
+        {
+            m_ErrorMessage = addResult.Message!;
+            return;
+        }
+
+        var changeResult = await accessor.UpdateUser(User.Username, User);
+        if (!changeResult.Success)
+        {
+            m_ErrorMessage = "The user has been added but some changes could not be saved. \n" +
+                           "You can change them using the edit menu.\n" +
+                           $"Error: {changeResult.Message!}";
+            return;
+        }
         MudDialog.Close(DialogResult.Ok(User));
+    }
+
+    public void ApplyExtraPermissions(bool isChecked, string permission)
+    {
+        var permissionParts = permission.Split('.');
+        var permissionsToCheck = new List<string>();
+        AllPermissions.SelectMany(kvp => kvp.Value).ToList()
+            .ForEach(s => permissionsToCheck.Add(s));
+
+        if (!permission.Contains('*'))
+        {
+            IsPermissionSet[permission] = isChecked;
+        }
+
+        for (int i = 0; i < permissionParts.Length; i++)
+        {
+            if (permissionParts[i] == "*")
+            {
+                permissionsToCheck.ForEach(p => IsPermissionSet[p] = isChecked);
+                return;
+            }
+            permissionsToCheck =  permissionsToCheck.Where(p => p.Contains(permission.Replace(".*", ""))).ToList();
+        }
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    public bool CheckIfDisabled(string permission)
+    {
+        string? highest = GetHighestJokerPermission(permission.Split('.').Length, permission);
+        if (string.IsNullOrEmpty(highest))
+            return false;
+        if (highest == permission)
+            return false;
+        if (permission.Contains(highest.Replace(".*", "").Replace("*", "")))
+            return true;
+        return false;
+    }
+
+    public string? GetHighestJokerPermission(int permissionsLength, string permissionType)
+    {
+        if (!(permissionType.EndsWith(".*") || permissionType.EndsWith("*")))
+        {
+            var splittedPermission = permissionType.Split(".").ToList();
+                splittedPermission.RemoveAt(splittedPermission.Count - 1);
+            permissionType = string.Join(".", splittedPermission);
+        }
+
+        List<string> highest = IsPermissionSet.Where(s => s.Value)
+            .Select(s => s.Key)
+            .Where(s => s.Contains('*'))
+            .Where(s => s.Replace(".*", "").Split('.').Length <= permissionsLength)
+            .OrderBy(p => p.Split('.').Length)
+            .ThenBy(p => p.Length)
+            .ToList();
+
+        if(highest.Count <= 1)
+            return highest.FirstOrDefault();
+        if(highest.Any(s => s.Split(".").Length < permissionsLength))
+            return highest.FirstOrDefault(s => s.Split(".").Length < permissionsLength);
+        return highest.FirstOrDefault(s => s.Contains(permissionType));
     }
 
     private void Cancel()
@@ -55,3 +194,4 @@
         MudDialog.Cancel();
     }
 }
+
