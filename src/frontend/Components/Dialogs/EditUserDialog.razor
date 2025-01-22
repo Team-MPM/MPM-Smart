@@ -66,13 +66,16 @@
             @if (User.Username != "admin")
             {
                 <MudPaper Class="pa-3 ma-2">
+                    <MudText Typo="Typo.h5">Permissions:</MudText>
                     @foreach (var kvp in AllPermissions)
                     {
-                        <MudText>@kvp.Key</MudText>
+                        <MudText Class="pa-2 ma-2" Typo="Typo.h6">@kvp.Key</MudText>
                         foreach (var permission in kvp.Value)
                         {
                             <MudPaper Class="d-flex flex-wrap">
-                                <MudCheckBox Label="@RemovePrefix(permission)" @bind-Value="@IsPermissionSet[permission]"></MudCheckBox>
+                                <MudCheckBox Label="@permission" Value="@IsPermissionSet[permission]"
+                                             Disabled="@CheckIfDisabled(permission)"
+                                             ValueChanged="@((bool b) => ApplyExtraPermissions(b, permission))"></MudCheckBox>
                             </MudPaper>
                         }
                     }
@@ -136,6 +139,68 @@
         }
         await accessor.UpdateUser(m_OldUsername, User);
         MudDialog.Close(DialogResult.Ok(User));
+    }
+
+    public void ApplyExtraPermissions(bool isChecked, string permission)
+    {
+        var permissionParts = permission.Split('.');
+        var permissionsToCheck = new List<string>();
+        AllPermissions.SelectMany(kvp => kvp.Value).ToList()
+            .ForEach(s => permissionsToCheck.Add(s));
+
+        if (!permission.Contains('*'))
+        {
+            IsPermissionSet[permission] = isChecked;
+        }
+
+        for (int i = 0; i < permissionParts.Length; i++)
+        {
+            if (permissionParts[i] == "*")
+            {
+                permissionsToCheck.ForEach(p => IsPermissionSet[p] = isChecked);
+                return;
+            }
+            permissionsToCheck =  permissionsToCheck.Where(p => p.Contains(permission.Replace(".*", ""))).ToList();
+        }
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    public bool CheckIfDisabled(string permission)
+    {
+        string? highest = GetHighestJokerPermission(permission.Split('.').Length, permission);
+        if (string.IsNullOrEmpty(highest))
+            return false;
+        if (highest == permission)
+            return false;
+        if (permission.Contains(highest.Replace(".*", "").Replace("*", "")))
+            return true;
+        return false;
+    }
+
+    public string? GetHighestJokerPermission(int permissionsLength, string permissionType)
+    {
+        if (!(permissionType.EndsWith(".*") || permissionType.EndsWith("*")))
+        {
+            var splittedPermission = permissionType.Split(".").ToList();
+                splittedPermission.RemoveAt(splittedPermission.Count - 1);
+            permissionType = string.Join(".", splittedPermission);
+        }
+
+        List<string> highest = IsPermissionSet.Where(s => s.Value)
+            .Select(s => s.Key)
+            .Where(s => s.Contains('*'))
+            .Where(s => s.Replace(".*", "").Split('.').Length <= permissionsLength)
+            .Where(s => s.Split('.').First() == permissionType.Split('.').First() || s.Split('.').First() == "*")
+            .OrderBy(p => p.Split('.').Length)
+            .ThenBy(p => p.Length)
+            .ToList();
+
+        if(highest.Count <= 1)
+            return highest.FirstOrDefault();
+        if(highest.Any(s => s.Split(".").Length < permissionsLength))
+            return highest.FirstOrDefault(s => s.Split(".").Length < permissionsLength);
+        return highest.FirstOrDefault(s => s.Contains(permissionType));
     }
 
 
