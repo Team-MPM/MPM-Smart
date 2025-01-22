@@ -14,12 +14,12 @@
 
 <div style="position: relative; height: calc(100dvh - 64px); width: 100dvw">
     <MudContainer Style="max-height: 100%; width: 100%; position: absolute; overflow-y: scroll; top: 0; left: 0; right: 0">
-        <MudGrid Gutter="3" Spacing="8" Justify="Justify.Center">
+        <MudGrid Spacing="8" Justify="Justify.Center">
             @foreach (var c in m_Controllers)
             {
                 <MudItem lg="3" md="4" sm="6" xs="12">
-                    <MudCard Hover="true">
-                        <MudCardMedia Image="@c.ImageUrl" Alt="Controller Banner" Height="200"
+                    <MudCard>
+                        <MudCardMedia Image="@c.ImageUrl" Height="200"
                                       @onclick="() => Connect(c)" Style="cursor: pointer"/>
                         <MudCardContent>
                             <MudText Typo="Typo.h5" Class="card-title">@c.Name</MudText>

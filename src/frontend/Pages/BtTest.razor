@@ -27,8 +27,9 @@
     private bool Available { get; set; } = false;
     private List<(string Name, string Id)>? Devices { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
+        return Task.CompletedTask;
     }
 
     private async Task Load()

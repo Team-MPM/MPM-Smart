@@ -100,9 +100,10 @@
         }
     }
 
-    public async Task OnSubmit()
+    public Task OnSubmit()
     {
         MudDialog.Close(DialogResult.Ok(true));
+        return Task.CompletedTask;
     }
 
 }

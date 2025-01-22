@@ -6,9 +6,7 @@
 @attribute [Authorize]
 @inject ApiAccessor Api
 
-
 <h1>Dashboard</h1>
-
 
 @if (m_Error is not null)
 {
@@ -40,7 +38,24 @@ else
     private List<List<ChartSeries>>? m_ChartData;
     private string? m_Error;
 
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
+    {
+        //await Query();
+        m_ChartData =
+        [
+            new List<ChartSeries>
+            {
+                new()
+                {
+                    Name = "Test",
+                    Data = [1, 2, 3, 4, 5]
+                }
+            }
+        ];
+        return Task.CompletedTask;
+    }
+
+    private async Task Query()
     {
         var res = await Api.GetPluginDataInfo();
         if (res is { Success: true, Response: not null })
