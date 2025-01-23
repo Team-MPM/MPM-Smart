@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using Blazored.LocalStorage;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace Frontend.Services;
 
@@ -23,6 +24,7 @@ public class ControllerConnectionManager(IServiceProvider sp)
     public string? Token { get; private set; }
     private bool m_Connected = false;
     private ApiAccessor m_Api = null!;
+    private Uri? m_Uri;
 
     public event Action? OnChange;
 
@@ -36,8 +38,9 @@ public class ControllerConnectionManager(IServiceProvider sp)
     {
         m_Client = new HttpClient();
         var protocol = details.UseHttps ? "https" : "http";
-        m_Client.BaseAddress = new Uri($"{protocol}://{details.Address}:{details.Port}/");
-        m_Client.Timeout = TimeSpan.FromSeconds(5);
+        m_Uri = new Uri($"{protocol}://{details.Address}:{details.Port}/");
+        m_Client.BaseAddress = m_Uri;
+        m_Client.Timeout = TimeSpan.FromMinutes(1);
 
         HttpResponseMessage res;
 
@@ -122,4 +125,16 @@ public class ControllerConnectionManager(IServiceProvider sp)
     }
 
     public HttpClient? GetCurrentClient() => m_Connected ? m_Client : null;
+
+    public HubConnectionBuilder GetSignalRClient(string path)
+    {
+        if (m_Uri is null) throw new InvalidOperationException("Not connected to a controller");
+        var builder = new HubConnectionBuilder();
+        builder.WithUrl(new Uri(m_Uri, path), options =>
+        {
+            options.AccessTokenProvider = () => Task.FromResult(Token);
+        });
+
+        return builder;
+    }
 }

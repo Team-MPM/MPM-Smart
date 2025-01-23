@@ -6,6 +6,7 @@ using Backend.Services.Plugins;
 using Data.System;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using PluginBase;
 
 namespace Backend.Services.Database;
 
@@ -46,7 +47,7 @@ public class DbInitializer(
         logger.LogInformation("System Database initialization completed after {ElapsedMilliseconds}ms",
             sw.ElapsedMilliseconds);
 
-        await pluginManager.WaitForPluginInitializationAsync();
+        await pluginManager.PluginInitializationComplete();
 
         logger.LogInformation("Starting Plugin System Database initialization after {ElapsedMilliseconds}ms",
             sw.ElapsedMilliseconds);

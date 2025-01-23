@@ -21,15 +21,16 @@ system_config_t system_config_from_file(const char *path, char *buffer, const si
     config.token = strtok(NULL, "\n");
     config.identity = strtok(NULL, "\n");
     config.username = strtok(NULL, "\n");
+    config.status = strtok(NULL, "\n");
 
     return config;
 }
 
 void system_config_save_to_file(const system_config_t* config, const char *path) {
     char buffer[512];
-    snprintf(buffer, sizeof(buffer), "%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
+    snprintf(buffer, sizeof(buffer), "%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
              config->deviceName, config->ssid, config->password, config->controllerAddress,
-             config->token, config->identity, config->username);
+             config->token, config->identity, config->username, config->status);
     file_write(path, buffer);
 }
 
@@ -41,4 +42,5 @@ void system_config_print(const system_config_t* config) {
     ESP_LOGI(TAG, "Identity: %s", config->identity);
     ESP_LOGI(TAG, "Username: %s", config->username);
     ESP_LOGI(TAG, "Token: %s", config->token);
+    ESP_LOGI(TAG, "Status: %s", config->status);
 }

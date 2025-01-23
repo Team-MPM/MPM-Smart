@@ -1,4 +1,6 @@
 using PluginBase;
+using PluginBase.Services.Devices;
+using PluginBase.Services.Networking;
 using PluginBase.Services.Telemetry;
 using Serilog;
 
@@ -15,7 +17,7 @@ public class PluginManager(
 
     private readonly TaskCompletionSource m_PluginsLoaded = new();
 
-    public Task WaitForPluginInitializationAsync() => m_PluginsLoaded.Task;
+    public Task PluginInitializationComplete() => m_PluginsLoaded.Task;
     
     public bool RegisterPlugin(IPlugin plugin, string path)
     {
@@ -68,6 +70,10 @@ public class PluginManager(
         services.AddSingleton<IServiceCollection>(services);
 
         services.AddSingleton(sp.GetRequiredService<ITelemetryDataCollector>());
+        services.AddSingleton(sp.GetRequiredService<NetworkScanner>());
+        services.AddSingleton(sp.GetRequiredService<DeviceTypeRegistry>());
+        services.AddSingleton(sp.GetRequiredService<DeviceRegistry>());
+        services.AddSingleton(sp.GetRequiredService<DeviceManager>());
 
         services.AddLogging(options =>
         {

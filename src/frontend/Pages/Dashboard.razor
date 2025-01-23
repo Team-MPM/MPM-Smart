@@ -1,108 +1,118 @@
 ﻿@page "/home"
+@using Frontend.Services
 @using Microsoft.AspNetCore.Authorization
+@using Shared.Plugins.DataRequest
 @layout MainLayout
 @attribute [Authorize]
-
+@inject ApiAccessor Api
 
 <h1>Dashboard</h1>
-<MudGrid Class="p-3">
-    <MudItem xs="12" sm="6" md="4">
-        <MudCard>
-            <MudCardContent>
-                <MudChart ChartType="ChartType.Line" XAxisLabels="XAxisLabels" ChartSeries="Series" Height="250px"/>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" sm="6" md="4">
-        <MudCard>
-            <MudCardContent>
-                <MudChart ChartType="ChartType.Bar" InputData="@data" XAxisLabels="XAxisLabels" ChartSeries="Series"
-                          Height="250px"/>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" sm="6" md="4">
-        <MudCard>
-            <MudCardContent>
-                <MudChart ChartType="ChartType.Pie" InputData="@data" @bind-SelectedIndex="Index" InputLabels="@labels"
-                          Height="250px"/>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" sm="6" md="4">
-        <MudCard>
-            <MudCardContent>
-                <MudChart ChartType="ChartType.Bar" InputData="@data" XAxisLabels="XAxisLabels" ChartSeries="Series"
-                          Height="250px"/>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" sm="6" md="4">
-        <MudCard>
-            <MudCardContent>
-                <MudChart ChartType="ChartType.Pie" InputData="@data" @bind-SelectedIndex="Index" InputLabels="@labels"
-                          Height="250px"/>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" sm="6" md="4">
-        <MudCard>
-            <MudCardContent>
-                <MudChart ChartType="ChartType.Line" XAxisLabels="XAxisLabels" ChartSeries="Series" Height="250px"/>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" sm="6" md="4">
-        <MudCard>
-            <MudCardContent>
-                <MudChart ChartType="ChartType.Pie" InputData="@data" @bind-SelectedIndex="Index" InputLabels="@labels"
-                          Height="250px"/>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" sm="6" md="4">
-        <MudCard>
-            <MudCardContent>
-                <MudChart ChartType="ChartType.Bar" InputData="@data" XAxisLabels="XAxisLabels" ChartSeries="Series"
-                          Height="250px"/>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" sm="6" md="4">
-        <MudCard>
-            <MudCardContent>
-                <MudChart ChartType="ChartType.Line" XAxisLabels="XAxisLabels" ChartSeries="Series" Height="250px"/>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-</MudGrid>
+
+@if (m_Error is not null)
+{
+    <MudText Typo="Typo.body1" Color="Color.Error">@m_Error</MudText>
+}
+
+@if (m_ChartData is null)
+{
+    <MudText>Loading...</MudText>
+}
+else
+{
+    <MudGrid Class="p-3">
+        @foreach (var chart in m_ChartData)
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard>
+                    <MudCardContent>
+                        <MudChart ChartType="ChartType.Line" ChartSeries="chart" Height="250px"/>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+}
 
 @code {
 
-    public List<ChartSeries> Series = new List<ChartSeries>()
+    private List<List<ChartSeries>>? m_ChartData;
+    private string? m_Error;
+
+    protected override Task OnInitializedAsync()
     {
-        new ChartSeries() { Name = "United States", Data = new double[] { 40, 20, 25, 27, 46, 60, 48, 80, 15 } },
-        new ChartSeries() { Name = "Germany", Data = new double[] { 19, 24, 35, 13, 28, 15, 13, 16, 31 } },
-        new ChartSeries() { Name = "Sweden", Data = new double[] { 8, 6, 11, 13, 4, 16, 10, 16, 18 } },
-    };
+        //await Query();
+        m_ChartData =
+        [
+            new List<ChartSeries>
+            {
+                new()
+                {
+                    Name = "Test",
+                    Data = [1, 2, 3, 4, 5]
+                }
+            }
+        ];
+        return Task.CompletedTask;
+    }
 
-    public string[] XAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep" };
-
-
-    private ChartOptions barChartData = new ChartOptions
+    private async Task Query()
     {
-        // Initialize your bar chart data here
-    };
+        var res = await Api.GetPluginDataInfo();
+        if (res is { Success: true, Response: not null })
+        {
+            var info = res.Response;
+            var req = new DataRequest()
+            {
+                Requests = info.Select(i => new DataRequestEntry()
+                {
+                    StartDate = DateTime.MinValue,
+                    EndDate = DateTime.MaxValue,
+                    PluginName = i.Plugin,
+                    DataPoint = i.DataPoint,
+                    RequestedDataType = "float"
+                }).ToList()
+            };
 
-    private int Index = -1; //default value cannot be 0 -> first selectedindex is 0.
+            req.Requests = [req.Requests[0]];
 
-    double[] data = { 77, 25, 20, 5 };
+            var dataRes = await Api.GetPluginData(req);
 
-    string[] labels =
-    {
-        "Uranium", "Plutonium", "Thorium", "Caesium", "Technetium", "Promethium",
-        "Polonium", "Astatine", "Radon", "Francium", "Radium", "Actinium", "Protactinium",
-        "Neptunium", "Americium", "Curium", "Berkelium", "Californium", "Einsteinium", "Mudblaznium"
-    };
+            foreach (var i in info)
+            {
+                Console.WriteLine(i.Plugin);
+            }
+
+            if (dataRes is { Success: true, Response: not null })
+            {
+                var data = dataRes.Response;
+
+                foreach (var i in data)
+                {
+                    Console.WriteLine(i.IsSuccessful);
+                    Console.WriteLine(i.ErrorMessage);
+                }
+
+                m_ChartData = data
+                    .Where(e => e.Data is not null)
+                    .Select(e =>
+                        new List<ChartSeries>
+                        {
+                            new()
+                            {
+                                Name = e.DataPoint,
+                                Data = e.Data!.Select(p => (double)p.Data).ToArray()
+                            }
+                        }).ToList();
+            }
+            else
+            {
+                m_Error = string.IsNullOrEmpty(dataRes.Message) ? "Unknown error" : dataRes.Message;
+            }
+        }
+        else
+        {
+            m_Error = string.IsNullOrEmpty(res.Message) ? "Unknown error" : res.Message;
+        }
+    }
 
 }

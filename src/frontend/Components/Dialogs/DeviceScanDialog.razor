@@ -1,0 +1,119 @@
+@using ApiSchema.Devices
+@using Frontend.Services
+@using Microsoft.AspNetCore.SignalR.Client
+
+@inject ControllerConnectionManager ConnectionManager
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">Connect new Devices</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTable Items="@m_Devices" Elevation="4">
+            <HeaderContent>
+                <MudTh>Device Name</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>
+                    <MudTooltip Text="@context.Description">
+                        @context.Name
+                    </MudTooltip>
+                </MudTd>
+                <MudTd>
+                    @{
+                        var localContext = context;
+                    }
+                    <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary"
+                               OnClick="async () => await Connect(localContext)">
+                        Connect
+                    </MudIconButton>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+        @if (m_IsLoading)
+        {
+            <MudText Class="mt-4">Searching...</MudText>
+        }
+        @if (m_Error is not null)
+        {
+            <MudText Typo="Typo.body1" Color="Color.Error">@m_Error</MudText>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="StartSearch" Color="Color.Info" Disabled="@m_IsLoading">Scan Again</MudButton>
+        <MudButton OnClick="CloseFail" Color="Color.Surface">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] public required MudDialogInstance MudDialog { get; set; }
+
+    private List<DeviceInfoDto> m_Devices = [];
+    private HubConnection? m_Connection;
+    private bool m_IsLoading = true;
+    private string? m_Error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        m_Connection = ConnectionManager.GetSignalRClient("/hubs/devices").Build();
+
+        m_Connection.On("DeviceFound", (DeviceInfoDto deviceInfo) =>
+        {
+            m_Devices.Add(deviceInfo);
+            StateHasChanged();
+        });
+
+        m_Connection.On("DeviceScanFinished", () =>
+        {
+            m_IsLoading = false;
+            StateHasChanged();
+        });
+
+        m_Connection.On("ConnectionFailed", () =>
+        {
+            m_Error = "Connection failed";
+            StateHasChanged();
+        });
+
+        m_Connection.On("ConnectionSucceeded", (DeviceDto device) =>
+        {
+            CloseSuc(device);
+        });
+
+        await m_Connection.StartAsync();
+        await m_Connection.SendAsync("Scan");
+    }
+
+    private void CloseSuc(DeviceDto device) => MudDialog.Close(device);
+    private void CloseFail() => MudDialog.Close();
+
+    private async Task StartSearch()
+    {
+        if (m_Connection is not null && m_Connection.State == HubConnectionState.Connected)
+        {
+            m_IsLoading = true;
+            m_Devices = [];
+            await m_Connection.SendAsync("Scan");
+        }
+    }
+
+    private async Task Connect(DeviceInfoDto deviceInfo)
+    {
+        Console.WriteLine("Connecting to device: " + deviceInfo.Name);
+        
+        if (m_Connection?.State is not HubConnectionState.Connected)
+            return;
+
+        Console.WriteLine("hi");
+
+        // TODO: Implement parameter UI for device connection
+        var parameters = new Dictionary<string, object>();
+        var location = "Living Room";
+
+        await m_Connection.SendAsync("TryConnect", deviceInfo, parameters, location);
+
+        Console.WriteLine("hi");
+    }
+
+}
