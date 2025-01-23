@@ -3,8 +3,7 @@
 @using ApiSchema.Enums
 @using ApiSchema.Usermanagement
 @using Frontend.Services
-@inject ApiAccessor accessor
-@attribute [StreamRendering]
+@inject ApiAccessor Accessor
 
 
 <MudDialog>
@@ -88,7 +87,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await accessor.GetAllPermissions();
+        var result = await Accessor.GetAllPermissions();
         if(result.Success)
             AllPermissions = result.Response!;
         AllPermissions.SelectMany(s => s.Value).ToList().ForEach(p => IsPermissionSet.Add(p, User.Permissions.Contains(p)));
@@ -106,7 +105,7 @@
         if (m_ErrorMessage != "")
             return;
         User.Permissions = IsPermissionSet.Where(p => p.Value).Select(p => p.Key).ToList();
-        var addResult = await accessor.AddNewUser(new AddUserModel
+        var addResult = await Accessor.AddNewUser(new AddUserModel
         {
             Username = User.Username,
             Password = NewPassword
@@ -117,7 +116,7 @@
             return;
         }
 
-        var changeResult = await accessor.UpdateUser(User.Username, User);
+        var changeResult = await Accessor.UpdateUser(User.Username, User);
         if (!changeResult.Success)
         {
             m_ErrorMessage = "The user has been added but some changes could not be saved. \n" +
@@ -131,9 +130,7 @@
     public void ApplyExtraPermissions(bool isChecked, string permission)
     {
         var permissionParts = permission.Split('.');
-        var permissionsToCheck = new List<string>();
-        AllPermissions.SelectMany(kvp => kvp.Value).ToList()
-            .ForEach(s => permissionsToCheck.Add(s));
+        var permissionsToCheck = AllPermissions.SelectMany(kvp => kvp.Value).ToList();
 
         if (!permission.Contains('*'))
         {

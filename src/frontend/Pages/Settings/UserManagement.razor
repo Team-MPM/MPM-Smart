@@ -4,9 +4,7 @@
 @using Frontend.Services
 @attribute [StreamRendering]
 @inject IDialogService DialogService
-@inject ILogger<UserManagement> Logger
-@inject ApiAccessor accessor
-@inject NavigationManager nav
+@inject ApiAccessor Accessor
 
 <h3>UserManagement</h3>
 
@@ -64,7 +62,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var userResponse = await accessor.GetAllUsers();
+        var userResponse = await Accessor.GetAllUsers();
         UsersLoaded = userResponse.Success;
         if (!userResponse.Success)
         {
@@ -78,7 +76,7 @@ else
 
     private async Task ReloadUsers()
     {
-        var userResponse = await accessor.GetAllUsers();
+        var userResponse = await Accessor.GetAllUsers();
         if (!userResponse.Success)
         {
             Console.WriteLine("User loading failed");
@@ -138,7 +136,7 @@ else
 
     public async Task DeleteUser(UsersModel user)
     {
-        await accessor.DeleteUser(user.Username);
+        await Accessor.DeleteUser(user.Username);
         await ReloadUsers();
         await InvokeAsync(StateHasChanged);
     }

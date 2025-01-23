@@ -1,9 +1,7 @@
 ﻿@page "/Settings/User"
-@using ApiSchema.Enums
 @using Frontend.Services
-@using MudBlazor
 
-@inject ApiAccessor accessor
+@inject ApiAccessor Accessor
 
 <MudContainer MaxWidth="MaxWidth.Small" Class="mt-6">
     <MudText Typo="Typo.h5" Align="Align.Left" Class="mb-4">Benutzer Einstellungen</MudText>
@@ -62,7 +60,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var responseUsername = await accessor.GetUserData();
+        var responseUsername = await Accessor.GetUserData();
         if (responseUsername.Response is null)
             return;
 
@@ -77,7 +75,7 @@
     {
         if (username != originalUsername)
         {
-            var responseU = await accessor.SetUsername(username);
+            var responseU = await Accessor.SetUsername(username);
             if (!responseU.Success)
                 ErrorMessageUserName = responseU.Message!;
             else
@@ -86,7 +84,7 @@
 
         if (!string.IsNullOrWhiteSpace(currentPassword) && !string.IsNullOrWhiteSpace(password))
         {
-            var responseP = await accessor.SetPassword(currentPassword, password);
+            var responseP = await Accessor.SetPassword(currentPassword, password);
             currentPassword = string.Empty;
             password = string.Empty;
             if (!responseP.Success)
