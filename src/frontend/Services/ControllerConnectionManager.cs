@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -100,6 +101,8 @@ public class ControllerConnectionManager(IServiceProvider sp)
                 var token = await storedCredentials.Storage
                     .GetItemAsStringAsync($"authToken-{details.Address}:{details.Port}");
                 if (token is null)
+                    return false;
+                if(new JwtSecurityToken(token).ValidTo < DateTime.UtcNow)
                     return false;
                 m_Client.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", token);

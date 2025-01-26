@@ -7,12 +7,21 @@
         Switch Connection
     </MudButton>
     <MudSpacer/>
+    <MudToggleIconButton @bind-Toggled="@_layout.IsDarkMode"
+                         Icon="@Icons.Material.Filled.LightMode"
+                         ToggledIcon="@Icons.Material.Filled.DarkMode"
+                         Class="mud-theme-primary"
+                         ToggledColor="@Color.Success"
+                         title="@(_layout.IsDarkMode ? "On" : "Off")"/>
     <MudIconButton Href="/" Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit"/>
     <MudIconButton Href="/settings/user" Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit"/>
 </MudAppBar>
 
 @code {
-        private void Home() => NavigationManager.NavigateTo("/");
+    
+    [CascadingParameter]
+    public required MudBaseLayout _layout { get; set; }
 
-        [Parameter] public required Action ToggleDrawer { get; set; }
+    private void Home() => NavigationManager.NavigateTo("/");
+    [Parameter] public required Action ToggleDrawer { get; set; }
 }

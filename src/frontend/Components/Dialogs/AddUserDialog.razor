@@ -1,0 +1,166 @@
+﻿@using ApiSchema.Enums
+@using ApiSchema.Usermanagement
+@using Frontend.Services
+@using Frontend.Utils
+@inject ApiAccessor Api
+
+<MudDialog>
+    <TitleContent>
+        Add User
+    </TitleContent>
+
+    <DialogContent>
+        <MudContainer Class="d-flex flex-column">
+            <MudPaper Class="pa-3 ma-2">
+                <MudTextField T="string" @bind-Value="@User.Username" Label="Username" />
+            </MudPaper>
+            <MudPaper Class="pa-3 ma-2">
+                <MudCheckBox Label="Can change Username" @bind-Value="@User.CanChangeUsername"/>
+            </MudPaper>
+
+            <MudPaper Class="pa-3 ma-2">
+                <MudTextField T="string" Label="New Password" @bind-Value="@NewPassword"/>
+            </MudPaper>
+            
+            <MudPaper Class="pa-3 ma-2">
+                <MudStack>
+                    <MudSelect T="string" Label="Sprache" @bind-Value="@User.Language">
+                        @foreach (var language in Enum.GetValues<Language>())
+                        {
+                            <MudSelectItem T="string" Value="language.ToString()">@language</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudStack>
+            </MudPaper>
+
+            <MudPaper Class="pa-3 ma-2">
+                <MudCheckBox Label="Use dark Mode" @bind-Value="@User.UseDarkMode"/>
+            </MudPaper>
+
+            <MudPaper>
+                <MudText Color="Color.Error">@m_ErrorMessage</MudText>
+            </MudPaper>
+
+            <MudPaper Class="pa-3 ma-2">
+                <MudText Typo="Typo.h5">Permissions:</MudText>
+                @foreach (var kvp in AllPermissions)
+                {
+                    <MudText Class="pa-2 ma-2" Typo="Typo.h6">@kvp.Key</MudText>
+                    foreach (var permission in kvp.Value)
+                    {
+                        <MudPaper Class="d-flex flex-wrap">
+                            <MudCheckBox Label="@permission" Value="@IsPermissionSet[permission]"
+                                         Disabled="@PermissionUtils.CheckIfDisabled(permission, IsPermissionSet)"
+                                         ValueChanged="@((bool b) => ApplyExtraPermissions(b, permission))"/>
+                        </MudPaper>
+                    }
+                }
+            </MudPaper>
+        </MudContainer>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = null!;
+
+    public UsersModel User { get; init; } = new()
+    {
+        Username = "",
+        CanChangeUsername = true,
+        IsActive = true,
+        Language = Language.English.ToString(),
+        UseDarkMode = true,
+        Permissions = []
+    };
+
+    private Dictionary<string, List<string>> AllPermissions { get; set; } = new();
+    private string? m_ErrorMessage = "";
+    private Dictionary<string, bool> IsPermissionSet { get; } = new();
+    private string NewPassword { get; set; } = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await Api.GetAllPermissions();
+
+        if (!result.Success)
+            return;
+
+        AllPermissions = result.Response!;
+
+        foreach (var p in AllPermissions.SelectMany(s => s.Value))
+            IsPermissionSet.Add(p, User.Permissions.Contains(p));
+    }
+
+    private async Task Submit()
+    {
+        m_ErrorMessage = "";
+
+        if (string.IsNullOrWhiteSpace(User.Username))
+            m_ErrorMessage += "Username cannot be empty\n";
+        if (string.IsNullOrWhiteSpace(NewPassword))
+            m_ErrorMessage += "Password cannot be empty\n";
+
+        if (m_ErrorMessage != "")
+            return;
+
+        User.Permissions = IsPermissionSet
+            .Where(p => p.Value)
+            .Select(p => p.Key)
+            .ToList();
+
+        var addResult = await Api.AddNewUser(new AddUserModel
+        {
+            Username = User.Username,
+            Password = NewPassword
+        });
+
+        if (!addResult.Success)
+        {
+            m_ErrorMessage = addResult.Message!;
+            return;
+        }
+
+        var changeResult = await Api.UpdateUser(User.Username, User);
+        if (!changeResult.Success)
+        {
+            m_ErrorMessage = "The user has been added but some changes could not be saved. \n" +
+                             "You can change them using the edit menu.\n" +
+                             $"Error: {changeResult.Message!}";
+            return;
+        }
+
+        MudDialog.Close(DialogResult.Ok(User));
+    }
+
+    public void ApplyExtraPermissions(bool isChecked, string permission)
+    {
+        var permissionParts = permission.Split('.');
+        var permissionsToCheck = AllPermissions.SelectMany(kvp => kvp.Value);
+
+        if (!permission.Contains('*'))
+        {
+            IsPermissionSet[permission] = isChecked;
+        }
+
+        foreach (var t in permissionParts)
+        {
+            if (t == "*")
+            {
+                foreach (var p in permissionsToCheck)
+                    IsPermissionSet[p] = isChecked;
+                return;
+            }
+
+            permissionsToCheck = permissionsToCheck.Where(p => p.Contains(permission.Replace(".*", "")));
+        }
+
+        InvokeAsync(StateHasChanged);
+    }
+    
+    private void Cancel() => MudDialog.Cancel();
+}

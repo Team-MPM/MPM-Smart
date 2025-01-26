@@ -30,8 +30,11 @@ public static class IdentityEndpoints
             if (user is null)
                 return Results.BadRequest(errorMessage);
 
-            if (!await userManager.CheckPasswordAsync(user, model.Password))
-                return Results.BadRequest(errorMessage);
+            if (!string.IsNullOrEmpty(user.PasswordHash))
+            {
+                if (!await userManager.CheckPasswordAsync(user, model.Password))
+                    return Results.BadRequest(errorMessage);
+            }
 
             var handler = new JwtSecurityTokenHandler();
 
@@ -46,7 +49,7 @@ public static class IdentityEndpoints
             var token = handler.CreateToken(new SecurityTokenDescriptor
             {
                 Subject = claims,
-                Expires = DateTime.UtcNow.AddDays(1),
+                Expires = DateTime.UtcNow.AddDays(2),
                 SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.RsaSha256)
             });
 

@@ -1,0 +1,133 @@
+﻿@page "/Settings/User-Management"
+@using ApiSchema.Usermanagement
+@using Frontend.Components.Dialogs
+@using Frontend.Services
+@inject IDialogService DialogService
+@inject ApiAccessor Api
+
+<h3>UserManagement</h3>
+
+@if (UsersLoaded && ErrorMessage == "")
+{
+    <MudContainer Class="p-4" MaxWidth="MaxWidth.Large">
+        <MudContainer Style="padding: 20px;">
+            <MudGrid Justify="Justify.FlexEnd">
+                <MudItem>
+                    <MudButton Class="mud-theme-primary" Variant="Variant.Filled" OnClick="@AddNewUser">Add</MudButton>
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
+
+        <MudContainer Class="p-4">
+            <MudTable Items="@Users" Class="mt-4">
+                <HeaderContent>
+                    <MudTh>Username</MudTh>
+                    <MudTh>Actions</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.Username</MudTd>
+                    <MudTd>
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"
+                                       OnClick="@(() => EditUser(context))"/>
+                        @if (context.Username != "admin" && context.Username != "Visitor")
+                        {
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
+                                           OnClick="@(() => DeleteUser(context))"/>
+                        }
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudContainer>
+    </MudContainer>
+}
+
+else if (ErrorMessage != "")
+{
+    <p>Access denied!</p>
+    <p>Error: @ErrorMessage</p>
+}
+else
+{
+    <p>Loading...</p>
+}
+
+@code {
+    private List<UsersModel> Users { get; set; } = [];
+    private string? ErrorMessage { get; set; } = "";
+    private bool UsersLoaded { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var userResponse = await Api.GetAllUsers();
+        UsersLoaded = userResponse.Success;
+        if (!userResponse.Success)
+        {
+            ErrorMessage = userResponse.Message;
+            return;
+        }
+
+        Users = userResponse.Response!;
+    }
+
+    private async Task ReloadUsers()
+    {
+        var userResponse = await Api.GetAllUsers();
+        if (!userResponse.Success)
+        {
+            Console.WriteLine("User loading failed");
+            UsersLoaded = userResponse.Success;
+            ErrorMessage = userResponse.Message;
+            return;
+        }
+
+        Users = userResponse.Response!;
+        UsersLoaded = userResponse.Success;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void AddNewUser() => Task.Run(AddDialog);
+
+    private async Task AddDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+
+        var dialog = await DialogService.ShowAsync<AddUserDialog>("Add new User", options);
+
+        var result = await dialog.Result;
+
+        if (result!.Data is null)
+        {
+            return;
+        }
+
+        await ReloadUsers();
+        await InvokeAsync(StateHasChanged);
+        StateHasChanged();
+    }
+
+    private async Task EditUser(UsersModel user)
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+        var parameters = new DialogParameters()
+        {
+            { "User", user }
+        };
+        var dialog = await DialogService.ShowAsync<EditUserDialog>("Edit User", parameters, options);
+        var result = await dialog.Result;
+        
+        if (result!.Data != null)
+        {
+            dialog.Close(DialogResult.Ok(user));
+        }
+
+        await ReloadUsers();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task DeleteUser(UsersModel user)
+    {
+        await Api.DeleteUser(user.Username);
+        await ReloadUsers();
+        await InvokeAsync(StateHasChanged);
+    }
+}

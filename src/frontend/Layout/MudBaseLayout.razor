@@ -1,4 +1,5 @@
 @using Blazored.LocalStorage
+@using Frontend.Services
 @inherits LayoutComponentBase
 
 @inject ILocalStorageService Storage
@@ -29,6 +30,7 @@
             m_IsDarkMode = value;
             StateHasChanged();
             Storage.SetItemAsync("darkMode", value);
+            
         }
     }
 }

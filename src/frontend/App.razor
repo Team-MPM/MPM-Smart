@@ -1,10 +1,34 @@
-﻿@using Microsoft.AspNetCore.Components.Authorization
+﻿@using System.IdentityModel.Tokens.Jwt
+@using System.Security.Claims
+@using Blazored.LocalStorage
+@using Frontend.Pages.General
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager Nav
+@inject ILocalStorageService Storage
+
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                 <NotAuthorized>
-                    <p>You are not authorized to view this page. Please ask your local admin if you think this is an issue.</p>
+                    @code {
+
+                        protected override async Task OnInitializedAsync()
+                        {
+                            var controller = await Storage.GetItemAsync<HomePage.ControllerInfo>("current-controller");
+                            if (controller is null)
+                                return;
+                            var token = await Storage.GetItemAsStringAsync($"authToken-{controller.Address}:{controller.Port}");
+                            if (string.IsNullOrEmpty(token))
+                            {
+                                Nav.NavigateTo("/");
+                                return;
+                            }
+
+                            if (new JwtSecurityToken(token).ValidTo < DateTime.Now)
+                                Nav.NavigateTo("/");
+                        }
+                    }
                 </NotAuthorized>
             </AuthorizeRouteView>
         </Found>
@@ -15,3 +39,10 @@
         </NotFound>
     </Router>
 </CascadingAuthenticationState>
+
+@code {
+    private bool IsHomePage()
+    {
+        return Nav.Uri.EndsWith("/") || Nav.Uri.EndsWith("/index", StringComparison.OrdinalIgnoreCase);
+    }
+}

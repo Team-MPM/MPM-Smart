@@ -1,0 +1,172 @@
+﻿@using ApiSchema.Usermanagement
+@using Frontend.Services
+@using Frontend.Utils
+@inject ApiAccessor Api
+
+<MudDialog>
+    <TitleContent>
+        Edit User
+    </TitleContent>
+
+    <DialogContent>
+        <MudContainer Class="d-flex flex-column">
+            <MudPaper Class="pa-3 ma-2">
+                @if (User.CanChangeUsername)
+                {
+                    <MudTextField T="string" @bind-Value="@User.Username" Label="Username" Variant="Variant.Filled"/>
+                }
+                else
+                {
+                    <MudTextField T="string" disabled @bind-Value="@User.Username" Label="Username" Variant="Variant.Filled"/>
+                }
+            </MudPaper>
+            
+            @if (User.Username != "admin" && User.Username != "Visitor")
+            {
+                <MudPaper Class="pa-3 ma-2">
+                    <MudCheckBox Label="Can change Username" @bind-Value="@User.CanChangeUsername"/>
+                </MudPaper>
+            }
+
+            <MudPaper Class="pa-3 ma-2">
+                <MudCheckBox Label="Change Password For User" @bind-Value="@ChangePassword"/>
+                @if (ChangePassword)
+                {
+                    <MudTextField T="string" Label="New Password" @bind-Value="@NewPassword"/>
+                }
+            </MudPaper>
+
+            @if (User.Username != "admin")
+            {
+                <MudPaper Class="pa-3 ma-2">
+                    <MudCheckBox Label="Is active" @bind-Value="@User.IsActive"/>
+                </MudPaper>
+            }
+
+            <MudPaper Class="pa-3 ma-2">
+                <MudStack>
+                    <MudSelect T="string" Label="Sprache" @bind-Value="@User.Language">
+                        @foreach (var language in m_Languages)
+                        {
+                            <MudSelectItem T="string" Value="language">@language</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudStack>
+            </MudPaper>
+
+            <MudPaper Class="pa-3 ma-2">
+                <MudCheckBox Label="Use dark Mode" @bind-Value="@User.UseDarkMode"></MudCheckBox>
+            </MudPaper>
+
+            <MudPaper>
+                <MudText Color="Color.Error">@m_ErrorMessage</MudText>
+            </MudPaper>
+
+            @if (User.Username != "admin")
+            {
+                <MudPaper Class="pa-3 ma-2">
+                    <MudText Typo="Typo.h5">Permissions:</MudText>
+                    @foreach (var kvp in AllPermissions)
+                    {
+                        <MudText Class="pa-2 ma-2" Typo="Typo.h6">@kvp.Key</MudText>
+                        foreach (var permission in kvp.Value)
+                        {
+                            <MudPaper Class="d-flex flex-wrap">
+                                <MudCheckBox Label="@permission" Value="@IsPermissionSet[permission]"
+                                             Disabled="@PermissionUtils.CheckIfDisabled(permission, IsPermissionSet)"
+                                             ValueChanged="@((bool b) => ApplyExtraPermissions(b, permission))" />
+                            </MudPaper>
+                        }
+                    }
+                </MudPaper>
+            }
+        </MudContainer>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter] public required UsersModel User { get; set; }
+    private Dictionary<string, List<string>> AllPermissions { get; set; } = new();
+    private string m_OldUsername = "";
+    private readonly List<string> m_Languages = ["Deutsch", "English", "Polish"];
+    private string m_ErrorMessage = "";
+    private Dictionary<string, bool> IsPermissionSet { get; set; } = new();
+    private bool ChangePassword { get; set; }
+    private string? NewPassword { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        m_OldUsername = User.Username;
+        var result = await Api.GetAllPermissions();
+        if (result.Success)
+            AllPermissions = result.Response!;
+        AllPermissions.SelectMany(s => s.Value).ToList().ForEach(p => IsPermissionSet.Add(p, User.Permissions.Contains(p)));
+    }
+
+    private string RemovePrefix(string permission) => permission.Replace("Permissions.", "");
+
+    private async Task Submit()
+    {
+        if (ChangePassword)
+        {
+            var resultPw = await Api.SetPasswordForUser(User.Username, NewPassword);
+            if (!resultPw.Success)
+            {
+                m_ErrorMessage = resultPw.Message!;
+                Console.WriteLine(m_ErrorMessage);
+                await InvokeAsync(StateHasChanged);
+                return;
+            }
+        }
+
+        User.Permissions = IsPermissionSet.Where(p => p.Value).Select(p => p.Key).ToList();
+        var result = await Api.UpdateUser(m_OldUsername, User);
+        if (!result.Success)
+        {
+            if (m_ErrorMessage != "")
+                m_ErrorMessage += ", ";
+            m_ErrorMessage = result.Message!;
+            Console.WriteLine(m_ErrorMessage);
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        await Api.UpdateUser(m_OldUsername, User);
+        MudDialog.Close(DialogResult.Ok(User));
+    }
+
+    public void ApplyExtraPermissions(bool isChecked, string permission)
+    {
+        var permissionParts = permission.Split('.');
+        var permissionsToCheck = new List<string>();
+        AllPermissions.SelectMany(kvp => kvp.Value).ToList()
+            .ForEach(s => permissionsToCheck.Add(s));
+
+        if (!permission.Contains('*'))
+        {
+            IsPermissionSet[permission] = isChecked;
+        }
+
+        foreach (var t in permissionParts)
+        {
+            if (t == "*")
+            {
+                permissionsToCheck.ForEach(p => IsPermissionSet[p] = isChecked);
+                return;
+            }
+
+            permissionsToCheck = permissionsToCheck.Where(p => p.Contains(permission.Replace(".*", ""))).ToList();
+        }
+
+        InvokeAsync(StateHasChanged);
+    }
+    
+    private void Cancel() => MudDialog.Cancel();
+}

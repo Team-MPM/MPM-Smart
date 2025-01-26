@@ -1,53 +1,96 @@
 ﻿@page "/Settings/General"
+@using System.Runtime.InteropServices.JavaScript
+@using Frontend.Services
 @layout MainLayout
 
-<MudContainer Class="p-4" MaxWidth="MaxWidth.Large">
-    <MudText Typo="Typo.h4">General-Settings</MudText>
-    <MudCard Class="m-3" Style=" width: 30%; background-color: #3b3432; margin: 10px">
-        <MudCardContent>
-            <MudTextField Label="Systemname" Placeholder="Enter username" Value="systemname"/>
-        </MudCardContent>
-    </MudCard>
+@inject ApiAccessor accessor
 
-    <MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
-        <text style="padding: 15px">Systemzeit</text>
-        <MudSelect T="string" @bind-Value="SelectedOption1">
-            @foreach (var systime in Systemtime!)
-            {
-                <MudSelectItem Value="@systime">@systime</MudSelectItem>
-            }
-        </MudSelect>
-    </MudCard>
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-6">
 
-    <MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
-        <text style="padding: 15px">Datenerfassungsintervall</text>
-        <MudSelect T="string" @bind-Value="SelectedOption2">
-            @foreach (var timeInt in TimeInterval!)
-            {
-                <MudSelectItem Value="@timeInt">@timeInt</MudSelectItem>
-            }
-        </MudSelect>
-    </MudCard>
+    <MudText Typo="Typo.h5" Align="Align.Left" Class="mb-4">Allgemeine Einstellungen</MudText>
 
-    <MudCard Style="width: 30%; background-color: #3b3432; margin: 10px">
-        <MudCardContent>
-            <MudGrid Justify="Justify.SpaceBetween">
-                <MudItem>
-                    <text style="color: white;">Backup</text>
-                </MudItem>
-                <MudItem Style="display: flex; justify-content: center; align-items: center;">
-                    <MudIcon Icon="@Icons.Material.Filled.Download"/>
-                </MudItem>
-            </MudGrid>
-        </MudCardContent>
-    </MudCard>
+    <MudPaper Class="p-2 mb-4" Elevation="2">
+        <MudStack Spacing="1" Row="true" AlignItems="AlignItems.Start" Justify="Justify.FlexStart">
+            <MudTextField Label="Systemname" Variant="Variant.Outlined" @bind-Value="systemname" FullWidth="true"/>
+        </MudStack>
+    </MudPaper>
+
+    <MudPaper Class="p-2 mb-4" Elevation="2">
+        <MudStack Spacing="1" Row="true" AlignItems="AlignItems.Start" Justify="Justify.FlexStart">
+            <MudSelect T="string" Label="Zeitzone auswählen" Variant="Variant.Outlined" @bind-Value="selectedTimeZone">
+                @foreach (var timeZone in TimeZones)
+                {
+                    <MudSelectItem T="string" Value="timeZone">@timeZone</MudSelectItem>
+                }
+            </MudSelect>
+        </MudStack>
+    </MudPaper>
+
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-2" OnClick="SaveSettings">Einstellungen speichern</MudButton>
+
 </MudContainer>
+<div>@ErrorMessage</div>
 
 @code {
-    private string? SelectedOption1 { get; set; }
-    private string? SelectedOption2 { get; set; }
-    private List<string>? Systemtime = new() { "UTC", "UDT", "CET", "..." };
-    private List<string>? TimeInterval = new() { "jeden Tag", "jede Woche", "jedes Monat", "..." };
-    private string? systemname = "HTL KREMS Home";
-}
+    private string systemname = "Localhost";
+    private string selectedTimeZone = "";
+    private string originalSystemName = "";
+    private string originalTimeZone = "";
+    public string ErrorMessage = "";
 
+    private List<string> TimeZones { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await accessor.GetTimeZones();
+        if (response.Response is not null)
+        {
+            TimeZones = response.Response.Select(s => s.Key).ToList();
+        }
+
+        var response1 = await accessor.GetTimeZone();
+        if (response1.Response is not null)
+        {
+            selectedTimeZone = response1.Response!;
+            originalTimeZone = selectedTimeZone; 
+        }
+
+        var response2 = await accessor.GetSettings();
+        if (response2.Response is not null)
+        {
+            systemname = response2.Response.SystemName;
+            originalSystemName = systemname; 
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task SaveSettings()
+    {
+        if (systemname != originalSystemName)
+        {
+            var systemNameResult = await accessor.SetSystemName(systemname);
+            if (!systemNameResult.Success)
+            {
+                ErrorMessage = systemNameResult.Message!;
+            }
+            else
+            {
+                originalSystemName = systemname; 
+            }
+        }
+
+        if (selectedTimeZone != originalTimeZone)
+        {
+            var timeZoneResult = await accessor.SetTimeZone(selectedTimeZone);
+            if (!timeZoneResult.Success)
+            {
+                ErrorMessage = timeZoneResult.Message!;
+            }
+            else
+            {
+                originalTimeZone = selectedTimeZone; 
+            }
+        }
+    }
+}
