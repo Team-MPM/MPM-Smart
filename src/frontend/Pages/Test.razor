@@ -1,0 +1,29 @@
+@page "/Test"
+
+@inject ISnackbar Snackbar
+
+<MudButton @onclick="() => TestFn()">Test</MudButton>
+<MudButton @onclick="() => CrashFn()">Crash</MudButton>
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        
+    } 
+    
+    private void CrashFn()
+    {
+        throw new Exception("Test");
+    }
+
+    private void TestFn()
+    {
+        Snackbar.Add("Test", Severity.Success);
+        Snackbar.Add("TestAdd", Severity.Error, options =>
+        {
+            options.Icon = Icons.Material.Filled.Error;
+            options.HideIcon = false;
+        });
+    }
+}

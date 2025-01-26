@@ -1,27 +1,37 @@
 @using Blazored.LocalStorage
-@using Frontend.Services
 @inherits LayoutComponentBase
 
 @inject ILocalStorageService Storage
+@inject ISnackbar Snackbar
 
 <CascadingValue Value="this">
-    @Body
+    <CustomErrorBoundary>
+        @Body
+    </CustomErrorBoundary>
 </CascadingValue>
 
-<MudDialogProvider />
-<MudSnackbarProvider />
-<MudPopoverProvider />
-<MudThemeProvider IsDarkMode="@m_IsDarkMode" />
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+<MudPopoverProvider/>
+<MudThemeProvider IsDarkMode="@m_IsDarkMode"/>
 
 @code {
 
     protected override async Task OnInitializedAsync()
     {
+        Snackbar.Configuration.ClearAfterNavigation = true;
+        Snackbar.Configuration.SnackbarVariant = Variant.Filled;
+        Snackbar.Configuration.VisibleStateDuration = 5000;
+        Snackbar.Configuration.HideTransitionDuration = 500;
+        Snackbar.Configuration.ShowTransitionDuration = 500;
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
+
         if (await Storage.ContainKeyAsync("darkMode"))
             m_IsDarkMode = await Storage.GetItemAsync<bool>("darkMode");
     }
 
     private bool m_IsDarkMode = true;
+
     public bool IsDarkMode
     {
         get => m_IsDarkMode;
@@ -30,7 +40,7 @@
             m_IsDarkMode = value;
             StateHasChanged();
             Storage.SetItemAsync("darkMode", value);
-            
         }
     }
+
 }

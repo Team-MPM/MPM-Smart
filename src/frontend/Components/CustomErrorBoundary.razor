@@ -1,0 +1,10 @@
+@inject ISnackbar SnackbarService
+@inherits ErrorBoundary
+
+@if (CurrentException != null)
+{
+    const string errorMessage = "An unexpected error occurred. Please try again or check the logs to learn more.";
+    SnackbarService.Add(errorMessage, Severity.Error);
+}
+
+@ChildContent

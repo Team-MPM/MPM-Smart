@@ -2,7 +2,7 @@
 @using Frontend.Services
 @using Microsoft.AspNetCore.SignalR.Client
 
-@inject ControllerConnectionManager ConnectionManager
+@inject RT RT
 
 <MudDialog>
     <TitleContent>
@@ -56,32 +56,32 @@
 
     protected override async Task OnInitializedAsync()
     {
-        m_Connection = ConnectionManager.GetSignalRClient("/hubs/devices").Build();
-
-        m_Connection.On("DeviceFound", (DeviceInfoDto deviceInfo) =>
+        m_Connection = RT.GetOrOpenConnection("DeviceHub", "/hubs/devices", connection =>
         {
-            m_Devices.Add(deviceInfo);
-            StateHasChanged();
-        });
+            connection.On("DeviceFound", (DeviceInfoDto deviceInfo) =>
+            {
+                m_Devices.Add(deviceInfo);
+                StateHasChanged();
+            });
 
-        m_Connection.On("DeviceScanFinished", () =>
-        {
-            m_IsLoading = false;
-            StateHasChanged();
-        });
+            connection.On("DeviceScanFinished", () =>
+            {
+                m_IsLoading = false;
+                StateHasChanged();
+            });
 
-        m_Connection.On("ConnectionFailed", () =>
-        {
-            m_Error = "Connection failed";
-            StateHasChanged();
-        });
+            connection.On("ConnectionFailed", () =>
+            {
+                m_Error = "Connection failed";
+                StateHasChanged();
+            });
 
-        m_Connection.On("ConnectionSucceeded", (DeviceDto device) =>
-        {
-            CloseSuc(device);
+            connection.On("ConnectionSucceeded", (DeviceDto device) =>
+            {
+                CloseSuc(device);
+            });
         });
-
-        await m_Connection.StartAsync();
+        
         await m_Connection.SendAsync("Scan");
     }
 
@@ -105,15 +105,11 @@
         if (m_Connection?.State is not HubConnectionState.Connected)
             return;
 
-        Console.WriteLine("hi");
-
         // TODO: Implement parameter UI for device connection
         var parameters = new Dictionary<string, object>();
         var location = "Living Room";
 
         await m_Connection.SendAsync("TryConnect", deviceInfo, parameters, location);
-
-        Console.WriteLine("hi");
     }
 
 }
