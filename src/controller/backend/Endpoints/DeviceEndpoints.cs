@@ -1,5 +1,4 @@
 using ApiSchema.Devices;
-using Backend.Services.PluginDataQuery;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using PluginBase.Services.Devices;

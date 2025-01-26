@@ -1,4 +1,3 @@
-using System.Reflection;
 using ApiSchema.Sensors.DemoTempSensor;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -10,16 +9,11 @@ using Microsoft.Extensions.Logging;
 using PluginBase;
 using PluginBase.Services.Options;
 using PluginBase.Services.Permissions;
-using Shared.Plugins;
-using Shared.Plugins.DataInfo;
-using Shared.Plugins.DataRequest;
-using Shared.Plugins.DataResponse;
 using Shared.Services.Sensors.TempDemo;
 using TemperatureDemoPlugin.Data;
 using TemperatureDemoPlugin.Endpoints;
 using TemperatureDemoPlugin.Permissions;
 using TemperatureDemoPlugin.Services;
-using ILogger = Serilog.ILogger;
 
 namespace TemperatureDemoPlugin;
 
@@ -117,72 +111,72 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
         });
     }
 
-    public override async Task<DataInfoPluginResponse> GetPluginDataInfo()
-    {
-        var result = new DataInfoPluginResponse()
-        {
-            IsSuccessful = true,
-            SensorEntries = new List<DataPointEntry>()
-        };
-        var dbContext = Services!.GetRequiredService<TemperatureDemoContext>();
-        var sensors = await dbContext.Sensors.ToListAsync();
-        foreach (var sensor in sensors)
-        {
-            result.SensorEntries.Add(new()
-            {
-                DataPoint = sensor.Name,
-                RequestableDataTypes = new List<string>() {"TemperatureC", "HumidityPercent"}
-            });
-        }
-        return result;
-    }
-
-    public override async Task<DataResponseInfo> GetDataFromPlugin(DataRequestEntry request)
-    {
-        var dbContext = Services!.GetRequiredService<TemperatureDemoContext>();
-        Type? dataType = Type.GetType("string");
-        var data = await dbContext.DataEntries
-            .Include(s => s.Sensor)
-            .Where(s => s.Sensor.Name == request.DataPoint)
-            .Where(s => s.CaptureTime > request.StartDate && s.CaptureTime < request.EndDate)
-            .ToListAsync();
-
-        var propertyValues = data
-            .Select(entry =>
-            {
-                var entryType = entry.GetType();
-
-                var propertyInfo = entryType.GetProperty(request.RequestedDataType);
-                if (propertyInfo == null)
-                {
-                    throw new InvalidOperationException($"Property '{request.RequestedDataType}' not found on type '{entryType.Name}'.");
-                }
-
-                dataType = propertyInfo.PropertyType;
-
-                var propertyValue = propertyInfo.GetValue(entry);
-
-                return new PropertyValue()
-                {
-                    Data = propertyValue,
-                    CaptureDate = entry.CaptureTime
-                };
-            })
-            .ToList();
-        return new DataResponseInfo
-        {
-            IsSuccessful = true,
-            PluginName = Name,
-            DataPoint = request.DataPoint,
-            DataName = request.RequestedDataType,
-            DataType = dataType!.ToString(),
-            Data = propertyValues.Select(s => new DataResponseEntry
-            {
-                Data = s.Data!,
-                TimeStampUtc = s.CaptureDate
-            }).ToList()
-        };
-    }
+    // public override async Task<DataInfoPluginResponse> GetPluginDataInfo()
+    // {
+    //     var result = new DataInfoPluginResponse()
+    //     {
+    //         IsSuccessful = true,
+    //         SensorEntries = new List<DataPointEntry>()
+    //     };
+    //     var dbContext = Services!.GetRequiredService<TemperatureDemoContext>();
+    //     var sensors = await dbContext.Sensors.ToListAsync();
+    //     foreach (var sensor in sensors)
+    //     {
+    //         result.SensorEntries.Add(new()
+    //         {
+    //             DataPoint = sensor.Name,
+    //             RequestableDataTypes = new List<string>() {"TemperatureC", "HumidityPercent"}
+    //         });
+    //     }
+    //     return result;
+    // }
+    //
+    // public override async Task<DataResponseInfo> GetDataFromPlugin(DataRequestEntry request)
+    // {
+    //     var dbContext = Services!.GetRequiredService<TemperatureDemoContext>();
+    //     Type? dataType = Type.GetType("string");
+    //     var data = await dbContext.DataEntries
+    //         .Include(s => s.Sensor)
+    //         .Where(s => s.Sensor.Name == request.DataPoint)
+    //         .Where(s => s.CaptureTime > request.StartDate && s.CaptureTime < request.EndDate)
+    //         .ToListAsync();
+    //
+    //     var propertyValues = data
+    //         .Select(entry =>
+    //         {
+    //             var entryType = entry.GetType();
+    //
+    //             var propertyInfo = entryType.GetProperty(request.RequestedDataType);
+    //             if (propertyInfo == null)
+    //             {
+    //                 throw new InvalidOperationException($"Property '{request.RequestedDataType}' not found on type '{entryType.Name}'.");
+    //             }
+    //
+    //             dataType = propertyInfo.PropertyType;
+    //
+    //             var propertyValue = propertyInfo.GetValue(entry);
+    //
+    //             return new PropertyValue()
+    //             {
+    //                 Data = propertyValue,
+    //                 CaptureDate = entry.CaptureTime
+    //             };
+    //         })
+    //         .ToList();
+    //     return new DataResponseInfo
+    //     {
+    //         IsSuccessful = true,
+    //         PluginName = Name,
+    //         DataPoint = request.DataPoint,
+    //         DataName = request.RequestedDataType,
+    //         DataType = dataType!.ToString(),
+    //         Data = propertyValues.Select(s => new DataResponseEntry
+    //         {
+    //             Data = s.Data!,
+    //             TimeStampUtc = s.CaptureDate
+    //         }).ToList()
+    //     };
+    // }
 
     protected override void ConfigureServices(IServiceCollection services)
     {

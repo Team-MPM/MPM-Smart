@@ -3,9 +3,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PluginBase.Services.Options;
-using Shared.Plugins.DataInfo;
-using Shared.Plugins.DataRequest;
-using Shared.Plugins.DataResponse;
 
 namespace PluginBase;
 
@@ -107,30 +104,6 @@ public abstract class PluginBase<T> : IPlugin where T : PluginBase<T>, IDisposab
         m_Options = optionBuilder.Build();
         m_Options.Load().Wait();
         SystemStart();
-    }
-
-    public virtual Task<DataResponseInfo> GetDataFromPlugin(DataRequestEntry request) =>
-        Task.FromResult(new DataResponseInfo
-        {
-            IsSuccessful = false,
-            ErrorMessage = "The given Plugin does support this method.",
-            PluginName = request.PluginName,
-            DataPoint = request.DataPoint,
-            DataName = null!,
-            DataType = null!
-        });
-
-    public virtual Task<DataInfoPluginResponse> GetPluginDataInfo() =>
-        Task.FromResult(new DataInfoPluginResponse
-        {
-            IsSuccessful = false,
-            SensorEntries = [],
-            ErrorMessage = "The given Plugin does support this method."
-        });
-
-    public virtual Task RequestDataFromSensors()
-    {
-        return Task.CompletedTask;
     }
 
     public virtual void Dispose()

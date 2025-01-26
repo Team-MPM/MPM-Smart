@@ -1,7 +1,6 @@
 ﻿@page "/home"
 @using Frontend.Services
 @using Microsoft.AspNetCore.Authorization
-@using Shared.Plugins.DataRequest
 @layout MainLayout
 @attribute [Authorize]
 @inject ApiAccessor Api
@@ -40,7 +39,6 @@ else
 
     protected override Task OnInitializedAsync()
     {
-        //await Query();
         m_ChartData =
         [
             new List<ChartSeries>
@@ -53,66 +51,6 @@ else
             }
         ];
         return Task.CompletedTask;
-    }
-
-    private async Task Query()
-    {
-        var res = await Api.GetPluginDataInfo();
-        if (res is { Success: true, Response: not null })
-        {
-            var info = res.Response;
-            var req = new DataRequest()
-            {
-                Requests = info.Select(i => new DataRequestEntry()
-                {
-                    StartDate = DateTime.MinValue,
-                    EndDate = DateTime.MaxValue,
-                    PluginName = i.Plugin,
-                    DataPoint = i.DataPoint,
-                    RequestedDataType = "float"
-                }).ToList()
-            };
-
-            req.Requests = [req.Requests[0]];
-
-            var dataRes = await Api.GetPluginData(req);
-
-            foreach (var i in info)
-            {
-                Console.WriteLine(i.Plugin);
-            }
-
-            if (dataRes is { Success: true, Response: not null })
-            {
-                var data = dataRes.Response;
-
-                foreach (var i in data)
-                {
-                    Console.WriteLine(i.IsSuccessful);
-                    Console.WriteLine(i.ErrorMessage);
-                }
-
-                m_ChartData = data
-                    .Where(e => e.Data is not null)
-                    .Select(e =>
-                        new List<ChartSeries>
-                        {
-                            new()
-                            {
-                                Name = e.DataPoint,
-                                Data = e.Data!.Select(p => (double)p.Data).ToArray()
-                            }
-                        }).ToList();
-            }
-            else
-            {
-                m_Error = string.IsNullOrEmpty(dataRes.Message) ? "Unknown error" : dataRes.Message;
-            }
-        }
-        else
-        {
-            m_Error = string.IsNullOrEmpty(res.Message) ? "Unknown error" : res.Message;
-        }
     }
 
 }

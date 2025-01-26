@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Shared.Plugins.DataInfo;
-using Shared.Plugins.DataRequest;
-using Shared.Plugins.DataResponse;
 using PluginBase.Services.Options;
 
 namespace PluginBase;
@@ -80,11 +77,4 @@ public interface IPlugin : IDisposable
     /// </summary>
     /// <param name="services">The service provider to use for starting the system</param>
     void OnSystemStart(IServiceProvider services);
-
-    public Task<DataResponseInfo> GetDataFromPlugin(DataRequestEntry request);
-
-    public Task<DataInfoPluginResponse> GetPluginDataInfo();
-
-    public Task RequestDataFromSensors();
-
 }
