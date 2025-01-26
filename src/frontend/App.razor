@@ -1,5 +1,4 @@
 ﻿@using System.IdentityModel.Tokens.Jwt
-@using System.Security.Claims
 @using Blazored.LocalStorage
 @using Frontend.Pages.General
 @using Microsoft.AspNetCore.Components.Authorization
@@ -12,7 +11,6 @@
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                 <NotAuthorized>
                     @code {
-
                         protected override async Task OnInitializedAsync()
                         {
                             var controller = await Storage.GetItemAsync<HomePage.ControllerInfo>("current-controller");
@@ -39,10 +37,3 @@
         </NotFound>
     </Router>
 </CascadingAuthenticationState>
-
-@code {
-    private bool IsHomePage()
-    {
-        return Nav.Uri.EndsWith("/") || Nav.Uri.EndsWith("/index", StringComparison.OrdinalIgnoreCase);
-    }
-}

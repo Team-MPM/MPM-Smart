@@ -21,6 +21,7 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddMudServices();
 builder.Services.AddSingleton<ControllerConnectionManager>();
+builder.Services.AddScoped<RT>();
 
 var app = builder.Build();
 
