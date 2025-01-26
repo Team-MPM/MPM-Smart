@@ -1,4 +1,4 @@
-using ApiSchema.Devices;
+using ApiSchema;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using PluginBase.Services.Devices;

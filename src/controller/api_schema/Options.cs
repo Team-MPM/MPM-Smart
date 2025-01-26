@@ -1,9 +1,9 @@
 using System.Text.Json.Serialization;
 using Shared;
 
-namespace ApiSchema.Plugins;
+namespace ApiSchema;
 
-[JsonConverter(typeof(OptionsDtoConverter))]
+[JsonConverter(typeof(OptionsConverter))]
 public record OptionsDto(
     OptionType Type,
     OptionDetailsDto Details,

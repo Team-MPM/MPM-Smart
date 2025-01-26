@@ -1,11 +1,6 @@
 ﻿using System.Net.Http.Json;
-using ApiSchema.Devices;
+using ApiSchema;
 using ApiSchema.Enums;
-using ApiSchema.Identity;
-using ApiSchema.Plugins;
-using ApiSchema.Settings;
-using ApiSchema.Usermanagement;
-using PermissionsModel = ApiSchema.Usermanagement.PermissionsModel;
 
 namespace Frontend.Services;
 
@@ -54,10 +49,10 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
     public async Task<ResponseModel<string>> Login(string username, string password)
     {
         var response = await GetResponseModel<string>(client =>
-            client.PostAsJsonAsync("/api/identity/login", new LoginModel
-            {
-                UserName = username, Password = password
-            }));
+            client.PostAsJsonAsync("/api/identity/login", new LoginModel(
+                UserName: username, 
+                Password: password
+            )));
 
         if (response.Success)
             response.Response = response.Response!.Trim('\"');
@@ -71,24 +66,18 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
 
     public async Task<ResponseModel> SetUsername(string newUsername) =>
         await GetResponseModel(client => client.PostAsJsonAsync("/api/profile/username",
-            new UsernameModel
-            {
-                Username = newUsername
-            }));
+            new UsernameModel(newUsername)));
 
     public async Task<ResponseModel> SetPassword(string currentPassword, string newPassword) =>
         await GetResponseModel(client => client.PostAsJsonAsync("/api/profile/password",
-            new PasswordModel
-            {
-                CurrentPassword = currentPassword, NewPassword = newPassword
-            }));
+            new PasswordModel(
+                CurrentPassword: currentPassword, 
+                NewPassword: newPassword
+            )));
 
     public async Task<ResponseModel> SetLanguage(string language) =>
         await GetResponseModel(client => client.PostAsJsonAsync("/api/profile/language",
-            new LanguageModel
-            {
-                Language = language
-            }));
+            new LanguageModel(language)));
 
     public async Task<ResponseModel<PermissionsModel>> GetUserPermissions() =>
         await GetResponseModel<PermissionsModel>(client =>
@@ -101,34 +90,22 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
 
     public async Task<ResponseModel> SetSystemName(string newSystemName) =>
         await GetResponseModel(client => client.PostAsJsonAsync("/api/settings/systemname",
-            new SystemNameModel
-            {
-                SystemName = newSystemName
-            }));
+            new SystemNameModel(newSystemName)));
 
     public async Task<ResponseModel> SetSystemTime(string newSystemTime) =>
         await GetResponseModel(client => client.PostAsJsonAsync("/api/settings/systemtime",
-            new SystemTimeModel
-            {
-                TimeZoneCode = newSystemTime
-            }));
+            new SystemTimeModel(newSystemTime)));
 
     public async Task<ResponseModel> SetTimeBetweenUpdates(int newTimeBetweenUpdates) =>
         await GetResponseModel(client => client.PostAsJsonAsync("/api/settings/timebetweenupdates",
-            new TimeBetweenUpdatesModel
-            {
-                TimeBetweenUpdatesSeconds = newTimeBetweenUpdates
-            }));
+            new TimeBetweenUpdatesModel(newTimeBetweenUpdates)));
 
     public async Task<ResponseModel<string>> GetTimeZone() =>
         await GetResponseModel<string>(client => client.GetAsync("/api/settings/timezone"));
 
     public async Task<ResponseModel> SetTimeZone(string timezoneCode) =>
         await GetResponseModel(client => client.PostAsJsonAsync("/api/settings/timezone",
-            new ChangeTimeZoneModel()
-            {
-                TimeZoneCode = timezoneCode
-            }));
+            new ChangeTimeZoneModel(timezoneCode)));
 
     public async Task<ResponseModel<Dictionary<string, double>>> GetTimeZones() =>
         await GetResponseModel<Dictionary<string, double>>(client => client.GetAsync("/api/settings/timeZones"));
@@ -164,40 +141,26 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
 
     public async Task<ResponseModel> SetUsernameForUser(string user, string newUsername) =>
         await GetResponseModel(client => client.PostAsJsonAsync($"/api/users/{user}/username",
-            new ChangeUsernameModel
-            {
-                Username = newUsername
-            }));
+            new ChangeUsernameModel(newUsername)));
+    
     public async Task<ResponseModel> UpdateUser(string user, UsersModel model) =>
         await GetResponseModel(client => client.PostAsJsonAsync($"/api/users/{user}", model));
 
     public async Task<ResponseModel> SetPasswordForUser(string user, string? newPassword) =>
         await GetResponseModel(client => client.PostAsJsonAsync($"/api/users/{user}/password",
-            new ChangePasswordModel
-            {
-                NewPassword = newPassword
-            }));
+            new ChangePasswordModel(newPassword)));
 
     public async Task<ResponseModel> SetIsActiveForUser(string user, bool isActive) =>
         await GetResponseModel(client => client.PostAsJsonAsync($"/api/users/{user}/isactive",
-            new ChangeIsActiveModel
-            {
-                IsActive = isActive
-            }));
+            new ChangeIsActiveModel(isActive)));
 
     public async Task<ResponseModel> SetLanguageForUser(string user, int language) =>
         await GetResponseModel(client => client.PostAsJsonAsync($"/api/users/{user}/language",
-            new ChangeLanguageModel
-            {
-                Language = (Language)language
-            }));
+            new ChangeLanguageModel((Language)language)));
 
     public async Task<ResponseModel> SetIsDarkModeForUser(string user, bool useDarkMode) =>
         await GetResponseModel(client => client.PostAsJsonAsync($"/api/users/{user}/isdarkmode",
-            new UseDarkModeModel
-            {
-                UseDarkMode = useDarkMode
-            }));
+            new UseDarkModeModel(useDarkMode)));
 
     // ---------------------------- Plugins ----------------------------
 

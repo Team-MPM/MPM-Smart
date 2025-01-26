@@ -204,6 +204,7 @@ app.MapPermissionEndpoints();
 app.MapRoleManagementEndpoint();
 app.MapPluginEndpoints();
 app.MapDeviceEndpoints();
+app.MapDataEndpoints();
 
 app.MapGet("/", () => "Hello World!");
 app.MapGet("/info", () => new
