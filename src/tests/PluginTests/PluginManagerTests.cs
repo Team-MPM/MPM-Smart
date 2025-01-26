@@ -238,7 +238,7 @@ public class PluginManagerTests(PluginFixture fixture)
             });
 
         var pluginManager = new PluginManager(
-            fixture.MockServiceProvider.Object,
+            fixture.ServiceProvider,
             fixture.MockPluginManagerLogger.Object,
             fixture.MockWebHostEnvironment.Object);
 
@@ -263,7 +263,7 @@ public class PluginManagerTests(PluginFixture fixture)
         var mockPlugin2 = new Mock<IPlugin>();
 
         var pluginManager = new PluginManager(
-            fixture.MockServiceProvider.Object,
+            fixture.ServiceProvider,
             fixture.MockPluginManagerLogger.Object,
             fixture.MockWebHostEnvironment.Object);
 
@@ -285,7 +285,7 @@ public class PluginManagerTests(PluginFixture fixture)
         fixture.Setup();
 
         var pluginManager = new PluginManager(
-            fixture.MockServiceProvider.Object,
+            fixture.ServiceProvider,
             fixture.MockPluginManagerLogger.Object,
             fixture.MockWebHostEnvironment.Object);
 
@@ -303,7 +303,7 @@ public class PluginManagerTests(PluginFixture fixture)
         fixture.Setup();
 
         var pluginManager = new PluginManager(
-            fixture.MockServiceProvider.Object,
+            fixture.ServiceProvider,
             fixture.MockPluginManagerLogger.Object,
             fixture.MockWebHostEnvironment.Object);
 
@@ -324,7 +324,7 @@ public class PluginManagerTests(PluginFixture fixture)
         var mockPlugin2 = new Mock<IPlugin>();
 
         var pluginManager = new PluginManager(
-            fixture.MockServiceProvider.Object,
+            fixture.ServiceProvider,
             fixture.MockPluginManagerLogger.Object,
             fixture.MockWebHostEnvironment.Object);
 
@@ -359,7 +359,7 @@ public class PluginManagerTests(PluginFixture fixture)
             });
 
         var pluginManager = new PluginManager(
-            fixture.MockServiceProvider.Object,
+            fixture.ServiceProvider,
             fixture.MockPluginManagerLogger.Object,
             fixture.MockWebHostEnvironment.Object);
 

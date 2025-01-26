@@ -6,16 +6,16 @@ namespace TemperatureDemoPlugin.Services;
 
 public class TemperatureDataFiller(TemperatureDemoContext context, ILogger<TemperatureDataFiller> logger) : BackgroundService
 {
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        return;
-        while (!await context.Database.CanConnectAsync(stoppingToken))
-        {
-            await Task.Delay(1000, stoppingToken);
-        }
-        await Task.WhenAll(
-            FillData(stoppingToken)
-            );
+        return Task.CompletedTask;
+        // while (!await context.Database.CanConnectAsync(stoppingToken))
+        // {
+        //     await Task.Delay(1000, stoppingToken);
+        // }
+        // await Task.WhenAll(
+        //     FillData(stoppingToken)
+        //     );
     }
 
     private async Task FillData(CancellationToken stoppingToken)
