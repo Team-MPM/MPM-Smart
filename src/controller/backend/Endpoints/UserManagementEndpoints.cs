@@ -44,11 +44,11 @@ public static class UserManagementEndpoints
             string user,
             [FromBody] UsersModel model) =>
         {
-            string? ErrorMessage = "";
+            var errorMessage = "";
             var userEntity = await dbContext.Users
                 .Include(s => s.UserProfile).FirstOrDefaultAsync(s => s.UserName == user);
             if(user != model.Username && await dbContext.Users.AnyAsync(s => s.UserName == model.Username))
-                ErrorMessage += "Username already exists";
+                errorMessage += "Username already exists";
             if (userEntity is null)
                 return Results.NotFound();
             if(userEntity.CanChangeUsername)
@@ -59,14 +59,14 @@ public static class UserManagementEndpoints
             var claims = await userManager.GetClaimsAsync(userEntity);
             claims.ToList().ForEach(c => userManager.RemoveClaimAsync(userEntity, c));
             model.Permissions.ForEach(p => userManager.AddClaimAsync(userEntity, new Claim("Permissions", p)));
-            bool parsable = Enum.TryParse<Language>(model.Language.ToString(), out var language);
+            var parsable = Enum.TryParse<Language>(model.Language.ToString(), out var language);
             if(parsable)
                 userEntity.UserProfile!.Language = language;
             else
-                ErrorMessage += ErrorMessage == "" ? "Language not found" : ", Language not found";
-            userEntity.UserProfile.UseDarkMode = model.UseDarkMode;
-            if(ErrorMessage != "")
-                return Results.BadRequest(ErrorMessage);
+                errorMessage += errorMessage == "" ? "Language not found" : ", Language not found";
+            userEntity.UserProfile!.UseDarkMode = model.UseDarkMode;
+            if(errorMessage != "")
+                return Results.BadRequest(errorMessage);
             await dbContext.SaveChangesAsync();
             return Results.Ok();
         }).RequirePermission(UserClaims.UserChangeUserUsername);
@@ -96,7 +96,7 @@ public static class UserManagementEndpoints
             if (userEntity is null)
                 return Results.NotFound("User not found");
             await userManager.RemovePasswordAsync(userEntity);
-            var result = await userManager.AddPasswordAsync(userEntity, model.NewPassword);
+            var result = await userManager.AddPasswordAsync(userEntity, model.NewPassword!);
             return result == IdentityResult.Success ? Results.Ok() : Results.BadRequest(result.Errors);
         }).RequirePermission(UserClaims.UserChangeUserPassword);
 

@@ -95,108 +95,108 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
 
     public async Task<ResponseModel<PermissionsModel>> GetUserPermissions() =>
         await GetResponseModel<PermissionsModel>(client =>
-            client.GetAsync("api/profile/permissions"));
+            client.GetAsync("/api/profile/permissions"));
 
     // ---------------------------- SETTINGS ----------------------------
 
     public async Task<ResponseModel<SettingsModel>> GetSettings() =>
-        await GetResponseModel<SettingsModel>(client => client.GetAsync("api/settings/"));
+        await GetResponseModel<SettingsModel>(client => client.GetAsync("/api/settings/"));
 
     public async Task<ResponseModel> SetSystemName(string newSystemName) =>
-        await GetResponseModel(client => client.PostAsJsonAsync("api/settings/systemname",
+        await GetResponseModel(client => client.PostAsJsonAsync("/api/settings/systemname",
             new SystemNameModel
             {
                 SystemName = newSystemName
             }));
 
     public async Task<ResponseModel> SetSystemTime(string newSystemTime) =>
-        await GetResponseModel(client => client.PostAsJsonAsync("api/settings/systemtime",
+        await GetResponseModel(client => client.PostAsJsonAsync("/api/settings/systemtime",
             new SystemTimeModel
             {
                 TimeZoneCode = newSystemTime
             }));
 
     public async Task<ResponseModel> SetTimeBetweenUpdates(int newTimeBetweenUpdates) =>
-        await GetResponseModel(client => client.PostAsJsonAsync("api/settings/timebetweenupdates",
+        await GetResponseModel(client => client.PostAsJsonAsync("/api/settings/timebetweenupdates",
             new TimeBetweenUpdatesModel
             {
                 TimeBetweenUpdatesSeconds = newTimeBetweenUpdates
             }));
 
     public async Task<ResponseModel<string>> GetTimeZone() =>
-        await GetResponseModel<string>(client => client.GetAsync("api/settings/timezone"));
+        await GetResponseModel<string>(client => client.GetAsync("/api/settings/timezone"));
 
     public async Task<ResponseModel> SetTimeZone(string timezoneCode) =>
-        await GetResponseModel(client => client.PostAsJsonAsync("api/settings/timezone",
+        await GetResponseModel(client => client.PostAsJsonAsync("/api/settings/timezone",
             new ChangeTimeZoneModel()
             {
                 TimeZoneCode = timezoneCode
             }));
 
     public async Task<ResponseModel<Dictionary<string, double>>> GetTimeZones() =>
-        await GetResponseModel<Dictionary<string, double>>(client => client.GetAsync("api/settings/timeZones"));
+        await GetResponseModel<Dictionary<string, double>>(client => client.GetAsync("/api/settings/timeZones"));
 
     // ---------------------------- Permissions ----------------------------
 
     public async Task<ResponseModel<Dictionary<string, List<string>>>> GetAllPermissions() =>
         await GetResponseModel<Dictionary<string, List<string>>>(client =>
-            client.GetAsync("api/permissions/all"));
+            client.GetAsync("/api/permissions/all"));
 
     public async Task<ResponseModel<PermissionsModel>> GetPermissionsForUser(string user) =>
         await GetResponseModel<PermissionsModel>(client =>
-            client.GetAsync($"api/permissions/user/{user}"));
+            client.GetAsync($"/api/permissions/user/{user}"));
 
     public async Task<ResponseModel> SetPermissionsForUser(string user, AddPermissionsModel model) =>
-        await GetResponseModel(client => client.PostAsJsonAsync($"api/permissions/user/{user}", model));
+        await GetResponseModel(client => client.PostAsJsonAsync($"/api/permissions/user/{user}", model));
 
     // TODO: IMPLEMENT ROLE PERMISSIONS -> NOT YET NEEDED
 
     // ---------------------------- USER MANAGEMENT ----------------------------
 
     public async Task<ResponseModel<List<UsersModel>>> GetAllUsers() =>
-        await GetResponseModel<List<UsersModel>>(client => client.GetAsync("api/users"));
+        await GetResponseModel<List<UsersModel>>(client => client.GetAsync("/api/users"));
 
     public async Task<ResponseModel<UsersModel>> GetSpecificUserInfo(string user) =>
-        await GetResponseModel<UsersModel>(client => client.GetAsync($"api/users/{user}"));
+        await GetResponseModel<UsersModel>(client => client.GetAsync($"/api/users/{user}"));
 
     public async Task<ResponseModel> AddNewUser(AddUserModel model) =>
-        await GetResponseModel(client => client.PostAsJsonAsync("api/users/", model));
+        await GetResponseModel(client => client.PostAsJsonAsync("/api/users/", model));
 
     public async Task<ResponseModel> DeleteUser(string user) =>
-        await GetResponseModel(client => client.DeleteAsync($"api/users/{user}"));
+        await GetResponseModel(client => client.DeleteAsync($"/api/users/{user}"));
 
     public async Task<ResponseModel> SetUsernameForUser(string user, string newUsername) =>
-        await GetResponseModel(client => client.PostAsJsonAsync($"api/users/{user}/username",
+        await GetResponseModel(client => client.PostAsJsonAsync($"/api/users/{user}/username",
             new ChangeUsernameModel
             {
                 Username = newUsername
             }));
     public async Task<ResponseModel> UpdateUser(string user, UsersModel model) =>
-        await GetResponseModel(client => client.PostAsJsonAsync($"api/users/{user}", model));
+        await GetResponseModel(client => client.PostAsJsonAsync($"/api/users/{user}", model));
 
-    public async Task<ResponseModel> SetPasswordForUser(string user, string newPassword) =>
-        await GetResponseModel(client => client.PostAsJsonAsync($"api/users/{user}/password",
+    public async Task<ResponseModel> SetPasswordForUser(string user, string? newPassword) =>
+        await GetResponseModel(client => client.PostAsJsonAsync($"/api/users/{user}/password",
             new ChangePasswordModel
             {
                 NewPassword = newPassword
             }));
 
     public async Task<ResponseModel> SetIsActiveForUser(string user, bool isActive) =>
-        await GetResponseModel(client => client.PostAsJsonAsync($"api/users/{user}/isactive",
+        await GetResponseModel(client => client.PostAsJsonAsync($"/api/users/{user}/isactive",
             new ChangeIsActiveModel
             {
                 IsActive = isActive
             }));
 
     public async Task<ResponseModel> SetLanguageForUser(string user, int language) =>
-        await GetResponseModel(client => client.PostAsJsonAsync($"api/users/{user}/language",
+        await GetResponseModel(client => client.PostAsJsonAsync($"/api/users/{user}/language",
             new ChangeLanguageModel
             {
                 Language = (Language)language
             }));
 
     public async Task<ResponseModel> SetIsDarkModeForUser(string user, bool useDarkMode) =>
-        await GetResponseModel(client => client.PostAsJsonAsync($"api/users/{user}/isdarkmode",
+        await GetResponseModel(client => client.PostAsJsonAsync($"/api/users/{user}/isdarkmode",
             new UseDarkModeModel
             {
                 UseDarkMode = useDarkMode

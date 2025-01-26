@@ -2,6 +2,5 @@
 
 public class LanguageModel
 {
-    public string Language { get; set; }
+    public required string Language { get; set; }
 }
-

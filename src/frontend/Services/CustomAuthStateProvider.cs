@@ -1,16 +1,12 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using System.Net.Http.Headers;
 using System.Security.Claims;
-using Blazored.LocalStorage;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Frontend.Services;
 
 public class CustomAuthStateProvider(
     ControllerConnectionManager controllerConnectionManager,
-    ILogger<CustomAuthStateProvider> logger,
-    NavigationManager Nav)
+    ILogger<CustomAuthStateProvider> logger)
     : AuthenticationStateProvider
 {
     public ClaimsPrincipal? User { get; private set; }

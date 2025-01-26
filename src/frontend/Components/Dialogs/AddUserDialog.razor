@@ -1,10 +1,8 @@
-﻿@using System.Text
-@using ApiSchema.DeviceOptions
-@using ApiSchema.Enums
+﻿@using ApiSchema.Enums
 @using ApiSchema.Usermanagement
 @using Frontend.Services
-@inject ApiAccessor Accessor
-
+@using Frontend.Utils
+@inject ApiAccessor Api
 
 <MudDialog>
     <TitleContent>
@@ -14,30 +12,29 @@
     <DialogContent>
         <MudContainer Class="d-flex flex-column">
             <MudPaper Class="pa-3 ma-2">
-                <MudTextField T="string" @bind-Value="@User.Username" Label="Username">@User.Username</MudTextField>
+                <MudTextField T="string" @bind-Value="@User.Username" Label="Username" />
             </MudPaper>
             <MudPaper Class="pa-3 ma-2">
-                <MudCheckBox Label="Can change Username" @bind-Value="@User.CanChangeUsername"></MudCheckBox>
+                <MudCheckBox Label="Can change Username" @bind-Value="@User.CanChangeUsername"/>
             </MudPaper>
 
             <MudPaper Class="pa-3 ma-2">
                 <MudTextField T="string" Label="New Password" @bind-Value="@NewPassword"/>
             </MudPaper>
-
-
+            
             <MudPaper Class="pa-3 ma-2">
                 <MudStack>
                     <MudSelect T="string" Label="Sprache" @bind-Value="@User.Language">
-                        @foreach(var language in Enum.GetValues<Language>())
+                        @foreach (var language in Enum.GetValues<Language>())
                         {
                             <MudSelectItem T="string" Value="language.ToString()">@language</MudSelectItem>
                         }
-                  </MudSelect>
+                    </MudSelect>
                 </MudStack>
             </MudPaper>
 
             <MudPaper Class="pa-3 ma-2">
-                <MudCheckBox Label="Use dark Mode" @bind-Value="@User.UseDarkMode"></MudCheckBox>
+                <MudCheckBox Label="Use dark Mode" @bind-Value="@User.UseDarkMode"/>
             </MudPaper>
 
             <MudPaper>
@@ -53,8 +50,8 @@
                     {
                         <MudPaper Class="d-flex flex-wrap">
                             <MudCheckBox Label="@permission" Value="@IsPermissionSet[permission]"
-                                         Disabled="@CheckIfDisabled(permission)"
-                                         ValueChanged="@((bool b) => ApplyExtraPermissions(b, permission))"></MudCheckBox>
+                                         Disabled="@PermissionUtils.CheckIfDisabled(permission, IsPermissionSet)"
+                                         ValueChanged="@((bool b) => ApplyExtraPermissions(b, permission))"/>
                         </MudPaper>
                     }
                 }
@@ -69,127 +66,101 @@
 </MudDialog>
 
 @code {
-    [CascadingParameter] private MudDialogInstance? MudDialog { get; set; }
-    [Parameter] public DeviceOptions? DeviceOptions { get; set; }
-    public UsersModel User { get; set; } = new ()
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = null!;
+
+    public UsersModel User { get; init; } = new()
     {
         Username = "",
         CanChangeUsername = true,
         IsActive = true,
         Language = Language.English.ToString(),
         UseDarkMode = true,
-        Permissions = new List<string>()
+        Permissions = []
     };
-    private Dictionary<string, List<string>> AllPermissions { get; set; } = new Dictionary<string, List<string>>();
+
+    private Dictionary<string, List<string>> AllPermissions { get; set; } = new();
     private string? m_ErrorMessage = "";
-    private Dictionary<string, bool> IsPermissionSet { get; set; } = new Dictionary<string, bool>();
+    private Dictionary<string, bool> IsPermissionSet { get; } = new();
     private string NewPassword { get; set; } = "";
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await Accessor.GetAllPermissions();
-        if(result.Success)
-            AllPermissions = result.Response!;
-        AllPermissions.SelectMany(s => s.Value).ToList().ForEach(p => IsPermissionSet.Add(p, User.Permissions.Contains(p)));
-    }
+        var result = await Api.GetAllPermissions();
 
+        if (!result.Success)
+            return;
+
+        AllPermissions = result.Response!;
+
+        foreach (var p in AllPermissions.SelectMany(s => s.Value))
+            IsPermissionSet.Add(p, User.Permissions.Contains(p));
+    }
 
     private async Task Submit()
     {
         m_ErrorMessage = "";
-        if(string.IsNullOrWhiteSpace(User.Username))
+
+        if (string.IsNullOrWhiteSpace(User.Username))
             m_ErrorMessage += "Username cannot be empty\n";
-        if(string.IsNullOrWhiteSpace(NewPassword))
+        if (string.IsNullOrWhiteSpace(NewPassword))
             m_ErrorMessage += "Password cannot be empty\n";
 
         if (m_ErrorMessage != "")
             return;
-        User.Permissions = IsPermissionSet.Where(p => p.Value).Select(p => p.Key).ToList();
-        var addResult = await Accessor.AddNewUser(new AddUserModel
+
+        User.Permissions = IsPermissionSet
+            .Where(p => p.Value)
+            .Select(p => p.Key)
+            .ToList();
+
+        var addResult = await Api.AddNewUser(new AddUserModel
         {
             Username = User.Username,
             Password = NewPassword
         });
+
         if (!addResult.Success)
         {
             m_ErrorMessage = addResult.Message!;
             return;
         }
 
-        var changeResult = await Accessor.UpdateUser(User.Username, User);
+        var changeResult = await Api.UpdateUser(User.Username, User);
         if (!changeResult.Success)
         {
             m_ErrorMessage = "The user has been added but some changes could not be saved. \n" +
-                           "You can change them using the edit menu.\n" +
-                           $"Error: {changeResult.Message!}";
+                             "You can change them using the edit menu.\n" +
+                             $"Error: {changeResult.Message!}";
             return;
         }
+
         MudDialog.Close(DialogResult.Ok(User));
     }
 
     public void ApplyExtraPermissions(bool isChecked, string permission)
     {
         var permissionParts = permission.Split('.');
-        var permissionsToCheck = AllPermissions.SelectMany(kvp => kvp.Value).ToList();
+        var permissionsToCheck = AllPermissions.SelectMany(kvp => kvp.Value);
 
         if (!permission.Contains('*'))
         {
             IsPermissionSet[permission] = isChecked;
         }
 
-        for (int i = 0; i < permissionParts.Length; i++)
+        foreach (var t in permissionParts)
         {
-            if (permissionParts[i] == "*")
+            if (t == "*")
             {
-                permissionsToCheck.ForEach(p => IsPermissionSet[p] = isChecked);
+                foreach (var p in permissionsToCheck)
+                    IsPermissionSet[p] = isChecked;
                 return;
             }
-            permissionsToCheck =  permissionsToCheck.Where(p => p.Contains(permission.Replace(".*", ""))).ToList();
+
+            permissionsToCheck = permissionsToCheck.Where(p => p.Contains(permission.Replace(".*", "")));
         }
 
         InvokeAsync(StateHasChanged);
     }
-
-    public bool CheckIfDisabled(string permission)
-    {
-        string? highest = GetHighestJokerPermission(permission.Split('.').Length, permission);
-        if (string.IsNullOrEmpty(highest))
-            return false;
-        if (highest == permission)
-            return false;
-        if (permission.Contains(highest.Replace(".*", "").Replace("*", "")))
-            return true;
-        return false;
-    }
-
-    public string? GetHighestJokerPermission(int permissionsLength, string permissionType)
-    {
-        if (!(permissionType.EndsWith(".*") || permissionType.EndsWith("*")))
-        {
-            var splittedPermission = permissionType.Split(".").ToList();
-                splittedPermission.RemoveAt(splittedPermission.Count - 1);
-            permissionType = string.Join(".", splittedPermission);
-        }
-
-        List<string> highest = IsPermissionSet.Where(s => s.Value)
-            .Select(s => s.Key)
-            .Where(s => s.Contains('*'))
-            .Where(s => s.Replace(".*", "").Split('.').Length <= permissionsLength)
-            .Where(s => s.Split('.').First() == permissionType.Split('.').First() || s.Split('.').First() == "*")
-            .OrderBy(p => p.Split('.').Length)
-            .ThenBy(p => p.Length)
-            .ToList();
-
-        if(highest.Count <= 1)
-            return highest.FirstOrDefault();
-        if(highest.Any(s => s.Split(".").Length < permissionsLength))
-            return highest.FirstOrDefault(s => s.Split(".").Length < permissionsLength);
-        return highest.FirstOrDefault(s => s.Contains(permissionType));
-    }
-
-    private void Cancel()
-    {
-        MudDialog.Cancel();
-    }
+    
+    private void Cancel() => MudDialog.Cancel();
 }
-

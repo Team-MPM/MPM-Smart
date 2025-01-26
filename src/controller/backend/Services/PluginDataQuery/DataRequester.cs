@@ -1,22 +1,17 @@
-﻿using System.Collections.Concurrent;
-using Backend.Services.Plugins;
-using Data.System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PluginBase;
-using Shared.Plugins;
 using Shared.Plugins.DataInfo;
 using Shared.Plugins.DataRequest;
 using Shared.Plugins.DataResponse;
-using ILogger = Serilog.ILogger;
 
 namespace Backend.Services.PluginDataQuery;
 
-public class DataRequester(IPluginManager pluginManager, ILogger<DataRequester> logger, IServiceProvider sp)
+public class DataRequester(IPluginManager pluginManager)
 {
     public async Task<DataInfoResponse> RequestPluginInfo()
     {
         await pluginManager.PluginInitializationComplete();
-        DataInfoResponse response = new DataInfoResponse();
+        var response = new DataInfoResponse();
         foreach (var plugin in pluginManager.Plugins)
         {
             var result = await plugin.GetPluginDataInfo();
@@ -36,7 +31,7 @@ public class DataRequester(IPluginManager pluginManager, ILogger<DataRequester> 
     public async Task<DataResponse> RequestPluginData(DataRequest request)
     {
         await pluginManager.PluginInitializationComplete();
-        DataResponse response = new DataResponse();
+        var response = new DataResponse();
 
         foreach (var requestEntry in request.Requests)
         {
@@ -58,6 +53,7 @@ public class DataRequester(IPluginManager pluginManager, ILogger<DataRequester> 
             var result = await plugin.GetDataFromPlugin(requestEntry);
             response.Add(result);
         }
+
         return response;
     }
 }
@@ -74,5 +70,4 @@ public static class DataRequesterEndpoints
         group.MapGet("/info", async (
             [FromServices] DataRequester requester) => await requester.RequestPluginInfo());
     }
-
 }

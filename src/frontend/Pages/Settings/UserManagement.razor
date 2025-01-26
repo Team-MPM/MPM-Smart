@@ -2,9 +2,8 @@
 @using ApiSchema.Usermanagement
 @using Frontend.Components.Dialogs
 @using Frontend.Services
-@attribute [StreamRendering]
 @inject IDialogService DialogService
-@inject ApiAccessor Accessor
+@inject ApiAccessor Api
 
 <h3>UserManagement</h3>
 
@@ -12,9 +11,9 @@
 {
     <MudContainer Class="p-4" MaxWidth="MaxWidth.Large">
         <MudContainer Style="padding: 20px;">
-            <MudGrid Justify="Justify.FlexEnd" AlignItems="Center">
+            <MudGrid Justify="Justify.FlexEnd">
                 <MudItem>
-                    <MudButton Class="mud-theme-primary" Variant="Variant.Filled" OnClick="@AddnewUser">Add</MudButton>
+                    <MudButton Class="mud-theme-primary" Variant="Variant.Filled" OnClick="@AddNewUser">Add</MudButton>
                 </MudItem>
             </MudGrid>
         </MudContainer>
@@ -33,17 +32,16 @@
                         @if (context.Username != "admin" && context.Username != "Visitor")
                         {
                             <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
-                                           OnClick="@(() =>DeleteUser(context))"/>
+                                           OnClick="@(() => DeleteUser(context))"/>
                         }
                     </MudTd>
                 </RowTemplate>
             </MudTable>
         </MudContainer>
     </MudContainer>
-
 }
 
-else if(ErrorMessage != "")
+else if (ErrorMessage != "")
 {
     <p>Access denied!</p>
     <p>Error: @ErrorMessage</p>
@@ -53,16 +51,14 @@ else
     <p>Loading...</p>
 }
 
-
-
 @code {
-    private List<UsersModel> Users { get; set; } = new List<UsersModel>();
+    private List<UsersModel> Users { get; set; } = [];
     private string? ErrorMessage { get; set; } = "";
     private bool UsersLoaded { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var userResponse = await Accessor.GetAllUsers();
+        var userResponse = await Api.GetAllUsers();
         UsersLoaded = userResponse.Success;
         if (!userResponse.Success)
         {
@@ -71,12 +67,11 @@ else
         }
 
         Users = userResponse.Response!;
-
     }
 
     private async Task ReloadUsers()
     {
-        var userResponse = await Accessor.GetAllUsers();
+        var userResponse = await Api.GetAllUsers();
         if (!userResponse.Success)
         {
             Console.WriteLine("User loading failed");
@@ -84,18 +79,16 @@ else
             ErrorMessage = userResponse.Message;
             return;
         }
+
         Users = userResponse.Response!;
         UsersLoaded = userResponse.Success;
         await InvokeAsync(StateHasChanged);
     }
-    private async Task AddnewUser()
-    {
-        _ = AddDialog();
-    }
+
+    private void AddNewUser() => Task.Run(AddDialog);
 
     private async Task AddDialog()
     {
-
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true };
 
         var dialog = await DialogService.ShowAsync<AddUserDialog>("Add new User", options);
@@ -110,21 +103,18 @@ else
         await ReloadUsers();
         await InvokeAsync(StateHasChanged);
         StateHasChanged();
-
     }
 
     private async Task EditUser(UsersModel user)
     {
-        string oldUsername = user.Username;
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true };
         var parameters = new DialogParameters()
         {
-            {"User", user}
+            { "User", user }
         };
         var dialog = await DialogService.ShowAsync<EditUserDialog>("Edit User", parameters, options);
         var result = await dialog.Result;
-
-
+        
         if (result!.Data != null)
         {
             dialog.Close(DialogResult.Ok(user));
@@ -134,11 +124,10 @@ else
         await InvokeAsync(StateHasChanged);
     }
 
-    public async Task DeleteUser(UsersModel user)
+    private async Task DeleteUser(UsersModel user)
     {
-        await Accessor.DeleteUser(user.Username);
+        await Api.DeleteUser(user.Username);
         await ReloadUsers();
         await InvokeAsync(StateHasChanged);
     }
-
 }
