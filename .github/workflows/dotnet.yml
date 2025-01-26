@@ -29,12 +29,6 @@ jobs:
       run: dotnet build --no-restore src/build-tasks/ReadJsonFileTask/ReadJsonFileTask.csproj
     - name: Build
       run: dotnet build --no-restore
-    - name: Remove Template Folder
-      run: rm -rf build/plugins/test-plugin
-    - name: Create Test Plugin Folder
-      run: mkdir -p build/plugins/mpm-test-plugin
-    - name: Copy Test Plugin
-      run: cp src/controller/plugins/test-plugin/bin/Debug/TestPlugin.dll build/plugins/mpm-test-plugin/TestPlugin.dll
     - name: Test
       run: dotnet test --no-build --verbosity normal
       
