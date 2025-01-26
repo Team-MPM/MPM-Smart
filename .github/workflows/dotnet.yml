@@ -29,6 +29,8 @@ jobs:
       run: dotnet build --no-restore src/build-tasks/ReadJsonFileTask/ReadJsonFileTask.csproj
     - name: Build
       run: dotnet build --no-restore
+    - name: Remove Template Folder
+      run: rm -rf build/plugins/test-plugin
     - name: Test
       run: dotnet test --no-build --verbosity normal
       
@@ -55,4 +57,3 @@ jobs:
       run: sleep 20
     - name: Log
       run: cat backend.log
-

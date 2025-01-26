@@ -8,6 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using PluginBase;
+using PluginBase.Services.Devices;
+using PluginBase.Services.Networking;
 using PluginBase.Services.Telemetry;
 
 namespace PluginTests.Fixtures;
@@ -53,7 +55,7 @@ public class PluginFixture
             "../../../../../../../build/plugins");
         HostPath = Path.Combine(assemblyLocation, "..", "app", "controller", "backend");
 
-        m_TestPluginAssemblyBin = File.ReadAllBytes(pluginSourceDir + "/test-plugin/TestPlugin.dll");
+        m_TestPluginAssemblyBin = File.ReadAllBytes(pluginSourceDir + "/mpm-test-plugin/TestPlugin.dll");
 
         PluginCount = 1;
     }
@@ -81,7 +83,7 @@ public class PluginFixture
         MockPluginManagerLogger = new Mock<ILogger<PluginManager>>();
         MockPluginLoaderLogger = new Mock<ILogger<PluginLoader>>();
         MockTelemetryDataCollector = new Mock<ITelemetryDataCollector>();
-
+        
         MockServiceProvider.Setup(sp => sp.GetService(typeof(ITelemetryDataCollector)))
             .Returns(MockTelemetryDataCollector.Object);
 
@@ -94,6 +96,10 @@ public class PluginFixture
         services.AddSingleton<IPluginLoader, PluginLoader>();
         services.AddSingleton(MockWebHostEnvironment.Object);
         services.AddSingleton(MockTelemetryDataCollector.Object);
+        services.AddSingleton<NetworkScanner>();
+        services.AddSingleton<DeviceTypeRegistry>();
+        services.AddSingleton<DeviceRegistry>();
+        services.AddSingleton<DeviceManager>();
         services.AddSingleton<IFileSystem>(MockFileSystem);
         services.AddLogging();
 
