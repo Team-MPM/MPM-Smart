@@ -16,6 +16,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using PluginBase;
 using PluginBase.Services;
+using PluginBase.Services.Data;
 using PluginBase.Services.Devices;
 using PluginBase.Services.Networking;
 using PluginBase.Services.Permissions;
@@ -143,6 +144,10 @@ builder.Services.AddOpenTelemetry()
         options.AddHttpClientInstrumentation();
         options.AddInMemoryExporter(telemetryDataCollector.Traces);
     });
+
+// -------------------------- Data --------------------------------
+
+builder.Services.AddSingleton<DataIndex>();
 
 // ------------------------- Plugins ------------------------------
 

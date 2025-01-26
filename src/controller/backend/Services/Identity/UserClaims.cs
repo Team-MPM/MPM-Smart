@@ -108,6 +108,9 @@ public static class UserClaims
     public const string ProfileChangeUsername = "Permissions.Profile.ChangeUsername";
     public const string ProfileChangePassword = "Permissions.Profile.ChangePassword";
 
+    // -------------------- Data --------------------
 
-
+    public const string AllData = "Permissions.Data.*";
+    public const string ViewDataIndex = "Permissions.Data.DataIndex";
+    public const string SubmitDataQuery = "Permissions.Data.SubmitQuery";
 }
