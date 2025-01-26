@@ -34,7 +34,7 @@ jobs:
     - name: Create Test Plugin Folder
       run: mkdir -p build/plugins/mpm-test-plugin
     - name: Copy Test Plugin
-      run: cp src/controller/plugins/test-plugin/bin/Debug/net9.0/TestPlugin.dll build/plugins/mpm-test-plugin/TestPlugin.dll
+      run: cp src/controller/plugins/test-plugin/bin/Debug/TestPlugin.dll build/plugins/mpm-test-plugin/TestPlugin.dll
     - name: Test
       run: dotnet test --no-build --verbosity normal
       
