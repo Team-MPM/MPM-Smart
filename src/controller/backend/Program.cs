@@ -2,6 +2,7 @@ using System.IO.Abstractions;
 using Backend.Endpoints;
 using Backend.Services.Database;
 using Backend.Services.Identity;
+using Backend.Services.Permissions;
 using Backend.Services.PluginDataQuery;
 using Backend.Services.Plugins;
 using Backend.Utils;
@@ -82,8 +83,9 @@ builder.Services.AddAuthorization(options =>
     });
 });
 
-builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
+builder.Services.AddSingleton<IAuthorizationHandler, PermissionVerifier>();
 builder.Services.AddSingleton<AvailablePermissionProvider>();
+builder.Services.AddSingleton<PermissionHandler>();
 
 builder.Services.AddIdentity<SystemUser, IdentityRole>(options =>
     {

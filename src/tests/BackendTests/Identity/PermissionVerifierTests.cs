@@ -1,13 +1,17 @@
-﻿using System.Security.Claims;
+﻿using System.Runtime.InteropServices;
+using System.Security.Claims;
 using Backend.Services.Identity;
+using Backend.Services.Permissions;
+using Data.System;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using PluginBase.Services.Permissions;
 using Xunit;
 
 namespace BackendTests.Identity;
 
-public class PermissionHandlerTests
+public class PermissionVerifierTests
 {
     [Theory]
     [InlineData("permission", "permission")]
@@ -27,13 +31,32 @@ public class PermissionHandlerTests
             user,
             null);
 
-        var handler = new PermissionHandler();
+        var handler = new PermissionVerifier();
 
         // Act
         handler.HandleAsync(context);
 
         // Assert
         context.HasSucceeded.Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData("permission.read", "permission.read", true)]
+    [InlineData("permission.*", "permission.read", true)]
+    [InlineData("permission.x.*", "permission.x.read", true)]
+    [InlineData("permission.x.y.*", "permission.x.y.read", true)]
+    [InlineData("permission.x.y.z", "permission.x.y.x", false)]
+    [InlineData("permission.*", "*", false)]
+    [InlineData("*", "permission.x.y.x", true)]
+    [InlineData("temperature.*", "permission.*", false)]
+    [InlineData("temperature.x.y", "permission.x.z", false)]
+
+    public void CheckHasAccess(string permission, string requiredPermission, bool expectedResult)
+    {
+        var handler = new PermissionHandler(null);
+
+        var result = handler.HasAccess(permission, requiredPermission);
+        Assert.Equal(expectedResult, result);
     }
     
     [Theory]
@@ -55,7 +78,7 @@ public class PermissionHandlerTests
             user,
             null);
 
-        var handler = new PermissionHandler();
+        var handler = new PermissionVerifier();
 
         // Act
         handler.HandleAsync(context);
@@ -75,7 +98,7 @@ public class PermissionHandlerTests
             user,
             null);
 
-        var handler = new PermissionHandler();
+        var handler = new PermissionVerifier();
 
         // Act
         handler.HandleAsync(context);
