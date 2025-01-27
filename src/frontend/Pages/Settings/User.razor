@@ -53,13 +53,16 @@
     private string ErrorMessagePassword = "";
     private string ErrorMessageLanguage = "";
 
-    private List<string> Languages = new()
-    {
-        "Deutsch", "Englisch", "Polnisch"
-    };
+    private List<string> Languages = new();
 
     protected override async Task OnInitializedAsync()
     {
+        var languageResponse = await Accessor.GetLanguages();
+        if(languageResponse.Success)
+        {
+            Languages = languageResponse.Response!;
+        }
+
         var responseUsername = await Accessor.GetUserData();
         if (responseUsername.Response is null)
             return;
@@ -69,6 +72,7 @@
 
         selectedLanguage = responseUsername.Response.Language.ToString();
         originalLanguage = selectedLanguage;
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task SaveSettings()
@@ -89,6 +93,20 @@
             password = string.Empty;
             if (!responseP.Success)
                 ErrorMessagePassword = responseP.Message!;
+        }
+
+        if (selectedLanguage != originalLanguage)
+        {
+            var responseL = await Accessor.SetLanguage(selectedLanguage);
+            if (!responseL.Success)
+            {
+                ErrorMessageLanguage = responseL.Message!;
+            }
+            else
+            {
+                originalLanguage = selectedLanguage;
+                ErrorMessageLanguage = "";
+            }
         }
     }
 }

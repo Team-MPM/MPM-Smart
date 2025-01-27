@@ -126,6 +126,8 @@ public static class UserProfileEndpoints
 
         }).RequirePermission(UserClaims.ProfileViewProfile);
 
+        group.MapGet("/languages", async () => Enum.GetNames<Language>().ToList());
+
         group.MapPost("/language", async (
             HttpContext context,
             UserManager<SystemUser> userManager,

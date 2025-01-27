@@ -25,7 +25,7 @@
             <MudPaper Class="pa-3 ma-2">
                 <MudStack>
                     <MudSelect T="string" Label="Sprache" @bind-Value="@User.Language">
-                        @foreach (var language in Enum.GetValues<Language>())
+                        @foreach (var language in m_Languages)
                         {
                             <MudSelectItem T="string" Value="language.ToString()">@language</MudSelectItem>
                         }
@@ -82,9 +82,13 @@
     private string? m_ErrorMessage = "";
     private Dictionary<string, bool> IsPermissionSet { get; } = new();
     private string NewPassword { get; set; } = "";
+    private List<string> m_Languages = new();
 
     protected override async Task OnInitializedAsync()
     {
+        var languagesResponse = await Api.GetLanguages();
+        if(languagesResponse.Success)
+            m_Languages = languagesResponse.Response!;
         var result = await Api.GetAllPermissions();
 
         if (!result.Success)
@@ -94,6 +98,7 @@
 
         foreach (var p in AllPermissions.SelectMany(s => s.Value))
             IsPermissionSet.Add(p, User.Permissions.Contains(p));
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task Submit()

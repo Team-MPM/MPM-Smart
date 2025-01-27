@@ -95,7 +95,7 @@
     [Parameter] public required UsersModel User { get; set; }
     private Dictionary<string, List<string>> AllPermissions { get; set; } = new();
     private string m_OldUsername = "";
-    private readonly List<string> m_Languages = ["Deutsch", "English", "Polish"];
+    private List<string> m_Languages = new();
     private string m_ErrorMessage = "";
     private Dictionary<string, bool> IsPermissionSet { get; set; } = new();
     private bool ChangePassword { get; set; }
@@ -103,6 +103,10 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var languagesResponse = await Api.GetLanguages();
+        if(languagesResponse.Success)
+            m_Languages = languagesResponse.Response!;
+
         m_OldUsername = User.Username;
         var result = await Api.GetAllPermissions();
         if (result.Success)

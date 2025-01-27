@@ -69,6 +69,9 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
 
     // ---------------------------- PROFILE ----------------------------
 
+    public async Task<ResponseModel<List<string>>> GetLanguages() =>
+        await GetResponseModel<List<string>>(client => client.GetAsync("/api/profile/languages"));
+
     public async Task<ResponseModel<UserData>> GetUserData() =>
         await GetResponseModel<UserData>(client => client.GetAsync($"api/profile/info"));
 
