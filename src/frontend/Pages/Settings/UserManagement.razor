@@ -5,7 +5,9 @@
 @inject IDialogService DialogService
 @inject ApiAccessor Api
 
-<h3>UserManagement</h3>
+<MudContainer Class="d-flex">
+    <MudText Typo="Typo.h4" Class="pl-5">User Management</MudText>
+</MudContainer>
 
 @if (UsersLoaded && ErrorMessage == "")
 {
