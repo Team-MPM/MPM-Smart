@@ -2,7 +2,7 @@ using Shared;
 
 namespace ApiSchema;
 
-public record class DataIndexEntryDto
+public record class DataPointDto
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public required string PluginName { get; set; }

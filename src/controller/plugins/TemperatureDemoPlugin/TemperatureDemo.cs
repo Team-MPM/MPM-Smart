@@ -36,7 +36,7 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
         permissionProvider.AddRange("TemperatureDemo", TemperatureClaims.ExportPermissions());
 
         var index = ApplicationServices.GetRequiredService<DataIndex>();
-        index.Add(new DataIndexEntry()
+        index.Add(new DataPoint()
         {
             Name = "Temperature Singe",
             Description = "Temperature",
@@ -47,7 +47,7 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
             QueryHandler = query => { return null; }
         });
 
-        index.Add(new DataIndexEntry()
+        index.Add(new DataPoint()
         {
             Name = "Temperature",
             Description = "Temperature",

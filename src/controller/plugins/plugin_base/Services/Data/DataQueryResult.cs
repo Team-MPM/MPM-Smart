@@ -5,16 +5,18 @@ namespace PluginBase.Services.Data;
 public abstract class DataQueryResult
 {
     public DataQueryResultType Type { get; protected set; }
-    protected object? Data { get; init; }
+    protected object Data { get; init; } = null!;
 }
 
 public class SingleQueryResult : DataQueryResult
 {
     public SingleQueryResult(object value)
     {
-        Data = value;
+        base.Data = value;
         Type = DataQueryResultType.Single;
     }
+    
+    public new object Data => base.Data;
 }
 
 public class SeriesQueryResult : DataQueryResult

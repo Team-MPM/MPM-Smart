@@ -55,17 +55,25 @@ public static class UserClaims
             ProfileChangeProfilePicture,
             ProfileChangeUsername,
             ProfileChangePassword,
+            
+            // Data
+            AllData,
+            ViewDataIndex,
+            SubmitDataQuery
         ];
     }
 
 
     // ------------------ ADMIN ------------------
+    
     public const string Admin = "*";
 
     // ------------------ AllPermissions ------------------
+    
     public const string AllPermissions = "Permissions.*";
 
     // ------------------ UserManagement ------------------
+    
     public const string AllOnUser = "Permissions.User.*";
     public const string UserViewUsers = "Permissions.User.ViewUsers";
     public const string UserAddUser = "Permissions.User.AddUser";
@@ -78,12 +86,14 @@ public static class UserClaims
     public const string UserViewOwnPermissions = "Permissions.User.ViewOwnPermissions";
 
     // ------------------ RoleManagement ------------------
+    
     public const string AllOnRole = "Permissions.Role.*";
     public const string RoleViewRoles = "Permissions.Role.ViewRoles";
     public const string RoleManageRoles = "Permissions.Role.ManageRoles";
     public const string RoleAssignUsers = "Permissions.Role.AssignUsers";
 
     // ------------------ PermissionManagement ------------------
+    
     public const string AllOnPermissionManagement = "Permissions.PermMng.*";
     public const string PermissionsViewUserPermissions = "Permissions.PermMng.ViewUserPermissions";
     public const string PermissionsChangeUserPermissions = "Permissions.PermMng.ChangeUserPermissions";
@@ -91,6 +101,7 @@ public static class UserClaims
     public const string PermissionsChangeRolePermissions = "Permissions.PermMng.ChangeRolePermissions";
 
     // ------------------ Settings ------------------
+    
     public const string AllOnSettings = "Permissions.Settings.*";
     public const string SettingsViewSettings = "Permissions.Settings.ViewSettings";
     public const string SettingsChangeHostName = "Permissions.Settings.ChangeHostName";

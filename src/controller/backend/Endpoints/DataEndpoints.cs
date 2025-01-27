@@ -13,16 +13,16 @@ public static class DataEndpoints
     {
         var group = endpoints.MapGroup("/api/data");
 
-        group.MapGet("/", GetDataIndex)
+        group.MapGet("/", GetDataPoints)
             .RequirePermission(UserClaims.ViewDataIndex);
         
-         group.MapPost("/query", GetDataIndex)
+         group.MapPost("/query", ProcessQuery)
             .RequirePermission(UserClaims.SubmitDataQuery);
         
         return endpoints;
     }
 
-    private static IResult GetDataIndex([FromServices] DataIndex index) => 
+    private static IResult GetDataPoints([FromServices] DataIndex index) => 
         Results.Json(index.Entries.Values.Select(e => e.MapToDto()));
     
     private static IResult ProcessQuery(
@@ -87,10 +87,19 @@ public static class DataEndpoints
         
         var result = entry.QueryHandler(query);
         
-        return Results.Json(result);
+        if (DataTypeHelper.IsSingle(entry.QueryType) && result is SingleQueryResult singleResult)
+            return Results.Json(new SingleDataQueryResultDto(DataQueryResultType.Single, singleResult.Data));
+        
+        if (DataTypeHelper.IsSeries(entry.QueryType) && result is SeriesQueryResult seriesResult)
+            return Results.Json(new SeriesDataQueryResultDto(DataQueryResultType.Series, seriesResult.Series));
+        
+        if (DataTypeHelper.IsCombo(entry.QueryType) && result is ComboSeriesQueryResult comboResult)
+            return Results.Json(new ComboSeriesDataQueryResultDto(DataQueryResultType.ComboSeries, comboResult.ComboSeries));
+
+        throw new InvalidOperationException("Invalid query result");
     }
 
-    private static DataIndexEntryDto MapToDto(this DataIndexEntry entry) => 
+    private static DataPointDto MapToDto(this DataPoint entry) => 
         new()
         {
             Id = entry.Id,
