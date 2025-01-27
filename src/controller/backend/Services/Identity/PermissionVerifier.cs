@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Linq;
 using System.Threading.Tasks;
 
-public class PermissionHandler : AuthorizationHandler<PermissionRequirement>
+public class PermissionVerifier : AuthorizationHandler<PermissionRequirement>
 {
     protected override Task HandleRequirementAsync(
         AuthorizationHandlerContext context,
