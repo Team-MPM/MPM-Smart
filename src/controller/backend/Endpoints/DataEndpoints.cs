@@ -68,6 +68,18 @@ public static class DataEndpoints
                 if (dto.From is null || dto.To is null)
                     return Results.BadRequest("Invalid query type");
                 break;
+            case DataQueryType.ComboLong:
+            case DataQueryType.ComboDouble:
+            case DataQueryType.ComboString:
+            case DataQueryType.ComboBool:
+            case DataQueryType.ComboDateTime:
+                if (dto.ComboOptions is null)
+                    return Results.BadRequest("Invalid query type");
+                if (dto.From is not null || dto.To is not null)
+                    return Results.BadRequest("Invalid query type");
+                if (dto.Filter is not null)
+                    return Results.BadRequest("Invalid query type");
+                break;
             case DataQueryType.Unknown:
             default:
                 throw new InvalidOperationException("Unknown query type");
@@ -90,12 +102,15 @@ public static class DataEndpoints
         if (DataTypeHelper.IsSingle(entry.QueryType) && result is SingleQueryResult singleResult)
             return Results.Json(new SingleDataQueryResultDto(DataQueryResultType.Single, singleResult.Data));
         
+        if (DataTypeHelper.IsCombo(entry.QueryType) && result is ComboQueryResult comboResult)
+            return Results.Json(new ComboDataQueryResultDto(DataQueryResultType.ComboSingle, comboResult.ComboData));
+        
         if (DataTypeHelper.IsSeries(entry.QueryType) && result is SeriesQueryResult seriesResult)
             return Results.Json(new SeriesDataQueryResultDto(DataQueryResultType.Series, seriesResult.Series));
         
-        if (DataTypeHelper.IsCombo(entry.QueryType) && result is ComboSeriesQueryResult comboResult)
-            return Results.Json(new ComboSeriesDataQueryResultDto(DataQueryResultType.ComboSeries, comboResult.ComboSeries));
-
+        if (DataTypeHelper.IsCombo(entry.QueryType) && result is ComboSeriesQueryResult comboSeriesResult)
+            return Results.Json(new ComboSeriesDataQueryResultDto(DataQueryResultType.ComboSeries, comboSeriesResult.ComboSeries));
+        
         throw new InvalidOperationException("Invalid query result");
     }
 

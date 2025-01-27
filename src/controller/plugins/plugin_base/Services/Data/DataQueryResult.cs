@@ -19,6 +19,17 @@ public class SingleQueryResult : DataQueryResult
     public new object Data => base.Data;
 }
 
+public class ComboQueryResult : DataQueryResult
+{
+    public ComboQueryResult(Dictionary<string, object> value)
+    {
+        base.Data = value;
+        Type = DataQueryResultType.Single;
+    }
+    
+    public Dictionary<string, object> ComboData => (Data as Dictionary<string, object>)!;
+}
+
 public class SeriesQueryResult : DataQueryResult
 {
     public SeriesQueryResult(object[] values)

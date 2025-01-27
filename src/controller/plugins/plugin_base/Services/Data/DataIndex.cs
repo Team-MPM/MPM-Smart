@@ -32,7 +32,7 @@ public class DataIndex
         }
     }
 
-    public void Add(DataPoint entry)
+    public DataPoint Add(DataPoint entry)
     {
         ValidateDataPoint(entry);
 
@@ -44,9 +44,9 @@ public class DataIndex
             m_ReverseLookup.Add(key, entry.Id);
             PersistReverseMap();
         }
-
             
         Entries.Add(entry.Id, entry);
+        return entry;
     }
 
     private static void ValidateDataPoint(DataPoint entry)

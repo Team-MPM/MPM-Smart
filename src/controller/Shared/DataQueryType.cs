@@ -3,6 +3,7 @@ namespace Shared;
 public enum DataQueryResultType
 {
     Single,
+    ComboSingle,
     Series,
     ComboSeries
 }
@@ -15,6 +16,11 @@ public enum DataQueryType
     String,
     Bool,
     DateTime,
+    ComboLong,
+    ComboDouble,
+    ComboString,
+    ComboBool,
+    ComboDateTime,
     SeriesLong,
     SeriesDouble,
     SeriesString,
@@ -37,19 +43,28 @@ public static class DataTypeHelper
             DataQueryType.String => true,
             DataQueryType.Bool => true,
             DataQueryType.DateTime => true,
+            DataQueryType.ComboLong => true,
+            DataQueryType.ComboDouble => true,
+            DataQueryType.ComboString => true,
+            DataQueryType.ComboBool => true,
+            DataQueryType.ComboDateTime => true,
             _ => false
         };
     
     public static bool IsSeries(DataQueryType queryType) =>
         queryType switch
         {
-            DataQueryType.Unknown => false,
-            DataQueryType.Long => false,
-            DataQueryType.Double => false,
-            DataQueryType.String => false,
-            DataQueryType.Bool => false,
-            DataQueryType.DateTime => false,
-            _ => true
+            DataQueryType.SeriesLong => true,
+            DataQueryType.SeriesDouble => true,
+            DataQueryType.SeriesString => true,
+            DataQueryType.SeriesBool => true,
+            DataQueryType.SeriesDateTime => true,
+            DataQueryType.ComboSeriesLong => true,
+            DataQueryType.ComboSeriesDouble => true,
+            DataQueryType.ComboSeriesString => true,
+            DataQueryType.ComboSeriesBool => true,
+            DataQueryType.ComboSeriesDateTime => true,
+            _ => false
         };
     
     public static bool IsCombo(DataQueryType queryType) =>
@@ -60,6 +75,11 @@ public static class DataTypeHelper
             DataQueryType.ComboSeriesString => true,
             DataQueryType.ComboSeriesBool => true,
             DataQueryType.ComboSeriesDateTime => true,
+            DataQueryType.ComboLong => true,
+            DataQueryType.ComboDouble => true,
+            DataQueryType.ComboString => true,
+            DataQueryType.ComboBool => true,
+            DataQueryType.ComboDateTime => true,
             _ => false
         };
 }

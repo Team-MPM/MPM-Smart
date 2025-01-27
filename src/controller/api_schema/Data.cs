@@ -35,6 +35,12 @@ public record SingleDataQueryResultDto(
     object Data
 );
 
+public record ComboDataQueryResultDto(
+    DataQueryResultType Type, 
+    Dictionary<string, object> Data
+);
+
+
 public record SeriesDataQueryResultDto(
     DataQueryResultType Type, 
     object[] Data
