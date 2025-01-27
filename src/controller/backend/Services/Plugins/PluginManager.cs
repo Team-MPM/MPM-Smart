@@ -1,4 +1,5 @@
 using PluginBase;
+using PluginBase.Services.Data;
 using PluginBase.Services.Devices;
 using PluginBase.Services.Networking;
 using PluginBase.Services.Telemetry;
@@ -74,6 +75,7 @@ public class PluginManager(
         services.AddSingleton(sp.GetRequiredService<DeviceTypeRegistry>());
         services.AddSingleton(sp.GetRequiredService<DeviceRegistry>());
         services.AddSingleton(sp.GetRequiredService<DeviceManager>());
+        services.AddSingleton(sp.GetRequiredService<DataIndex>());
 
         services.AddLogging(options =>
         {

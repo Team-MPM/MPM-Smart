@@ -1,4 +1,4 @@
-namespace ApiSchema.Plugins;
+namespace ApiSchema;
 
 public record PluginInfoDto(
     string Guid,

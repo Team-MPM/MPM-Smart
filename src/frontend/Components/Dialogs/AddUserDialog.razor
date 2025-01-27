@@ -1,5 +1,5 @@
-﻿@using ApiSchema.Enums
-@using ApiSchema.Usermanagement
+﻿@using ApiSchema
+@using ApiSchema.Enums
 @using Frontend.Services
 @using Frontend.Utils
 @inject ApiAccessor Api
@@ -113,11 +113,10 @@
             .Select(p => p.Key)
             .ToList();
 
-        var addResult = await Api.AddNewUser(new AddUserModel
-        {
-            Username = User.Username,
-            Password = NewPassword
-        });
+        var addResult = await Api.AddNewUser(new AddUserModel(
+            Username: User.Username,
+            Password: NewPassword
+        ));
 
         if (!addResult.Success)
         {

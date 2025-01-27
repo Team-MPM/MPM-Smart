@@ -1,19 +1,11 @@
-﻿using System.Reflection.Metadata.Ecma335;
-using System.Security.Claims;
+﻿using ApiSchema;
 using ApiSchema.Enums;
-using ApiSchema.Identity;
-using ApiSchema.Settings;
-using ApiSchema.Usermanagement;
 using Backend.Services.Identity;
 using Data.System;
-using LanguageExt;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PluginBase.Services.Permissions;
-using PermissionsModel = ApiSchema.Identity.PermissionsModel;
-
 namespace Backend.Endpoints;
 
 public static class UserProfileEndpoints
@@ -84,10 +76,10 @@ public static class UserProfileEndpoints
             if(!user.CanChangeUsername)
                 return Results.BadRequest($"Username for the '{user.UserName}' user cannot be changed");
 
-            if (string.IsNullOrWhiteSpace(model.Username))
+            if (string.IsNullOrWhiteSpace(model.UserName))
                 return Results.BadRequest();
 
-            var result = await userManager.SetUserNameAsync(user, model.Username);
+            var result = await userManager.SetUserNameAsync(user, model.UserName);
 
             return result.Succeeded ? Results.Ok() : Results.BadRequest(result.Errors);
 
@@ -162,11 +154,10 @@ public static class UserProfileEndpoints
                 roleClaims.Add(role, claimlist.Select(c => c.Value));
             }
 
-            return Results.Ok(new PermissionsModel()
-            {
-                UserPermissions = userPermissions.Select(s => s.Value),
-                RolePermissions = roleClaims
-            });
+            return Results.Ok(new PermissionsModel(
+                UserPermissions: userPermissions.Select(s => s.Value),
+                RolePermissions: roleClaims
+            ));
         }).RequirePermission(UserClaims.ProfileViewProfile);
     }
 }

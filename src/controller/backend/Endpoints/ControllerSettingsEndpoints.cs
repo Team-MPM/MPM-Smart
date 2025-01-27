@@ -1,9 +1,6 @@
-﻿using ApiSchema.Settings;
-using ApiSchema.Usermanagement;
+﻿using ApiSchema;
 using Backend.Services.Identity;
 using Data.System;
-using LanguageExt.Common;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PluginBase.Services.Permissions;
@@ -24,12 +21,10 @@ public static class ControllerSettingsEndpoints
         group.MapGet("/", async (
             SystemDbContext dbContext) =>
         {
-            return Results.Ok(new SettingsModel()
-            {
-                SystemName = await dbContext.SystemConfiguration.Select(s => s.SystemName).FirstAsync(),
-                SystemTime = (await dbContext.SystemConfiguration.Select(s => s.TimeZoneCode).FirstAsync()).ToString(),
-                TimeBetweenUpdatesInSec = await dbContext.SystemConfiguration.Select(s => s.TimeBetweenDataUpdatesSeconds).FirstAsync(),
-            });
+            return Results.Ok(new SettingsModel(
+                SystemName: await dbContext.SystemConfiguration.Select(s => s.SystemName).FirstAsync(),
+                SystemTime: (await dbContext.SystemConfiguration.Select(s => s.TimeZoneCode).FirstAsync()).ToString(),
+                TimeBetweenUpdatesInSec: await dbContext.SystemConfiguration.Select(s => s.TimeBetweenDataUpdatesSeconds).FirstAsync()));
         }).RequirePermission(UserClaims.SettingsViewSettings);
 
         group.MapGet("/systemname", async (

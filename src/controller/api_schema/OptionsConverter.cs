@@ -2,9 +2,9 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Shared;
 
-namespace ApiSchema.Plugins;
+namespace ApiSchema;
 
-public class OptionsDtoConverter : JsonConverter<OptionsDto>
+public class OptionsConverter : JsonConverter<OptionsDto>
 {
     public override OptionsDto Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
