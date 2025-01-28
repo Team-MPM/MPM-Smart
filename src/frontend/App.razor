@@ -1,9 +1,12 @@
 ﻿@using System.IdentityModel.Tokens.Jwt
 @using Blazored.LocalStorage
 @using Frontend.Pages.General
+@using Frontend.Services
 @using Microsoft.AspNetCore.Components.Authorization
 @inject NavigationManager Nav
 @inject ILocalStorageService Storage
+@inject ApiAccessor api
+@inject CustomAuthStateProvider authStateProvider
 
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
@@ -17,14 +20,18 @@
                             if (controller is null)
                                 return;
                             var token = await Storage.GetItemAsStringAsync($"authToken-{controller.Address}:{controller.Port}");
-                            if (string.IsNullOrEmpty(token))
-                            {
+                            var refreshToken = await Storage.GetItemAsStringAsync($"refreshToken-{controller.Address}:{controller.Port}");
+                            if (token is null)
                                 Nav.NavigateTo("/");
+                            else if (refreshToken is null)
+                                Nav.NavigateTo("/");
+                            else if (new JwtSecurityToken(token).ValidTo > DateTime.Now)
                                 return;
-                            }
 
-                            if (new JwtSecurityToken(token).ValidTo < DateTime.Now)
+                            var result = await api.TryRefreshToken();
+                            if (!result.Success)
                                 Nav.NavigateTo("/");
+                            Nav.NavigateTo(Nav.Uri);
                         }
                     }
                 </NotAuthorized>

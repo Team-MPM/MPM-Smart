@@ -3,6 +3,6 @@
 public class RefreshTokenModel
 {
     public required string RefreshToken { get; set; }
-    public int? Duration = 2;
-    public LoginDurationEntity? DurationType = LoginDurationEntity.Day;
+    public int? Duration { get; set; }  = 2;
+    public LoginDurationEntity? DurationType { get; set; } = LoginDurationEntity.Day;
 }

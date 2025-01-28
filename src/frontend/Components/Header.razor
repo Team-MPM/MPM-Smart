@@ -1,4 +1,6 @@
-﻿@inject NavigationManager NavigationManager
+﻿@using Frontend.Services
+@inject NavigationManager NavigationManager
+@inject TokenHandler handler
 
 <MudAppBar Fixed="true" Elevation="1">
     <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit"
@@ -13,7 +15,7 @@
                          Class="mud-theme-primary"
                          ToggledColor="@Color.Success"
                          title="@(_layout.IsDarkMode ? "On" : "Off")"/>
-    <MudIconButton Href="/" Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit"/>
+    <MudIconButton Href="/" Icon="@Icons.Material.Filled.Logout" OnClick="@(async () => await Logout())" Color="Color.Inherit"/>
     <MudIconButton Href="/settings/user" Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit"/>
 </MudAppBar>
 
@@ -24,4 +26,10 @@
 
     private void Home() => NavigationManager.NavigateTo("/");
     [Parameter] public required Action ToggleDrawer { get; set; }
+
+    private async Task Logout()
+    {
+        await handler.LogoutAsync();
+        NavigationManager.NavigateTo("/");
+    }
 }

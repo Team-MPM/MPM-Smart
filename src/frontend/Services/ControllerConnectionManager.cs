@@ -26,6 +26,7 @@ public class ControllerConnectionManager(IServiceProvider sp)
     private bool m_Connected = false;
     private ApiAccessor m_Api = null!;
     private Uri? m_Uri;
+    public ControllerConnectionDetails? Details { get; private set; } = null;
 
     public event Action? OnChange;
 
@@ -53,6 +54,8 @@ public class ControllerConnectionManager(IServiceProvider sp)
         {
             return false;
         }
+
+        Details = details;
 
         if (!res.IsSuccessStatusCode)
         {

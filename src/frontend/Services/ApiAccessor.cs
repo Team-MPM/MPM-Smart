@@ -1,4 +1,6 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using ApiSchema.Devices;
 using ApiSchema.Enums;
 using ApiSchema.Identity;
@@ -27,18 +29,28 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         try
         {
             var response = await request(Client);
-            if ((int)response.StatusCode == 401)
+            if (!response.IsSuccessStatusCode)
             {
                 var tokenResponse = await TryRefreshToken();
                 if(tokenResponse.Success)
                     response = await request(Client);
             }
+
             return !response.IsSuccessStatusCode
                 ? await new ResponseModel().ServerError(response)
                 : await new ResponseModel().SuccessResultAsync(response);
         }
         catch (Exception e)
         {
+            try
+            {
+                var result = await TryRefreshToken();
+                if (result.Success)
+                {
+                    Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result.Response);
+                    return await GetResponseModel(request);
+                }
+            } catch(Exception) {}
             return new ResponseModel().ExceptionError(e);
         }
     }
@@ -52,24 +64,34 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         try
         {
             var response = await request(Client);
-            if ((int)response.StatusCode == 401)
+            if (!response.IsSuccessStatusCode)
             {
                 var tokenResponse = await TryRefreshToken();
                 if(tokenResponse.Success)
                     response = await request(Client);
             }
+
             return !response.IsSuccessStatusCode
                 ? await new ResponseModel<T>().ServerError(response)
                 : await new ResponseModel<T>().SuccessResultAsync(response);
         }
         catch (Exception e)
         {
+            try
+            {
+                var result = await TryRefreshToken();
+                if (result.Success)
+                {
+                    Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result.Response);
+                    return await GetResponseModel<T>(request);
+                }
+            } catch(Exception) {}
             return new ResponseModel<T>().ExceptionError(e);
         }
     }
 
     // ---------------------------- IDENTITY ----------------------------
-    public async Task<ResponseModel<LoginResponse>> Login(string username, string password, int duration = 2, LoginDurationEntity durationEntity = LoginDurationEntity.Minute)
+    public async Task<ResponseModel<LoginResponse>> Login(string username, string password, int duration = 1, LoginDurationEntity durationEntity = LoginDurationEntity.Minute)
     {
         var response = await GetResponseModel<LoginResponse>(client =>
             client.PostAsJsonAsync("/api/identity/login", new LoginModel
@@ -87,12 +109,12 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         }
         return response;
     }
-    public async Task<ResponseModel<string>> TryRefreshToken()
+    public async Task<ResponseModel<string>> TryRefreshToken(int duration = 1, LoginDurationEntity durationEntity = LoginDurationEntity.Minute)
     {
         using var scope = sp.CreateScope();
         var tokenService = scope.ServiceProvider.GetRequiredService<TokenHandler>();
 
-        return await tokenService.RefreshTokenAsync(Client!, Details.Address, Details.Port.ToString());
+        return await tokenService.RefreshTokenAsync(Client!, Details.Address, Details.Port.ToString(), duration, durationEntity);
     }
 
     // ---------------------------- PROFILE ----------------------------
