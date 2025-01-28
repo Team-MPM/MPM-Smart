@@ -5,6 +5,8 @@ using ApiSchema.Identity;
 using ApiSchema.Plugins;
 using ApiSchema.Settings;
 using ApiSchema.Usermanagement;
+using Blazored.LocalStorage;
+using Frontend.Pages.General;
 using Shared.Plugins.DataInfo;
 using Shared.Plugins.DataRequest;
 using Shared.Plugins.DataResponse;
@@ -12,8 +14,9 @@ using PermissionsModel = ApiSchema.Usermanagement.PermissionsModel;
 
 namespace Frontend.Services;
 
-public class ApiAccessor(ControllerConnectionManager controllerConnectionManager)
+public class ApiAccessor(ControllerConnectionManager controllerConnectionManager, IServiceProvider sp)
 {
+    public ControllerConnectionDetails Details { get; set; }
     private HttpClient? Client => controllerConnectionManager.GetCurrentClient();
 
     private async Task<ResponseModel> GetResponseModel(Func<HttpClient, Task<HttpResponseMessage>> request)
@@ -24,6 +27,12 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         try
         {
             var response = await request(Client);
+            if ((int)response.StatusCode == 401)
+            {
+                var tokenResponse = await TryRefreshToken();
+                if(tokenResponse.Success)
+                    response = await request(Client);
+            }
             return !response.IsSuccessStatusCode
                 ? await new ResponseModel().ServerError(response)
                 : await new ResponseModel().SuccessResultAsync(response);
@@ -43,6 +52,12 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         try
         {
             var response = await request(Client);
+            if ((int)response.StatusCode == 401)
+            {
+                var tokenResponse = await TryRefreshToken();
+                if(tokenResponse.Success)
+                    response = await request(Client);
+            }
             return !response.IsSuccessStatusCode
                 ? await new ResponseModel<T>().ServerError(response)
                 : await new ResponseModel<T>().SuccessResultAsync(response);
@@ -54,17 +69,30 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
     }
 
     // ---------------------------- IDENTITY ----------------------------
-    public async Task<ResponseModel<string>> Login(string username, string password)
+    public async Task<ResponseModel<LoginResponse>> Login(string username, string password, int duration = 2, LoginDurationEntity durationEntity = LoginDurationEntity.Minute)
     {
-        var response = await GetResponseModel<string>(client =>
+        var response = await GetResponseModel<LoginResponse>(client =>
             client.PostAsJsonAsync("/api/identity/login", new LoginModel
             {
-                UserName = username, Password = password
+                UserName = username, Password = password,
+                LoginDuration = duration,
+                LoginDurationEntity = durationEntity
             }));
 
         if (response.Success)
-            response.Response = response.Response!.Trim('\"');
+        {
+            response.Response!.Token = response.Response!.Token.Replace("\"", "");
+            if(!string.IsNullOrEmpty(response.Response.RefreshToken))
+                response.Response!.RefreshToken = response.Response!.RefreshToken.Replace("\"", "");
+        }
         return response;
+    }
+    public async Task<ResponseModel<string>> TryRefreshToken()
+    {
+        using var scope = sp.CreateScope();
+        var tokenService = scope.ServiceProvider.GetRequiredService<TokenHandler>();
+
+        return await tokenService.RefreshTokenAsync(Client!, Details.Address, Details.Port.ToString());
     }
 
     // ---------------------------- PROFILE ----------------------------

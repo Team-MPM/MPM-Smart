@@ -49,32 +49,113 @@ public static class IdentityEndpoints
             var token = handler.CreateToken(new SecurityTokenDescriptor
             {
                 Subject = claims,
-                Expires = DateTime.UtcNow.AddDays(2),
+                Expires = DateTime.UtcNow.AddMinutes(model.LoginDurationEntity switch
+                {
+                    LoginDurationEntity.Minute => model.LoginDuration!.Value,
+                    LoginDurationEntity.Hour => model.LoginDuration!.Value * 60,
+                    LoginDurationEntity.Day => model.LoginDuration!.Value * 60 * 24,
+                    LoginDurationEntity.Month => model.LoginDuration!.Value * 60 * 24 * 30,
+                    LoginDurationEntity.Year => model.LoginDuration!.Value * 60 * 24 * 365,
+                    _ => throw new ArgumentOutOfRangeException()
+                }),
                 SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.RsaSha256)
             });
-
             var tokenString = handler.WriteToken(token);
-            return Results.Ok(tokenString);
+
+            var refreshTokenClaims = new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.Name, user.UserName!),
+                new Claim("type", "refresh_token"),
+                new Claim("purpose", "refresh_token")
+            });
+
+            var refreshToken = handler.CreateToken(new SecurityTokenDescriptor
+            {
+                Subject = refreshTokenClaims,
+                TokenType = "refresh_token",
+                Expires = DateTime.UtcNow.AddDays(30),
+                SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.RsaSha256)
+            });
+            var refreshTokenString = handler.WriteToken(refreshToken);
+
+            return Results.Ok(new LoginResponse()
+            {
+                Token = tokenString,
+                RefreshToken = refreshTokenString
+            });
         });
-
-        group.MapGet("/profile", async (
-            HttpContext context,
+        group.MapPost("/refresh", async (
             UserManager<SystemUser> userManager,
-            SystemDbContext dbContext) =>
+            RoleManager<IdentityRole> roleManager,
+            [FromBody] RefreshTokenModel model) =>
         {
-            var user = await userManager.GetUserAsync(context.User);
+            model.RefreshToken = model.RefreshToken.Trim('"');
+            var token = new JwtSecurityToken(model.RefreshToken);
+            var tokenUser = token.Claims.FirstOrDefault(s => s.Type == "nameid");
 
+
+
+            if ((token.Claims.FirstOrDefault(s => s.Type == "type" && s.Value == "refresh_token") is null) ||
+                tokenUser is null)
+            {
+                Console.WriteLine("Token" + token.Claims.FirstOrDefault(s => s.Type == "type")?.Value);
+                Console.WriteLine("User:" + tokenUser?.Value);
+                return Results.BadRequest("Invalid refresh token 1");
+            }
+            var user = await userManager.FindByIdAsync(tokenUser.Value);
             if (user is null)
                 return Results.Unauthorized();
+            if (token.ValidTo < DateTime.UtcNow)
+                return Results.BadRequest("Refresh token expired");
+            if (tokenUser.Value != user.Id)
+                return Results.BadRequest("Invalid refresh token 2");
 
-            var profile = await dbContext.UserProfiles.FindAsync(user.UserProfileId);
+            var handler = new JwtSecurityTokenHandler();
 
-            return Results.Ok(new
+            var claims = new ClaimsIdentity(
+            [
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.Name, user.UserName!)
+            ]);
+
+            claims.AddClaims(await ClaimUtils.GetAllUserClaims(userManager, user, roleManager));
+            var newToken = handler.CreateToken(new SecurityTokenDescriptor()
             {
-                User = user.UserName,
-                Profile = profile as UserProfile
+                Subject = claims,
+                Expires = DateTime.UtcNow.AddMinutes(model.DurationType switch
+                {
+                    LoginDurationEntity.Minute => model.Duration!.Value,
+                    LoginDurationEntity.Hour => model.Duration!.Value * 60,
+                    LoginDurationEntity.Day => model.Duration!.Value * 60 * 24,
+                    LoginDurationEntity.Month => model.Duration!.Value * 60 * 24 * 30,
+                    LoginDurationEntity.Year => model.Duration!.Value * 60 * 24 * 365,
+                    _ => throw new ArgumentOutOfRangeException()
+                }),
+                SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.RsaSha256)
             });
-        }).RequirePermission(UserClaims.ProfileViewProfile);
+            var newTokenString = handler.WriteToken(newToken);
+            return Results.Ok(newTokenString);
+        });
+
+        // group.MapGet("/profile", async (
+        //     HttpContext context,
+        //     UserManager<SystemUser> userManager,
+        //     SystemDbContext dbContext) =>
+        // {
+        //     var user = await userManager.GetUserAsync(context.User);
+        //
+        //     if (user is null)
+        //         return Results.Unauthorized();
+        //
+        //     var profile = await dbContext.UserProfiles.FindAsync(user.UserProfileId);
+        //
+        //     return Results.Ok(new
+        //     {
+        //         User = user.UserName,
+        //         Profile = profile as UserProfile
+        //     });
+        // }).RequirePermission(UserClaims.ProfileViewProfile);
 
 
         // TODO OPTIONAL

@@ -20,6 +20,7 @@ public record ControllerStoredCredentials(ILocalStorageService Storage) : Contro
 
 public class ControllerConnectionManager(IServiceProvider sp)
 {
+    public string? RefreshToken { get; set; }
     private HttpClient m_Client = new();
     public string? Token { get; private set; }
     private bool m_Connected = false;
@@ -74,6 +75,7 @@ public class ControllerConnectionManager(IServiceProvider sp)
         }
 
         m_Connected = true;
+        m_Api.Details = details;
 
         switch (credentials)
         {
@@ -85,29 +87,38 @@ public class ControllerConnectionManager(IServiceProvider sp)
                 break;
             case ControllerPasswordCredentials passwordCredentials:
                 var tokenResponse = await m_Api.Login(passwordCredentials.Username, passwordCredentials.Password);
-                Console.WriteLine(tokenResponse.Success);
                 if (!tokenResponse.Success || tokenResponse.Response is null)
                     return false;
 
                 await passwordCredentials.Storage
                     .SetItemAsStringAsync($"authToken-{details.Address}:{details.Port}",
-                        tokenResponse.Response);
+                        tokenResponse.Response.Token);
+                await passwordCredentials.Storage
+                    .SetItemAsStringAsync($"refreshToken-{details.Address}:{details.Port}",
+                        tokenResponse.Response.RefreshToken!);
                 m_Client.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", tokenResponse.Response);
-                Token = tokenResponse.Response;
-                auth.NotifyUserAuthentication(tokenResponse.Response);
+                    new AuthenticationHeaderValue("Bearer", tokenResponse.Response.Token);
+                Token = tokenResponse.Response.Token;
+                auth.NotifyUserAuthentication(tokenResponse.Response.Token);
                 break;
             case ControllerStoredCredentials storedCredentials:
                 var token = await storedCredentials.Storage
                     .GetItemAsStringAsync($"authToken-{details.Address}:{details.Port}");
                 if (token is null)
                     return false;
-                if(new JwtSecurityToken(token).ValidTo < DateTime.UtcNow)
-                    return false;
+                if (new JwtSecurityToken(token).ValidTo < DateTime.UtcNow)
+                {
+                    var result = await m_Api.TryRefreshToken();
+                    if (!result.Success)
+                        return false;
+                    await storedCredentials.Storage
+                        .SetItemAsStringAsync($"authToken-{details.Address}:{details.Port}",
+                            result.Response!);
+                }
                 m_Client.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", token);
                 Token = token;
-                auth.NotifyUserAuthentication(token);
+                auth.NotifyUserAuthentication(token!);
                 break;
         }
 
