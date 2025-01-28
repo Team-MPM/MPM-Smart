@@ -18,7 +18,7 @@ namespace Frontend.Services;
 
 public class ApiAccessor(ControllerConnectionManager controllerConnectionManager, IServiceProvider sp)
 {
-    public ControllerConnectionDetails Details { get; set; }
+    public ControllerConnectionDetails? Details { get; set; }
     private HttpClient? Client => controllerConnectionManager.GetCurrentClient();
 
     private async Task<ResponseModel> GetResponseModel(Func<HttpClient, Task<HttpResponseMessage>> request)
@@ -91,7 +91,12 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
     }
 
     // ---------------------------- IDENTITY ----------------------------
-    public async Task<ResponseModel<LoginResponse>> Login(string username, string password, int duration = 1, LoginDurationEntity durationEntity = LoginDurationEntity.Minute)
+
+    public async Task<ResponseModel> TryConnect() =>
+        await GetResponseModel(client => client.GetAsync("/api/settings/tryconnect"));
+
+    // ---------------------------- IDENTITY ----------------------------
+    public async Task<ResponseModel<LoginResponse>> Login(string username, string password, int duration = 2, LoginDurationEntity durationEntity = LoginDurationEntity.Day)
     {
         var response = await GetResponseModel<LoginResponse>(client =>
             client.PostAsJsonAsync("/api/identity/login", new LoginModel
@@ -114,6 +119,8 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         using var scope = sp.CreateScope();
         var tokenService = scope.ServiceProvider.GetRequiredService<TokenHandler>();
 
+        if(Details is null || Client is null)
+            return new ResponseModel<string>().NoClientError();
         return await tokenService.RefreshTokenAsync(Client!, Details.Address, Details.Port.ToString(), duration, durationEntity);
     }
 

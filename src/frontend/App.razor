@@ -7,6 +7,7 @@
 @inject ILocalStorageService Storage
 @inject ApiAccessor api
 @inject CustomAuthStateProvider authStateProvider
+@inject TokenHandler handler
 
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
@@ -14,25 +15,12 @@
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                 <NotAuthorized>
                     @code {
+
                         protected override async Task OnInitializedAsync()
                         {
-                            var controller = await Storage.GetItemAsync<HomePage.ControllerInfo>("current-controller");
-                            if (controller is null)
-                                return;
-                            var token = await Storage.GetItemAsStringAsync($"authToken-{controller.Address}:{controller.Port}");
-                            var refreshToken = await Storage.GetItemAsStringAsync($"refreshToken-{controller.Address}:{controller.Port}");
-                            if (token is null)
-                                Nav.NavigateTo("/");
-                            else if (refreshToken is null)
-                                Nav.NavigateTo("/");
-                            else if (new JwtSecurityToken(token).ValidTo > DateTime.Now)
-                                return;
-
-                            var result = await api.TryRefreshToken();
-                            if (!result.Success)
-                                Nav.NavigateTo("/");
-                            Nav.NavigateTo(Nav.Uri);
+                            await handler.CheckToken();
                         }
+
                     }
                 </NotAuthorized>
             </AuthorizeRouteView>
