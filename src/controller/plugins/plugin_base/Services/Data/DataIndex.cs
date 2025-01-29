@@ -45,7 +45,9 @@ public class DataIndex
             PersistReverseMap();
         }
             
-        Entries.Add(entry.Id, entry);
+        if (!Entries.TryAdd(entry.Id, entry))
+            throw new InvalidOperationException("DataPoint with the same signature is already registered");
+
         return entry;
     }
 
