@@ -67,7 +67,6 @@ public static class IdentityEndpoints
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(ClaimTypes.Name, user.UserName!),
                 new Claim("type", "refresh_token"),
-                new Claim("purpose", "refresh_token")
             });
 
             var refreshToken = handler.CreateToken(new SecurityTokenDescriptor
