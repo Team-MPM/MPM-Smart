@@ -30,7 +30,6 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var connectionManager = scope.ServiceProvider.GetRequiredService<ControllerConnectionManager>();
-    var api = scope.ServiceProvider.GetRequiredService<ApiAccessor>();
     var storage = scope.ServiceProvider.GetRequiredService<ILocalStorageService>();
     var auth = scope.ServiceProvider.GetRequiredService<CustomAuthStateProvider>();
     scope.ServiceProvider.GetRequiredService<UserAccessor>();

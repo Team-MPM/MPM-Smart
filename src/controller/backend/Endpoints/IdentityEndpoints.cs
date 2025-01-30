@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Backend.Services.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using PluginBase.Services.Permissions;
 
 namespace Backend.Endpoints;
@@ -49,15 +50,7 @@ public static class IdentityEndpoints
             var token = handler.CreateToken(new SecurityTokenDescriptor
             {
                 Subject = claims,
-                Expires = DateTime.UtcNow.AddMinutes(model.LoginDurationEntity switch
-                {
-                    LoginDurationEntity.Minute => model.LoginDuration!.Value,
-                    LoginDurationEntity.Hour => model.LoginDuration!.Value * 60,
-                    LoginDurationEntity.Day => model.LoginDuration!.Value * 60 * 24,
-                    LoginDurationEntity.Month => model.LoginDuration!.Value * 60 * 24 * 30,
-                    LoginDurationEntity.Year => model.LoginDuration!.Value * 60 * 24 * 365,
-                    _ => throw new ArgumentOutOfRangeException()
-                }),
+                Expires = DateTime.UtcNow.Add(model.Duration),
                 SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.RsaSha256)
             });
             var tokenString = handler.WriteToken(token);
@@ -122,20 +115,24 @@ public static class IdentityEndpoints
             var newToken = handler.CreateToken(new SecurityTokenDescriptor()
             {
                 Subject = claims,
-                Expires = DateTime.UtcNow.AddMinutes(model.DurationType switch
-                {
-                    LoginDurationEntity.Minute => model.Duration!.Value,
-                    LoginDurationEntity.Hour => model.Duration!.Value * 60,
-                    LoginDurationEntity.Day => model.Duration!.Value * 60 * 24,
-                    LoginDurationEntity.Month => model.Duration!.Value * 60 * 24 * 30,
-                    LoginDurationEntity.Year => model.Duration!.Value * 60 * 24 * 365,
-                    _ => throw new ArgumentOutOfRangeException()
-                }),
+                // Expires = DateTime.UtcNow.Add(model.Duration),
+                Expires = DateTime.UtcNow.Add(TimeSpan.FromSeconds(15)),
                 SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.RsaSha256)
             });
             var newTokenString = handler.WriteToken(newToken);
             return Results.Ok(newTokenString);
         });
+
+        group.MapGet("/checkToken", async (
+            HttpContext context,
+            UserManager<SystemUser> userManager) =>
+        {
+            var user = await userManager.GetUserAsync(context.User);
+            Console.WriteLine("We got here 1");
+            if (user is null)
+                return Results.Unauthorized();
+            return Results.Ok();
+        }).RequirePermission("");
 
         // group.MapGet("/profile", async (
         //     HttpContext context,

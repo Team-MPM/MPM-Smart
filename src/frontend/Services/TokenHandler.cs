@@ -21,7 +21,7 @@ public class TokenHandler
         Nav = sp.GetRequiredService<NavigationManager>();
     }
 
-    public async Task<ResponseModel<string>> RefreshTokenAsync(HttpClient client, string host, string port, int duration, LoginDurationEntity durationEntity)
+    public async Task<ResponseModel<string>> RefreshTokenAsync(HttpClient client, string host, string port, TimeSpan duration)
     {
         var refreshToken = await m_Storage.GetItemAsStringAsync($"refreshToken-{host}:{port}");
         if (string.IsNullOrEmpty(refreshToken))
@@ -30,8 +30,7 @@ public class TokenHandler
         var response = await client.PostAsJsonAsync("/api/identity/refresh", new RefreshTokenModel
         {
             RefreshToken = refreshToken,
-            Duration = duration,
-            DurationType = durationEntity
+            Duration = duration
         });
 
         if (!response.IsSuccessStatusCode)
@@ -79,8 +78,10 @@ public class TokenHandler
         var refreshToken = await m_Storage.GetItemAsStringAsync($"refreshToken-{controller.Address}:{controller.Port}");
         if (token is not null)
         {
-            if (new JwtSecurityToken(token).ValidTo > DateTime.Now)
+            if (new JwtSecurityToken(token).ValidTo > DateTime.UtcNow)
+            {
                 return;
+            }
         }
 
         if (refreshToken is null)
@@ -89,19 +90,27 @@ public class TokenHandler
             return;
         }
 
-        var result = await RefreshTokenAsync(client, controller.Address, controller.Port.ToString(), 30, LoginDurationEntity.Day);
+        var result = await RefreshTokenAsync(client, controller.Address, controller.Port.ToString(), TimeSpan.FromDays(2));
         if (!result.Success)
             Nav.NavigateTo("/");
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result.Response!);
+        var checkResult = await client.GetAsync("api/identity/checktoken");
+        if (!checkResult.IsSuccessStatusCode)
+            Nav.NavigateTo("/");
         Nav.NavigateTo(Nav.Uri);
         Nav.Refresh();
     }
 
     public async Task LogoutAsync()
     {
-        string host = m_Manager.Details.Address;
-        string port = m_Manager.Details.Port.ToString();
-        await m_Storage.RemoveItemAsync($"authToken-{host}:{port}");
-        await m_Storage.RemoveItemAsync($"refreshToken-{host}:{port}");
+        try
+        {
+            string host = m_Manager.Details!.Address;
+            string port = m_Manager.Details.Port.ToString();
+            await m_Storage.RemoveItemAsync($"authToken-{host}:{port}");
+            await m_Storage.RemoveItemAsync($"refreshToken-{host}:{port}");
+        } catch(NullReferenceException)
+        {
+        }
     }
 }

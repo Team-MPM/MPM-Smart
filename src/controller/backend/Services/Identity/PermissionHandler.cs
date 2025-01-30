@@ -12,7 +12,11 @@ public class PermissionHandler : AuthorizationHandler<PermissionRequirement>
         AuthorizationHandlerContext context,
         PermissionRequirement requirement)
     {
-
+        if (string.IsNullOrEmpty(requirement.Permission))
+        {
+            context.Succeed(requirement);
+            return Task.CompletedTask;
+        }
         var userPermissions = context.User
             .FindAll(c => c.Type == "Permissions")
             .Select(s => s.Value);

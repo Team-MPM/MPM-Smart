@@ -31,8 +31,7 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
             var response = await request(Client);
             if (!response.IsSuccessStatusCode)
             {
-                var tokenResponse = await TryRefreshToken();
-                if(tokenResponse.Success)
+                if(await RefreshAndCheck())
                     response = await request(Client);
             }
 
@@ -44,13 +43,9 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         {
             try
             {
-                var result = await TryRefreshToken();
-                if (result.Success)
-                {
-                    Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result.Response);
+                if(await RefreshAndCheck())
                     return await GetResponseModel(request);
-                }
-            } catch(Exception) {}
+            } catch(Exception) { /* I don't like this warning, it's useless */}
             return new ResponseModel().ExceptionError(e);
         }
     }
@@ -66,8 +61,7 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
             var response = await request(Client);
             if (!response.IsSuccessStatusCode)
             {
-                var tokenResponse = await TryRefreshToken();
-                if(tokenResponse.Success)
+                if(await RefreshAndCheck())
                     response = await request(Client);
             }
 
@@ -79,13 +73,9 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         {
             try
             {
-                var result = await TryRefreshToken();
-                if (result.Success)
-                {
-                    Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result.Response);
+                if(await RefreshAndCheck())
                     return await GetResponseModel<T>(request);
-                }
-            } catch(Exception) {}
+            } catch(Exception) { /* I don't like this warning, it's useless */}
             return new ResponseModel<T>().ExceptionError(e);
         }
     }
@@ -96,14 +86,15 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         await GetResponseModel(client => client.GetAsync("/api/settings/tryconnect"));
 
     // ---------------------------- IDENTITY ----------------------------
-    public async Task<ResponseModel<LoginResponse>> Login(string username, string password, int duration = 2, LoginDurationEntity durationEntity = LoginDurationEntity.Day)
+    public async Task<ResponseModel<LoginResponse>> Login(string username, string password, TimeSpan duration = new())
     {
+        if (duration.Duration() == TimeSpan.Zero)
+            duration = TimeSpan.FromDays(2);
         var response = await GetResponseModel<LoginResponse>(client =>
             client.PostAsJsonAsync("/api/identity/login", new LoginModel
             {
                 UserName = username, Password = password,
-                LoginDuration = duration,
-                LoginDurationEntity = durationEntity
+                Duration = duration
             }));
 
         if (response.Success)
@@ -114,14 +105,16 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         }
         return response;
     }
-    public async Task<ResponseModel<string>> TryRefreshToken(int duration = 1, LoginDurationEntity durationEntity = LoginDurationEntity.Minute)
+    public async Task<ResponseModel<string>> TryRefreshToken(TimeSpan duration = new())
     {
+        if (duration.Duration() == TimeSpan.Zero)
+            duration = TimeSpan.FromDays(2);
         using var scope = sp.CreateScope();
         var tokenService = scope.ServiceProvider.GetRequiredService<TokenHandler>();
 
         if(Details is null || Client is null)
             return new ResponseModel<string>().NoClientError();
-        return await tokenService.RefreshTokenAsync(Client!, Details.Address, Details.Port.ToString(), duration, durationEntity);
+        return await tokenService.RefreshTokenAsync(Client!, Details.Address, Details.Port.ToString(), duration);
     }
 
     // ---------------------------- PROFILE ----------------------------
@@ -288,4 +281,24 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
 
     public async Task<ResponseModel<DeviceDto>> GetDevice(string serial) =>
         await GetResponseModel<DeviceDto>(client => client.GetAsync($"/api/device/{serial}"));
+
+    private async Task<bool> RefreshAndCheck()
+    {
+        try
+        {
+            var tokenResponse = await TryRefreshToken();
+            if (!tokenResponse.Success)
+                return false;
+            Client!.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.Response);
+            var checkResult = await GetResponseModel(client => client.GetAsync("/api/identity/checkToken"));
+            if (!checkResult.Success)
+                return false;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+
+        return true;
+    }
 }
