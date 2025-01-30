@@ -1,10 +1,14 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using ApiSchema.Devices;
 using ApiSchema.Enums;
 using ApiSchema.Identity;
 using ApiSchema.Plugins;
 using ApiSchema.Settings;
 using ApiSchema.Usermanagement;
+using Blazored.LocalStorage;
+using Frontend.Pages.General;
 using Shared.Plugins.DataInfo;
 using Shared.Plugins.DataRequest;
 using Shared.Plugins.DataResponse;
@@ -12,8 +16,9 @@ using PermissionsModel = ApiSchema.Usermanagement.PermissionsModel;
 
 namespace Frontend.Services;
 
-public class ApiAccessor(ControllerConnectionManager controllerConnectionManager)
+public class ApiAccessor(ControllerConnectionManager controllerConnectionManager, IServiceProvider sp)
 {
+    public ControllerConnectionDetails? Details { get; set; }
     private HttpClient? Client => controllerConnectionManager.GetCurrentClient();
 
     private async Task<ResponseModel> GetResponseModel(Func<HttpClient, Task<HttpResponseMessage>> request)
@@ -24,12 +29,23 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         try
         {
             var response = await request(Client);
+            if (!response.IsSuccessStatusCode)
+            {
+                if(await RefreshAndCheck())
+                    response = await request(Client);
+            }
+
             return !response.IsSuccessStatusCode
                 ? await new ResponseModel().ServerError(response)
                 : await new ResponseModel().SuccessResultAsync(response);
         }
         catch (Exception e)
         {
+            try
+            {
+                if(await RefreshAndCheck())
+                    return await GetResponseModel(request);
+            } catch(Exception) { /* I don't like this warning, it's useless */}
             return new ResponseModel().ExceptionError(e);
         }
     }
@@ -43,28 +59,62 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         try
         {
             var response = await request(Client);
+            if (!response.IsSuccessStatusCode)
+            {
+                if(await RefreshAndCheck())
+                    response = await request(Client);
+            }
+
             return !response.IsSuccessStatusCode
                 ? await new ResponseModel<T>().ServerError(response)
                 : await new ResponseModel<T>().SuccessResultAsync(response);
         }
         catch (Exception e)
         {
+            try
+            {
+                if(await RefreshAndCheck())
+                    return await GetResponseModel<T>(request);
+            } catch(Exception) { /* I don't like this warning, it's useless */}
             return new ResponseModel<T>().ExceptionError(e);
         }
     }
 
     // ---------------------------- IDENTITY ----------------------------
-    public async Task<ResponseModel<string>> Login(string username, string password)
+
+    public async Task<ResponseModel> TryConnect() =>
+        await GetResponseModel(client => client.GetAsync("/api/settings/tryconnect"));
+
+    // ---------------------------- IDENTITY ----------------------------
+    public async Task<ResponseModel<LoginResponse>> Login(string username, string password, TimeSpan duration = new())
     {
-        var response = await GetResponseModel<string>(client =>
+        if (duration.Duration() == TimeSpan.Zero)
+            duration = TimeSpan.FromDays(2);
+        var response = await GetResponseModel<LoginResponse>(client =>
             client.PostAsJsonAsync("/api/identity/login", new LoginModel
             {
-                UserName = username, Password = password
+                UserName = username, Password = password,
+                Duration = duration
             }));
 
         if (response.Success)
-            response.Response = response.Response!.Trim('\"');
+        {
+            response.Response!.Token = response.Response!.Token.Replace("\"", "");
+            if(!string.IsNullOrEmpty(response.Response.RefreshToken))
+                response.Response!.RefreshToken = response.Response!.RefreshToken.Replace("\"", "");
+        }
         return response;
+    }
+    public async Task<ResponseModel<string>> TryRefreshToken(TimeSpan duration = new())
+    {
+        if (duration.Duration() == TimeSpan.Zero)
+            duration = TimeSpan.FromDays(2);
+        using var scope = sp.CreateScope();
+        var tokenService = scope.ServiceProvider.GetRequiredService<TokenHandler>();
+
+        if(Details is null || Client is null)
+            return new ResponseModel<string>().NoClientError();
+        return await tokenService.RefreshTokenAsync(Client!, Details.Address, Details.Port.ToString(), duration);
     }
 
     // ---------------------------- PROFILE ----------------------------
@@ -231,4 +281,24 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
 
     public async Task<ResponseModel<DeviceDto>> GetDevice(string serial) =>
         await GetResponseModel<DeviceDto>(client => client.GetAsync($"/api/device/{serial}"));
+
+    private async Task<bool> RefreshAndCheck()
+    {
+        try
+        {
+            var tokenResponse = await TryRefreshToken();
+            if (!tokenResponse.Success)
+                return false;
+            Client!.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.Response);
+            var checkResult = await GetResponseModel(client => client.GetAsync("/api/identity/checkToken"));
+            if (!checkResult.Success)
+                return false;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+
+        return true;
+    }
 }

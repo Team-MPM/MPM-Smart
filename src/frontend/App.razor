@@ -1,9 +1,9 @@
 ﻿@using System.IdentityModel.Tokens.Jwt
 @using Blazored.LocalStorage
 @using Frontend.Pages.General
+@using Frontend.Services
 @using Microsoft.AspNetCore.Components.Authorization
-@inject NavigationManager Nav
-@inject ILocalStorageService Storage
+@inject TokenHandler Handler
 
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
@@ -11,21 +11,12 @@
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                 <NotAuthorized>
                     @code {
+
                         protected override async Task OnInitializedAsync()
                         {
-                            var controller = await Storage.GetItemAsync<HomePage.ControllerInfo>("current-controller");
-                            if (controller is null)
-                                return;
-                            var token = await Storage.GetItemAsStringAsync($"authToken-{controller.Address}:{controller.Port}");
-                            if (string.IsNullOrEmpty(token))
-                            {
-                                Nav.NavigateTo("/");
-                                return;
-                            }
-
-                            if (new JwtSecurityToken(token).ValidTo < DateTime.Now)
-                                Nav.NavigateTo("/");
+                            await Handler.CheckToken();
                         }
+
                     }
                 </NotAuthorized>
             </AuthorizeRouteView>
