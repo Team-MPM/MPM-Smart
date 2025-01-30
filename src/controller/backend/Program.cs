@@ -2,7 +2,6 @@ using System.IO.Abstractions;
 using Backend.Endpoints;
 using Backend.Services.Database;
 using Backend.Services.Identity;
-using Backend.Services.Permissions;
 using Backend.Services.Plugins;
 using Backend.Utils;
 using Data.System;
@@ -19,6 +18,7 @@ using PluginBase;
 using PluginBase.Services;
 using PluginBase.Services.Data;
 using PluginBase.Services.Devices;
+using PluginBase.Services.General;
 using PluginBase.Services.Networking;
 using PluginBase.Services.Permissions;
 using PluginBase.Services.Telemetry;
@@ -85,7 +85,6 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionVerifier>();
 builder.Services.AddSingleton<AvailablePermissionProvider>();
-builder.Services.AddSingleton<PermissionHandler>();
 
 builder.Services.AddIdentity<SystemUser, IdentityRole>(options =>
     {

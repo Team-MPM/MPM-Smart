@@ -1,11 +1,11 @@
 ﻿using System.Runtime.InteropServices;
 using System.Security.Claims;
 using Backend.Services.Identity;
-using Backend.Services.Permissions;
 using Data.System;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using PluginBase.Services.General;
 using PluginBase.Services.Permissions;
 using Xunit;
 
@@ -53,9 +53,7 @@ public class PermissionVerifierTests
 
     public void CheckHasAccess(string permission, string requiredPermission, bool expectedResult)
     {
-        var handler = new PermissionHandler(null);
-
-        var result = handler.HasAccess(permission, requiredPermission);
+        var result = PermissionHandler.HasAccess(permission, requiredPermission);
         Assert.Equal(expectedResult, result);
     }
     

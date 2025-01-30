@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
+using PluginBase.Services.Permissions;
 
 namespace PluginBase.Services.General;
 
@@ -12,7 +13,6 @@ public class HubBase : Hub
     private List<Claim>? m_UserClaims;
     private readonly Dictionary<string, bool> m_Permissions = new(); 
     private static readonly ConcurrentDictionary<string, Timer> TokenExpirationTimers = new();
-
     
     public event Action? OnAuthStateChanged;
     
@@ -78,10 +78,17 @@ public class HubBase : Hub
     
     public void AuthStateChanged()
     {
-        // TODO
-        
         m_Permissions.Clear();
-        m_UserClaims?.Clear(); // TODO Load new
+        if (Context.User?.Identity?.IsAuthenticated == true)
+        {
+            IsAuthenticated = true;
+            m_UserClaims = Context.User.Claims.ToList();
+        }
+        else
+        {
+            IsAuthenticated = false;
+            m_UserClaims?.Clear();
+        }
         
         OnAuthStateChanged?.Invoke();
     }
@@ -104,8 +111,11 @@ public class HubBase : Hub
         {
             return hasPermission;
         }
+
+        if (m_UserClaims is null)
+            return false;
         
-        hasPermission = false; // TODO Check Claims Here
+        hasPermission = PermissionHandler.HasAccess(m_UserClaims, permission);
         m_Permissions.Add(permission, hasPermission);
         
         return hasPermission;
