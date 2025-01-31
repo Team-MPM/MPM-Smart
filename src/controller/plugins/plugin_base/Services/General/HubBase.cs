@@ -76,20 +76,23 @@ public class HubBase : Hub
         TokenExpirationTimers[Context.ConnectionId] = timer;
     }
     
-    public void AuthStateChanged()
+    public async Task AuthStateChanged()
     {
         m_Permissions.Clear();
         if (Context.User?.Identity?.IsAuthenticated == true)
         {
             IsAuthenticated = true;
             m_UserClaims = Context.User.Claims.ToList();
+            await PushMessage("Session renewed successfully");
         }
         else
         {
             IsAuthenticated = false;
             m_UserClaims?.Clear();
+            await PushMessage("Session renew failed");
         }
-        
+
+        await ScheduleTokenRefresh();
         OnAuthStateChanged?.Invoke();
     }
 
@@ -99,11 +102,10 @@ public class HubBase : Hub
     }
     
     [HubMethodName(nameof(SessionRenewed))]
-    public void SessionRenewed()
+    public async Task SessionRenewed()
     {
-        AuthStateChanged();
+        await AuthStateChanged();
     }
-
     
     public bool CheckPermission(string permission)
     {

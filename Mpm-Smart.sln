@@ -67,6 +67,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Other", "Other", "{81460F6E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartDevicePlugin", "src\controller\plugins\SmartDevicePlugin\SmartDevicePlugin.csproj", "{88830BF9-0E59-4EF1-801B-4348231594C8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnvironmentSensorPlugin", "src\controller\plugins\EnvironmentSensorPlugin\EnvironmentSensorPlugin.csproj", "{A0C09A94-95BA-4043-B731-EE0F43B2D9E9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -168,6 +170,10 @@ Global
 		{D887723D-0F6A-4765-9604-A83EE711C287}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D887723D-0F6A-4765-9604-A83EE711C287}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D887723D-0F6A-4765-9604-A83EE711C287}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0C09A94-95BA-4043-B731-EE0F43B2D9E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0C09A94-95BA-4043-B731-EE0F43B2D9E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0C09A94-95BA-4043-B731-EE0F43B2D9E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0C09A94-95BA-4043-B731-EE0F43B2D9E9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4EFEA609-1FD3-4AF0-9AC1-1DBC7BA8C520} = {15A159CC-FB34-49B3-9591-7BF3D30ED6B7}
@@ -201,5 +207,6 @@ Global
 		{D0DA7A41-A96B-416A-B259-A86B07E006A2} = {5587EF80-D3C2-419E-B825-1497B5045241}
 		{8249C929-63A8-44B6-BF15-72A839AD01C0} = {5587EF80-D3C2-419E-B825-1497B5045241}
 		{6ED2515B-9611-463A-92A6-943DC2E1A8AB} = {77EE4CAA-5C6D-444B-BA98-9790A6522EED}
+		{A0C09A94-95BA-4043-B731-EE0F43B2D9E9} = {B82876AA-36AB-420B-84A3-1DE24E18BA32}
 	EndGlobalSection
 EndGlobal

@@ -65,7 +65,7 @@ public class PluginManager(
         GC.SuppressFinalize(this);
     }
 
-    public void ConfigureServices()
+    public async Task ConfigureServices()
     {
         var services = new ServiceCollection();
         services.AddSingleton<IServiceCollection>(services);
@@ -98,7 +98,7 @@ public class PluginManager(
 
         foreach (var plugin in Plugins)
         {
-            plugin.OnConfiguring(services);
+            await plugin.OnConfiguring(services);
         }
 
         PluginServices = services.BuildServiceProvider();
@@ -110,7 +110,7 @@ public class PluginManager(
             throw new InvalidOperationException("Plugin Services not configured");
 
         foreach (var plugin in Plugins)
-            plugin.OnSystemStart(PluginServices);
+            await plugin.OnSystemStart(PluginServices);
 
         var hostedServices = PluginServices.GetServices<IHostedService>();
 

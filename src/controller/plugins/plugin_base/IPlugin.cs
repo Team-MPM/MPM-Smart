@@ -58,23 +58,23 @@ public interface IPlugin : IDisposable
     /// <param name="hostPath">The Host Applications Root Directory</param>
     /// <exception cref="FileNotFoundException">Plugin Files incomplete</exception>
     /// <exception cref="FormatException">Invalid Plugin Files</exception>
-    void OnInitialize(IServiceProvider applicationServices, string pluginPath, string hostPath);
+    Task OnInitialize(IServiceProvider applicationServices, string pluginPath, string hostPath);
 
     /// <summary>
     /// Gets called when the plugin is being loaded into the Request Pipeline.
     /// </summary>
     /// <param name="routeBuilder">The route builder to use for building endpoints</param>
-    void OnEndpointBuilding(IEndpointRouteBuilder routeBuilder);
+    Task OnEndpointBuilding(IEndpointRouteBuilder routeBuilder);
 
     /// <summary>
     /// Get called when the plugin services are being configured.
     /// </summary>
     /// <param name="services">The service collection to configure</param>
-    void OnConfiguring(IServiceCollection services);
+    Task OnConfiguring(IServiceCollection services);
 
     /// <summary>
     /// Gets called when the plugin system successfully initialized and the Services were configured.
     /// </summary>
     /// <param name="services">The service provider to use for starting the system</param>
-    void OnSystemStart(IServiceProvider services);
+    Task OnSystemStart(IServiceProvider services);
 }

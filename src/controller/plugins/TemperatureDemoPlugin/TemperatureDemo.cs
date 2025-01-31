@@ -13,24 +13,27 @@ namespace TemperatureDemoPlugin;
 
 public class TemperatureDemo : PluginBase<TemperatureDemo>
 {
-    protected override void Initialize()
+    protected override Task Initialize()
     {
+        return Task.CompletedTask;
     }
 
-    protected override void BuildEndpoints(IEndpointRouteBuilder routeBuilder)
+    protected override Task BuildEndpoints(IEndpointRouteBuilder routeBuilder)
     {
+        return Task.CompletedTask;
     }
 
-    protected override void ConfigureServices(IServiceCollection services)
+    protected override Task ConfigureServices(IServiceCollection services)
     {
         services.AddDbContextPool<TemperatureDemoContext>(options =>
         {
             options.UseSqlite("Data Source=TemperatureDemo.db");
             options.EnableDetailedErrors();
         });
+        return Task.CompletedTask;
     }
 
-    protected override void SystemStart()
+    protected override Task SystemStart()
     {
         var permissionProvider = ApplicationServices.GetRequiredService<AvailablePermissionProvider>();
         permissionProvider.AddRange("TemperatureDemo", TemperatureClaims.ExportPermissions());
@@ -71,9 +74,11 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
                 ["Bed Room"] = [18.0d, 19.0d, 20.0d, 21.0d]
             })
         });
+        return Task.CompletedTask;
     }
 
-    protected override void OnOptionBuilding(OptionsBuilder builder)
+    protected override Task OnOptionBuilding(OptionsBuilder builder)
     {
+        return Task.CompletedTask;
     }
 }

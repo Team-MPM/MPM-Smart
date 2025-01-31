@@ -10,6 +10,9 @@ public class DeviceRegistry
 
     private readonly List<Device> m_Devices = [];
     private readonly Task m_LoadTask;
+    
+    public event Action<Device>? DeviceRegistered;
+    public event Action<Device>? DeviceUnregistered;
 
     public DeviceRegistry(IPluginManager pluginManager)
     {
@@ -24,6 +27,7 @@ public class DeviceRegistry
                 await using var fs = File.OpenRead(file);
                 var device = await JsonSerializer.DeserializeAsync<Device>(fs);
                 m_Devices.Add(device!);
+                DeviceRegistered?.Invoke(device!);
             }
         });
     }
@@ -31,6 +35,7 @@ public class DeviceRegistry
     public async Task RegisterDeviceAsync(Device device)
     {
         await m_LoadTask;
+        DeviceRegistered?.Invoke(device);
         if (m_Devices.Any(d => d.Info.Serial == device.Info.Serial))
             return;
 
@@ -41,6 +46,7 @@ public class DeviceRegistry
         await JsonSerializer.SerializeAsync(fs, device);
 
         File.Move(tempPath, path, overwrite: true);
+        
     }
 
     public async Task PersistAllAsync()
@@ -61,6 +67,7 @@ public class DeviceRegistry
     public async Task UnregisterDeviceAsync(Device device)
     {
         await m_LoadTask;
+        DeviceUnregistered?.Invoke(device);
         m_Devices.Remove(device);
         var path = Path.Combine(BasePath, $"{device.Info.Serial}.json");
         File.Delete(path);

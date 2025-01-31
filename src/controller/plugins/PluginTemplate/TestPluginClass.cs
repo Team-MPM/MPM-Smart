@@ -8,28 +8,30 @@ namespace MpmSmart.PluginTemplate;
 
 public class TestPluginClass : PluginBase<TestPluginClass>
 {
-    protected override void Initialize()
+    protected override Task Initialize()
     {
-        
+        return Task.CompletedTask;
     }
 
-    protected override void BuildEndpoints(IEndpointRouteBuilder routeBuilder)
+    protected override Task BuildEndpoints(IEndpointRouteBuilder routeBuilder)
     {
         routeBuilder.MapTestEndpoints();
+        return Task.CompletedTask;
     }
 
-    protected override void ConfigureServices(IServiceCollection services)
+    protected override Task ConfigureServices(IServiceCollection services)
     {
         //services.AddDbContextPool
+        return Task.CompletedTask;
     }
 
-    protected override void SystemStart()
+    protected override Task SystemStart()
     {
-        
+        return Task.CompletedTask;
     }
 
-    protected override void OnOptionBuilding(OptionsBuilder builder)
+    protected override Task OnOptionBuilding(OptionsBuilder builder)
     {
-
+        return Task.CompletedTask;
     }
 }

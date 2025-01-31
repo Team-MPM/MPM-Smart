@@ -34,9 +34,9 @@ public abstract class PluginBase<T> : IPlugin where T : PluginBase<T>, IDisposab
     /// <summary>
     /// Initialize the plugin.
     /// </summary>
-    protected abstract void Initialize();
+    protected abstract Task Initialize();
 
-    public void OnInitialize(IServiceProvider applicationServices, string pluginPath, string hostPath)
+    public Task OnInitialize(IServiceProvider applicationServices, string pluginPath, string hostPath)
     {
         ApplicationServices = applicationServices;
         PluginPath = pluginPath;
@@ -60,50 +60,50 @@ public abstract class PluginBase<T> : IPlugin where T : PluginBase<T>, IDisposab
         Author = metadata.Author;
         Version = metadata.Version;
 
-        Initialize();
+        return Initialize();
     }
 
     /// <summary>
     /// Builds the endpoints for the plugin.
     /// </summary>
     /// <param name="routeBuilder">The route builder to use for building endpoints.</param>
-    protected abstract void BuildEndpoints(IEndpointRouteBuilder routeBuilder);
+    protected abstract Task BuildEndpoints(IEndpointRouteBuilder routeBuilder);
 
-    public virtual void OnEndpointBuilding(IEndpointRouteBuilder routeBuilder)
+    public virtual Task OnEndpointBuilding(IEndpointRouteBuilder routeBuilder)
     {
-        BuildEndpoints(routeBuilder);
+        return BuildEndpoints(routeBuilder);
     }
 
     /// <summary>
     /// Configures the services for the plugin.
     /// </summary>
     /// <param name="services">The service collection to configure.</param>
-    protected abstract void ConfigureServices(IServiceCollection services);
+    protected abstract Task ConfigureServices(IServiceCollection services);
 
-    public virtual void OnConfiguring(IServiceCollection services)
+    public virtual Task OnConfiguring(IServiceCollection services)
     {
-        ConfigureServices(services);
+        return ConfigureServices(services);
     }
 
     /// <summary>
     /// Starts the system for the plugin. Services and Options are available.
     /// </summary>
-    protected abstract void SystemStart();
+    protected abstract Task SystemStart();
 
     /// <summary>
     /// Specify and map the options for the plugin.
     /// Services are already configured and built here.
     /// </summary>
-    protected abstract void OnOptionBuilding(OptionsBuilder builder);
+    protected abstract Task OnOptionBuilding(OptionsBuilder builder);
 
-    public void OnSystemStart(IServiceProvider services)
+    public Task OnSystemStart(IServiceProvider services)
     {
         Services = services;
         var optionBuilder = new OptionsBuilder(RegistryName);
         OnOptionBuilding(optionBuilder);
         m_Options = optionBuilder.Build();
         m_Options.Load().Wait();
-        SystemStart();
+        return SystemStart();
     }
 
     public virtual void Dispose()
