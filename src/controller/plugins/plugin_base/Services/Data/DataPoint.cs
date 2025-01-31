@@ -15,5 +15,5 @@ public class DataPoint
     public Func<string[]>? ComboOptionsSource { get; set; }
     public required string Permission { get; set; }
 
-    public required Func<DataQuery, DataQueryResult> QueryHandler { get; set; }
+    public required Func<DataQuery, Task<DataQueryResult>> QueryHandler { get; set; }
 }

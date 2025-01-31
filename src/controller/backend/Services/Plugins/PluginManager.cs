@@ -76,6 +76,7 @@ public class PluginManager(
         services.AddSingleton(sp.GetRequiredService<DeviceRegistry>());
         services.AddSingleton(sp.GetRequiredService<DeviceManager>());
         services.AddSingleton(sp.GetRequiredService<DataIndex>());
+        services.AddSingleton(sp.GetRequiredService<IHttpClientFactory>());
 
         services.AddLogging(options =>
         {

@@ -48,7 +48,7 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
             Plugin = this,
             ComboOptions = ["Kitchen", "Living Room", "Bed Room"],
             Permission = TemperatureClaims.ViewSensorData,
-            QueryHandler = query => new ComboQueryResult(new Dictionary<string, object>
+            QueryHandler = async query => new ComboQueryResult(new Dictionary<string, object>
             {
                 ["Kitchen"] = 20.0d,
                 ["Living Room"] = 22.0d,
@@ -67,7 +67,7 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
                 [TimeSpan.FromDays(1), TimeSpan.FromHours(4), TimeSpan.FromHours(1), TimeSpan.FromMinutes(10)],
             ComboOptions = ["Kitchen", "Living Room", "Bed Room"],
             Permission = TemperatureClaims.ViewSensorData,
-            QueryHandler = query => new ComboSeriesQueryResult(new Dictionary<string, object[]>
+            QueryHandler = async query => new ComboSeriesQueryResult(new Dictionary<string, object[]>
             {
                 ["Kitchen"] = [20.0d, 21.0d, 22.0d, 23.0d],
                 ["Living Room"] = [22.0d, 23.0d, 24.0d, 25.0d],

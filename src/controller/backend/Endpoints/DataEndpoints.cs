@@ -25,7 +25,7 @@ public static class DataEndpoints
     private static IResult GetDataPoints([FromServices] DataIndex index) => 
         Results.Json(index.Entries.Values.Select(e => e.MapToDto()));
     
-    private static IResult ProcessQuery(
+    private static async Task<IResult> ProcessQuery(
         HttpContext context,
         [FromBody] DataQueryDto dto, 
         [FromServices] IServiceProvider sp,
@@ -97,7 +97,7 @@ public static class DataEndpoints
             Services = sp
         };
         
-        var result = entry.QueryHandler(query);
+        var result = await entry.QueryHandler(query);
         
         if (DataTypeHelper.IsSingle(entry.QueryType) && result is SingleQueryResult singleResult)
             return Results.Json(new SingleDataQueryResultDto(DataQueryResultType.Single, singleResult.Data));
