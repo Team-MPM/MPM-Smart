@@ -90,7 +90,7 @@
 </MudDialog>
 
 @code {
-    [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = null!;
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
 
     [Parameter] public required UsersModel User { get; set; }
     private Dictionary<string, List<string>> AllPermissions { get; set; } = new();

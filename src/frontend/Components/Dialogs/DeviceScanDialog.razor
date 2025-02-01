@@ -47,7 +47,7 @@
 </MudDialog>
 
 @code {
-    [CascadingParameter] public required MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] public required IMudDialogInstance MudDialog { get; set; }
 
     private List<DeviceInfoDto> m_Devices = [];
     private HubConnection? m_Connection;

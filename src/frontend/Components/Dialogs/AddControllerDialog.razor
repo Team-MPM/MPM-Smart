@@ -23,7 +23,7 @@
 </MudDialog>
 
 @code {
-    [CascadingParameter] public required MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] public required IMudDialogInstance MudDialog { get; set; }
 
     readonly Model m_Model = new Model
     {
