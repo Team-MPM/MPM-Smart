@@ -1,25 +1,18 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Xml.Serialization;
-using ApiSchema.Identity;
+using ApiSchema;
 using Blazored.LocalStorage;
 using Frontend.Pages.General;
 using Microsoft.AspNetCore.Components;
 
 namespace Frontend.Services;
 
-public class TokenHandler
+public class TokenHandler(IServiceProvider sp)
 {
-    private ILocalStorageService m_Storage;
-    private ControllerConnectionManager m_Manager;
-    private NavigationManager Nav { get; set; }
-    public TokenHandler(IServiceProvider sp)
-    {
-        m_Storage = sp.GetRequiredService<ILocalStorageService>();
-        m_Manager = sp.GetRequiredService<ControllerConnectionManager>();
-        Nav = sp.GetRequiredService<NavigationManager>();
-    }
+    private readonly ILocalStorageService m_Storage = sp.GetRequiredService<ILocalStorageService>();
+    private readonly ControllerConnectionManager m_Manager = sp.GetRequiredService<ControllerConnectionManager>();
+    private NavigationManager Nav { get; set; } = sp.GetRequiredService<NavigationManager>();
 
     public async Task<ResponseModel<string>> RefreshTokenAsync(HttpClient client, string host, string port, TimeSpan duration)
     {
@@ -27,11 +20,8 @@ public class TokenHandler
         if (string.IsNullOrEmpty(refreshToken))
             return new ResponseModel<string>().NoClientError();
 
-        var response = await client.PostAsJsonAsync("/api/identity/refresh", new RefreshTokenModel
-        {
-            RefreshToken = refreshToken,
-            Duration = duration
-        });
+        var response = await client.PostAsJsonAsync("/api/identity/refresh", 
+            new RefreshTokenModel(refreshToken, duration));
 
         if (!response.IsSuccessStatusCode)
             return await new ResponseModel<string>().ServerError(response);

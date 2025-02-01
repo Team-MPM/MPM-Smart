@@ -6,8 +6,6 @@ using Data.System;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using Backend.Services.Identity;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using PluginBase.Services.Permissions;
 
 namespace Backend.Endpoints;
@@ -54,12 +52,11 @@ public static class IdentityEndpoints
             });
             var tokenString = handler.WriteToken(token);
 
-            var refreshTokenClaims = new ClaimsIdentity(new[]
-            {
+            var refreshTokenClaims = new ClaimsIdentity([
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(ClaimTypes.Name, user.UserName!),
-                new Claim("type", "refresh_token"),
-            });
+                new Claim("type", "refresh_token")
+            ]);
 
             var refreshToken = handler.CreateToken(new SecurityTokenDescriptor
             {
@@ -70,19 +67,14 @@ public static class IdentityEndpoints
             });
             var refreshTokenString = handler.WriteToken(refreshToken);
 
-            return Results.Ok(new LoginResponse()
-            {
-                Token = tokenString,
-                RefreshToken = refreshTokenString
-            });
+            return Results.Ok(new LoginResponse(tokenString, refreshTokenString));
         });
         group.MapPost("/refresh", async (
             UserManager<SystemUser> userManager,
             RoleManager<IdentityRole> roleManager,
             [FromBody] RefreshTokenModel model) =>
         {
-            model.RefreshToken = model.RefreshToken.Trim('"');
-            var token = new JwtSecurityToken(model.RefreshToken);
+            var token = new JwtSecurityToken(model.RefreshToken.Trim('"'));
             var tokenUser = token.Claims.FirstOrDefault(s => s.Type == "nameid");
 
 
@@ -128,9 +120,7 @@ public static class IdentityEndpoints
         {
             var user = await userManager.GetUserAsync(context.User);
             Console.WriteLine("We got here 1");
-            if (user is null)
-                return Results.Unauthorized();
-            return Results.Ok();
+            return user is null ? Results.Unauthorized() : Results.Ok();
         }).RequirePermission("");
 
         // group.MapGet("/profile", async (

@@ -21,7 +21,7 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
             var response = await request(Client);
             if (!response.IsSuccessStatusCode)
             {
-                if(await RefreshAndCheck())
+                if (await RefreshAndCheck())
                     response = await request(Client);
             }
 
@@ -33,9 +33,14 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         {
             try
             {
-                if(await RefreshAndCheck())
+                if (await RefreshAndCheck())
                     return await GetResponseModel(request);
-            } catch(Exception) { /* I don't like this warning, it's useless */}
+            }
+            catch (Exception)
+            {
+                /* I don't like this warning, it's useless */
+            }
+
             return new ResponseModel().ExceptionError(e);
         }
     }
@@ -51,7 +56,7 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
             var response = await request(Client);
             if (!response.IsSuccessStatusCode)
             {
-                if(await RefreshAndCheck())
+                if (await RefreshAndCheck())
                     response = await request(Client);
             }
 
@@ -63,9 +68,14 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         {
             try
             {
-                if(await RefreshAndCheck())
+                if (await RefreshAndCheck())
                     return await GetResponseModel<T>(request);
-            } catch(Exception) { /* I don't like this warning, it's useless */}
+            }
+            catch (Exception)
+            {
+                /* I don't like this warning, it's useless */
+            }
+
             return new ResponseModel<T>().ExceptionError(e);
         }
     }
@@ -81,20 +91,22 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         if (duration.Duration() == TimeSpan.Zero)
             duration = TimeSpan.FromDays(2);
         var response = await GetResponseModel<LoginResponse>(client =>
-            client.PostAsJsonAsync("/api/identity/login", new LoginModel
-            {
-                UserName = username, Password = password,
-                Duration = duration
-            }));
+            client.PostAsJsonAsync("/api/identity/login", new LoginModel(
+                UserName: username, 
+                Password: password,
+                Duration: duration
+            )));
 
         if (response.Success)
         {
-            response.Response!.Token = response.Response!.Token.Replace("\"", "");
-            if(!string.IsNullOrEmpty(response.Response.RefreshToken))
-                response.Response!.RefreshToken = response.Response!.RefreshToken.Replace("\"", "");
+            response.Response = new LoginResponse(
+                response.Response!.Token.Replace("\"", ""),
+                response.Response!.RefreshToken?.Replace("\"", "") ?? "");
         }
+
         return response;
     }
+
     public async Task<ResponseModel<string>> TryRefreshToken(TimeSpan duration = new())
     {
         if (duration.Duration() == TimeSpan.Zero)
@@ -102,7 +114,7 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         using var scope = sp.CreateScope();
         var tokenService = scope.ServiceProvider.GetRequiredService<TokenHandler>();
 
-        if(Details is null || Client is null)
+        if (Details is null || Client is null)
             return new ResponseModel<string>().NoClientError();
         return await tokenService.RefreshTokenAsync(Client!, Details.Address, Details.Port.ToString(), duration);
     }
@@ -119,7 +131,7 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
     public async Task<ResponseModel> SetPassword(string currentPassword, string newPassword) =>
         await GetResponseModel(client => client.PostAsJsonAsync("/api/profile/password",
             new PasswordModel(
-                CurrentPassword: currentPassword, 
+                CurrentPassword: currentPassword,
                 NewPassword: newPassword
             )));
 
@@ -190,7 +202,7 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
     public async Task<ResponseModel> SetUsernameForUser(string user, string newUsername) =>
         await GetResponseModel(client => client.PostAsJsonAsync($"/api/users/{user}/username",
             new ChangeUsernameModel(newUsername)));
-    
+
     public async Task<ResponseModel> UpdateUser(string user, UsersModel model) =>
         await GetResponseModel(client => client.PostAsJsonAsync($"/api/users/{user}", model));
 
@@ -239,7 +251,8 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
             var tokenResponse = await TryRefreshToken();
             if (!tokenResponse.Success)
                 return false;
-            Client!.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.Response);
+            Client!.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", tokenResponse.Response);
             var checkResult = await GetResponseModel(client => client.GetAsync("/api/identity/checkToken"));
             if (!checkResult.Success)
                 return false;
