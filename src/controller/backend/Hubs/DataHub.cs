@@ -1,4 +1,5 @@
 using ApiSchema;
+using Backend.Endpoints;
 using Microsoft.AspNetCore.SignalR;
 using PluginBase.Services.Data;
 using PluginBase.Services.General;
@@ -8,6 +9,12 @@ namespace Backend.Hubs;
 
 public class DataHub(DataIndex index, IServiceProvider sp) : HubBase
 {
+    public async Task IndexData()
+    {
+        var entries = index.Entries.Values.Select(e => e.MapToDto());
+        await Clients.Caller.SendAsync("IndexData", entries);
+    } 
+    
     [HubMethodName("Query")]
     public async Task QueryData(DataQueryDto dto, int requestId)
     {
@@ -145,7 +152,7 @@ public class DataHub(DataIndex index, IServiceProvider sp) : HubBase
         if (DataTypeHelper.IsSeries(entry.QueryType) && result is SeriesQueryResult seriesResult)
         {
             var resultDto = new SeriesDataQueryResultDto(DataQueryResultType.Series, seriesResult.Series);
-            await Clients.Caller.SendAsync("QueryResultSeries", resultDto, requestId);
+            await Clients.Caller.SendAsync("QueryResultCombo", resultDto, requestId);
             return;
         }
 

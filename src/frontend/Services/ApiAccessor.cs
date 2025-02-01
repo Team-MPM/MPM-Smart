@@ -244,6 +244,13 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
     public async Task<ResponseModel<DeviceDto>> GetDevice(string serial) =>
         await GetResponseModel<DeviceDto>(client => client.GetAsync($"/api/device/{serial}"));
 
+    // ------------------------------ Data ------------------------------------
+    
+    public async Task<ResponseModel<List<DataPointDto>>> GetDataPoints() =>
+        await GetResponseModel<List<DataPointDto>>(client => client.GetAsync($"/api/data"));
+    
+    // ------------------------------------------------------------------------
+    
     private async Task<bool> RefreshAndCheck()
     {
         try

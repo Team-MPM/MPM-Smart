@@ -115,7 +115,7 @@ public static class DataEndpoints
         throw new InvalidOperationException("Invalid query result");
     }
 
-    private static DataPointDto MapToDto(this DataPoint entry) => 
+    public static DataPointDto MapToDto(this DataPoint entry) => 
         new()
         {
             Id = entry.Id,
