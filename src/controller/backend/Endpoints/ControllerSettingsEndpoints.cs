@@ -13,6 +13,8 @@ public static class ControllerSettingsEndpoints
     {
         var group = endpoints.MapGroup("/api/settings");
 
+        group.MapGet("/tryconnect", () => Results.Ok("Available"));
+
         group.MapGet("/admin", () =>
         {
             return "Hello, Admin!";
