@@ -2,6 +2,7 @@ namespace Shared;
 
 public enum DataQueryResultType
 {
+    Failed,
     Single,
     ComboSingle,
     Series,

@@ -38,6 +38,8 @@ public class DeviceRegistry
         DeviceRegistered?.Invoke(device);
         if (m_Devices.Any(d => d.Info.Serial == device.Info.Serial))
             return;
+        
+        m_Devices.Add(device);
 
         var path = Path.Combine(BasePath, $"{device.Info.Serial}.json");
         var tempPath = Path.Combine(BasePath, $"{device.Info.Serial}.json.tmp");

@@ -30,6 +30,11 @@ public record DataQueryResultDto(
     object Data
 );
 
+public record FailedDataQueryResultDto(
+    DataQueryResultType Type, 
+    string Message
+);
+
 public record SingleDataQueryResultDto(
     DataQueryResultType Type, 
     object Data

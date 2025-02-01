@@ -1,5 +1,6 @@
 using System.IO.Abstractions;
 using Backend.Endpoints;
+using Backend.Hubs;
 using Backend.Services.Database;
 using Backend.Services.Identity;
 using Backend.Services.Plugins;
@@ -18,7 +19,6 @@ using PluginBase;
 using PluginBase.Services;
 using PluginBase.Services.Data;
 using PluginBase.Services.Devices;
-using PluginBase.Services.General;
 using PluginBase.Services.Networking;
 using PluginBase.Services.Permissions;
 using PluginBase.Services.Telemetry;
@@ -210,6 +210,10 @@ app.MapRoleManagementEndpoint();
 app.MapPluginEndpoints();
 app.MapDeviceEndpoints();
 app.MapDataEndpoints();
+
+var hubs = app.MapGroup("/hubs");
+hubs.MapHub<DeviceHub>("/devices");
+hubs.MapHub<DataHub>("/data");
 
 app.MapGet("/", () => "Hello World!");
 app.MapGet("/info", () => new

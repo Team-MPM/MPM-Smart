@@ -26,7 +26,6 @@ public static class DataEndpoints
         Results.Json(index.Entries.Values.Select(e => e.MapToDto()));
     
     private static async Task<IResult> ProcessQuery(
-        HttpContext context,
         [FromBody] DataQueryDto dto, 
         [FromServices] IServiceProvider sp,
         [FromServices] DataIndex index)
@@ -93,11 +92,13 @@ public static class DataEndpoints
             Filter = dto.Filter,
             Granularity = dto.Granularity,
             ComboOptions = dto.ComboOptions,
-            Context = context,
             Services = sp
         };
         
-        var result = await entry.QueryHandler(query);
+        var result = await entry.ExecuteQuery(query);
+        
+        if (result is FailedQueryResult failedResult)
+            return Results.Json(new FailedDataQueryResultDto(DataQueryResultType.Failed, failedResult.Message));
         
         if (DataTypeHelper.IsSingle(entry.QueryType) && result is SingleQueryResult singleResult)
             return Results.Json(new SingleDataQueryResultDto(DataQueryResultType.Single, singleResult.Data));

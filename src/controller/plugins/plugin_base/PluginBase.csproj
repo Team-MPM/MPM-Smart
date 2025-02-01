@@ -18,6 +18,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.1" PrivateAssets="False" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.1" PrivateAssets="False" />
         <PackageReference Include="OpenTelemetry" Version="1.11.1" PrivateAssets="False" />
+        <PackageReference Include="System.Linq.Async" Version="6.0.1" PrivateAssets="False" />
     </ItemGroup>
   
 </Project>

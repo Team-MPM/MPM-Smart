@@ -8,6 +8,17 @@ public abstract class DataQueryResult
     protected object Data { get; init; } = null!;
 }
 
+public class FailedQueryResult : DataQueryResult
+{
+    public FailedQueryResult(string message)
+    {
+        Data = message;
+        Type = DataQueryResultType.Failed;
+    }
+    
+    public string Message => (Data as string)!;
+}
+
 public class SingleQueryResult : DataQueryResult
 {
     public SingleQueryResult(object value)

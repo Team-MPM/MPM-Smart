@@ -12,5 +12,4 @@ public class DataQuery
     public required string? Filter { get; set; }
 
     public required IServiceProvider Services { get; set; }
-    public required HttpContext Context { get; set; }
 }

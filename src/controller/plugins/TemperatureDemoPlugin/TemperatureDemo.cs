@@ -1,8 +1,11 @@
+using LanguageExt.ClassInstances.Pred;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using PluginBase;
 using PluginBase.Services.Data;
+using PluginBase.Services.Devices;
 using PluginBase.Services.Options;
 using PluginBase.Services.Permissions;
 using Shared;
@@ -35,6 +38,38 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
 
     protected override Task SystemStart()
     {
+        var deviceTypeRegistry = ApplicationServices.GetRequiredService<DeviceTypeRegistry>();
+        deviceTypeRegistry.RegisterDeviceType(new DemoTempDeviceType { Plugin = this });
+        var deviceType = deviceTypeRegistry.GetDeviceType<DemoTempDeviceType>();
+        var logger = Services!.GetRequiredService<ILogger<TemperatureDemo>>();
+        var deviceRegistry = Services!.GetRequiredService<DeviceRegistry>();
+        logger.LogInformation("Starting Temp Demo Plugin");
+        _ = Task.Run(async () =>
+        {
+            await deviceRegistry.RegisterDeviceAsync(new Device()
+            {
+                Info = new DeviceInfo
+                {
+                    Name = "Temperature Sensor Demo 1",
+                    Description = "Temperature Sensor Demo 1",
+                    Serial = "123412341234",
+                    Type = deviceType!,
+                    Capabilities = new Dictionary<string, string>()
+                    {
+                        { "temperature-demo", "temperature-demo-plugin" }
+                    },
+                    Details = new Dictionary<string, string>()
+                },
+                State = DeviceState.Connected,
+                MetaData = new DeviceMeta()
+                {
+                    Location = "Living Room",
+                    ConnectionDetails = new Dictionary<string, string>()
+                }
+            });
+        });
+        
+
         var permissionProvider = ApplicationServices.GetRequiredService<AvailablePermissionProvider>();
         permissionProvider.AddRange("TemperatureDemo", TemperatureClaims.ExportPermissions());
 
@@ -48,12 +83,12 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
             Plugin = this,
             ComboOptions = ["Kitchen", "Living Room", "Bed Room"],
             Permission = TemperatureClaims.ViewSensorData,
-            QueryHandler = async query => new ComboQueryResult(new Dictionary<string, object>
+            QueryHandler = query => Task.FromResult<DataQueryResult?>(new ComboQueryResult(new Dictionary<string, object>
             {
                 ["Kitchen"] = 20.0d,
                 ["Living Room"] = 22.0d,
                 ["Bed Room"] = 18.0d
-            })
+            }))
         });
 
         index.Add(new DataPoint
@@ -67,17 +102,40 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
                 [TimeSpan.FromDays(1), TimeSpan.FromHours(4), TimeSpan.FromHours(1), TimeSpan.FromMinutes(10)],
             ComboOptions = ["Kitchen", "Living Room", "Bed Room"],
             Permission = TemperatureClaims.ViewSensorData,
-            QueryHandler = async query => new ComboSeriesQueryResult(new Dictionary<string, object[]>
+            QueryHandler = query => Task.FromResult<DataQueryResult?>(new ComboSeriesQueryResult(new Dictionary<string, object[]>
             {
                 ["Kitchen"] = [20.0d, 21.0d, 22.0d, 23.0d],
                 ["Living Room"] = [22.0d, 23.0d, 24.0d, 25.0d],
                 ["Bed Room"] = [18.0d, 19.0d, 20.0d, 21.0d]
-            })
+            }))
         });
         return Task.CompletedTask;
     }
 
     protected override Task OnOptionBuilding(OptionsBuilder builder)
+    {
+        return Task.CompletedTask;
+    }
+}
+
+public class DemoTempDeviceType : IDeviceType
+{
+    public required IPlugin Plugin { get; init; }
+    public IDictionary<string, string> Parameters => new Dictionary<string, string>();
+    public bool IsSensor => true;
+
+    public IAsyncEnumerable<DeviceInfo> ScanAsync()
+    {
+        return AsyncEnumerable.Empty<DeviceInfo>();
+    }
+
+    public Task<Device?> ConnectAsync(DeviceInfo deviceInfo, DeviceMeta metadata,
+        IDictionary<string, object> parameters)
+    {
+        return Task.FromResult<Device?>(null);
+    }
+
+    public Task PollAsync(Device device)
     {
         return Task.CompletedTask;
     }
