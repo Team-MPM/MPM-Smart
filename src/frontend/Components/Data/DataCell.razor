@@ -1,0 +1,68 @@
+@using ApiSchema
+@using Frontend.Services
+@typeparam T where T : class
+@inject DataManager DataManager
+
+<MudCard>
+    <MudCardHeader>
+        @DataPoint.Name
+    </MudCardHeader>
+    <MudCardContent>
+        @switch (m_Data)
+        {
+            case SingleDataQueryResultDto data:
+                <SingleDataCellContent Data="data" DataPoint="DataPoint"/>
+                break;
+            case ComboDataQueryResultDto data:
+                <ComboDataCellContent Data="data" DataPoint="DataPoint"/>
+                break;
+            case SeriesDataQueryResultDto data:
+                <SeriesDataCellContent Data="data" DataPoint="DataPoint"/>
+                break;
+            case ComboSeriesDataQueryResultDto data:
+                <ComboSeriesDataCellContent Data="data" DataPoint="DataPoint"/>
+                break;
+            case null:
+                if (m_Error is null)
+                {
+                    <LoadingDataCellContent DataPoint="DataPoint"/>
+                }
+                else
+                {
+                    <ErrorDataCellContent Data="m_Error" DataPoint="DataPoint"/>
+                }
+
+                break;
+            default:
+                throw new InvalidOperationException("Invalid type");
+        }
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter] public required DataPointDto DataPoint { get; set; }
+    [Parameter] public required DataQueryDto Query { get; set; }
+
+    private T? m_Data;
+    private FailedDataQueryResultDto? m_Error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await DataManager.SubscribeToDataPointAsync<T>(DataPoint, Query, (suc, data, err) =>
+        {
+            if (suc)
+            {
+                m_Data = data;
+                m_Error = null;
+            }
+            else
+            {
+                m_Data = null;
+                m_Error = err;
+            }
+
+            InvokeAsync(StateHasChanged);
+        });
+    }
+
+}

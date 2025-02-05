@@ -33,22 +33,22 @@ public class DataHub(DataIndex index, IServiceProvider sp) : HubBase
             case DataQueryType.DateTime:
                 if (dto.ComboOptions is not null || dto.Granularity is not null)
                 {
-                    await PushError("Invalid query type");
+                    await PushError("Error 1: Invalid query type for Long, Double, String, Bool, or DateTime - ComboOptions or Granularity should be null.");
                     return;
                 }
-
+        
                 if (dto.From is not null || dto.To is not null)
                 {
-                    await PushError("Invalid query type");
+                    await PushError("Error 2: Invalid query type for Long, Double, String, Bool, or DateTime - From and To should be null.");
                     return;
                 }
-
+        
                 if (dto.Filter is not null)
                 {
-                    await PushError("Invalid query type");
+                    await PushError("Error 3: Invalid query type for Long, Double, String, Bool, or DateTime - Filter should be null.");
                     return;
                 }
-
+        
                 break;
             case DataQueryType.SeriesLong:
             case DataQueryType.SeriesDouble:
@@ -57,16 +57,16 @@ public class DataHub(DataIndex index, IServiceProvider sp) : HubBase
             case DataQueryType.SeriesDateTime:
                 if (dto.ComboOptions is not null)
                 {
-                    await PushError("Invalid query type");
+                    await PushError("Error 4: Invalid query type for Series - ComboOptions should be null.");
                     return;
                 }
-
+        
                 if (dto.From is null || dto.To is null)
                 {
-                    await PushError("Invalid query type");
+                    await PushError("Error 5: Invalid query type for Series - From and To should not be null.");
                     return;
                 }
-
+        
                 break;
             case DataQueryType.ComboSeriesLong:
             case DataQueryType.ComboSeriesDouble:
@@ -75,16 +75,16 @@ public class DataHub(DataIndex index, IServiceProvider sp) : HubBase
             case DataQueryType.ComboSeriesDateTime:
                 if (dto.ComboOptions is null)
                 {
-                    await PushError("Invalid query type");
+                    await PushError("Error 6: Invalid query type for ComboSeries - ComboOptions should not be null.");
                     return;
                 }
-
+        
                 if (dto.From is null || dto.To is null)
                 {
-                    await PushError("Invalid query type");
+                    await PushError("Error 7: Invalid query type for ComboSeries - From and To should not be null.");
                     return;
                 }
-
+        
                 break;
             case DataQueryType.ComboLong:
             case DataQueryType.ComboDouble:
@@ -93,22 +93,22 @@ public class DataHub(DataIndex index, IServiceProvider sp) : HubBase
             case DataQueryType.ComboDateTime:
                 if (dto.ComboOptions is null)
                 {
-                    await PushError("Invalid query type");
+                    await PushError("Error 8: Invalid query type for Combo - ComboOptions should not be null.");
                     return;
                 }
-
+        
                 if (dto.From is not null || dto.To is not null)
                 {
-                    await PushError("Invalid query type");
+                    await PushError("Error 9: Invalid query type for Combo - From and To should be null.");
                     return;
                 }
-
+        
                 if (dto.Filter is not null)
                 {
-                    await PushError("Invalid query type");
+                    await PushError("Error 10: Invalid query type for Combo - Filter should be null.");
                     return;
                 }
-
+        
                 break;
             case DataQueryType.Unknown:
             default:

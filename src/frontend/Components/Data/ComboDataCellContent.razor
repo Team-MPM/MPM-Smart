@@ -1,0 +1,8 @@
+@using ApiSchema
+
+<MudText>@Data.Data["123412341234"]</MudText>
+
+@code {
+    [Parameter] public required ComboDataQueryResultDto Data { get; set; }
+    [Parameter] public required DataPointDto DataPoint { get; set; }
+}

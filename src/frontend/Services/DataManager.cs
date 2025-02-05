@@ -48,7 +48,7 @@ public class DataManager
         });
     }
 
-    public async Task<List<DataPointDto>> GetDataPoints()
+    public async Task<List<DataPointDto>> GetDataPointsAsync()
     {
         if (m_DataPoints is not null)
             return m_DataPoints;
@@ -59,7 +59,7 @@ public class DataManager
         return m_DataPoints!;
     }
 
-    public async Task SubscribeToDataPoint<T>(
+    public async Task SubscribeToDataPointAsync<T>(
         DataPointDto dataPoint,
         DataQueryDto query, 
         Action<bool, T?, FailedDataQueryResultDto?> callback) where T : class
@@ -96,10 +96,5 @@ public class DataManager
         var currentIndex = m_Callbacks.Count;
         m_Callbacks.Add((suc, obj, err) => callback(suc, obj as T, err));
         await m_Connection.SendAsync("Query", query, currentIndex);
-    }
-    
-    public async Task SubscribeToBoard(int boardId)
-    {
-        // TODO
     }
 }

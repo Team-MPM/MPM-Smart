@@ -2,9 +2,11 @@
 @using ApiSchema
 @using Frontend.Services
 @using Shared
+@using Frontend.Components.Data
 @inject IDialogService DialogService
 @inject ApiAccessor Api
 @inject NavigationManager Nav
+@inject DataManager DataManager
 
 <MudGrid>
     <MudItem xs="12">
@@ -21,25 +23,25 @@
                         <MudText Typo="Typo.body1" Class="mb-2">
                             <span class="bold">Serial:</span> @Serial
                         </MudText>
-                        @if (DeviceDto is not null)
+                        @if (m_DeviceDto is not null)
                         {
                             <MudText Typo="Typo.body1" Class="mb-2">
-                                <span class="bold">Type:</span> @DeviceDto.DeviceInfo.Type
+                                <span class="bold">Type:</span> @m_DeviceDto.DeviceInfo.Type
                             </MudText>
                             <MudText Typo="Typo.body1" Class="mb-2">
-                                <span class="bold">Location:</span> @DeviceDto.Location
+                                <span class="bold">Location:</span> @m_DeviceDto.Location
                             </MudText>
                             <MudHidden Breakpoint="Breakpoint.MdAndUp">
                                 <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Class="mb-3">
                                     <MudIcon Style="font-size: 1rem"
                                              Icon="@Icons.Material.Filled.Circle"
-                                             Color="@(GetStateColor(DeviceDto.State))"/>
+                                             Color="@(GetStateColor(m_DeviceDto.State))"/>
                                     <MudText Typo="Typo.body1" Class="state-text">
-                                        <span class="bold">State:</span> @DeviceDto.State
+                                        <span class="bold">State:</span> @m_DeviceDto.State
                                     </MudText>
                                 </MudStack>
                                 <MudChipSet T="string">
-                                    @foreach (var item in DeviceDto.DeviceInfo.Capabilities)
+                                    @foreach (var item in m_DeviceDto.DeviceInfo.Capabilities)
                                     {
                                         <MudChip T="string" Label="true" Text="@item.Key" Color="Color.Success"/>
                                     }
@@ -48,19 +50,19 @@
                         }
                     </MudItem>
                     <MudItem xs="12" md="4">
-                        @if (DeviceDto is not null)
+                        @if (m_DeviceDto is not null)
                         {
                             <MudHidden Breakpoint="Breakpoint.SmAndDown">
                                 <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Class="my-3">
                                     <MudIcon Style="font-size: 1rem"
                                              Icon="@Icons.Material.Filled.Circle"
-                                             Color="@(GetStateColor(DeviceDto.State))"/>
+                                             Color="@(GetStateColor(m_DeviceDto.State))"/>
                                     <MudText Typo="Typo.body1" Class="state-text">
-                                        <span class="bold">State:</span> @DeviceDto.State
+                                        <span class="bold">State:</span> @m_DeviceDto.State
                                     </MudText>
                                 </MudStack>
                                 <MudChipSet T="string">
-                                    @foreach (var item in DeviceDto.DeviceInfo.Capabilities)
+                                    @foreach (var item in m_DeviceDto.DeviceInfo.Capabilities)
                                     {
                                         <MudChip T="string" Label="true" Text="@item.Key" Color="Color.Success"/>
                                     }
@@ -72,29 +74,42 @@
             </MudCardContent>
         </MudCard>
     </MudItem>
-    @foreach (var item in Enumerable.Range(1, 30))
+    @foreach (var item in m_DataPoints ?? [])
     {
-        <MudItem xs="12" sm="6" md="4">
-            <MudCard>
-                <MudCardContent>
-                    <MudText Typo="Typo.subtitle1">Chart @item</MudText>
-                    <MudChart ChartType="ChartType.Line" ChartSeries="@m_Data" XAxisLabels="@m_XAxisLabels"
-                              Width="100%"/>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
+        if (DataTypeHelper.IsSeries(item.QueryType))
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <DataCell
+                    T="ComboSeriesDataQueryResultDto"
+                    DataPoint="item"
+                    Query="new DataQueryDto(
+                    Id: item.Id, 
+                    Granularity: TimeSpan.FromMinutes(1), 
+                    From: DateTime.UtcNow.AddHours(-1),
+                    To: DateTime.UtcNow,
+                    ComboOptions: [m_DeviceDto!.DeviceInfo.Serial], 
+                    Filter: null)"/>
+            </MudItem>
+        }
+        else
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <DataCell
+                    T="ComboDataQueryResultDto"
+                    DataPoint="item"
+                    Query="new DataQueryDto(
+                        Id: item.Id, 
+                        Granularity: null, 
+                        From: null,
+                        To: null,
+                        ComboOptions: [m_DeviceDto!.DeviceInfo.Serial], 
+                        Filter: null)"/>
+            </MudItem>
+        }
     }
 </MudGrid>
 
 @code {
-
-    private readonly List<ChartSeries> m_Data =
-    [
-        new() { Name = "Fossil", Data = [90, 79, 72, 69, 62, 62, 55, 65, 70] },
-        new() { Name = "Renewable", Data = [10, 41, 35, 51, 49, 62, 69, 91, 148] }
-    ];
-
-    private readonly string[] m_XAxisLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"];
 
     [Parameter]
     [SupplyParameterFromQuery(Name = "name")]
@@ -104,11 +119,8 @@
     [SupplyParameterFromQuery(Name = "serial")]
     public string? Serial { get; set; }
 
-    [Parameter]
-    [SupplyParameterFromQuery(Name = "plugin")]
-    public string? PluginRegistryName { get; set; }
-
-    private DeviceDto? DeviceDto { get; set; }
+    private DeviceDto? m_DeviceDto;
+    private DataPointDto[]? m_DataPoints;
 
     protected override async Task OnInitializedAsync()
     {
@@ -119,7 +131,21 @@
         }
 
         var res = await Api.GetDevice(Serial);
-        DeviceDto = res is { Success: true, Response: not null } ? res.Response : null;
+        m_DeviceDto = res is { Success: true, Response: not null } ? res.Response : null;
+
+        if (m_DeviceDto is null)
+        {
+            Nav.NavigateTo("/error");
+            return;
+        }
+
+        Name = m_DeviceDto.DeviceInfo.Name;
+
+        var allDataPoints = await DataManager.GetDataPointsAsync();
+
+        m_DataPoints = allDataPoints.Where(p =>
+                DataTypeHelper.IsCombo(p.QueryType) && p.ComboOptions!.Contains(m_DeviceDto.DeviceInfo.Serial))
+            .ToArray();
     }
 
     private Color GetStateColor(DeviceState state) =>

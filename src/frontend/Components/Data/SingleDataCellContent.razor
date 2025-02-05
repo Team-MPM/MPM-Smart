@@ -1,0 +1,8 @@
+@using ApiSchema
+
+<MudText Typo="Typo.h1">@Data.Data.ToString() @DataPoint.Unit</MudText>
+
+@code {
+    [Parameter] public required SingleDataQueryResultDto Data { get; set; }
+    [Parameter] public required DataPointDto DataPoint { get; set; }
+}

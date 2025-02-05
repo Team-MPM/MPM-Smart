@@ -22,6 +22,7 @@ builder.Services.AddMudServices();
 builder.Services.AddSingleton<ControllerConnectionManager>();
 builder.Services.AddScoped<RT>();
 builder.Services.AddScoped<TokenHandler>();
+builder.Services.AddScoped<DataManager>();
 
 var app = builder.Build();
 

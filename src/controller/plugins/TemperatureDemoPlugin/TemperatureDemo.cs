@@ -81,10 +81,11 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
             QueryType = DataQueryType.ComboDouble,
             Unit = "°C",
             Plugin = this,
-            ComboOptions = ["Kitchen", "Living Room", "Bed Room"],
+            ComboOptions = ["123412341234", "Kitchen", "Living Room", "Bed Room"],
             Permission = TemperatureClaims.ViewSensorData,
             QueryHandler = query => Task.FromResult<DataQueryResult?>(new ComboQueryResult(new Dictionary<string, object>
             {
+                ["123412341234"] = 20.0d,
                 ["Kitchen"] = 20.0d,
                 ["Living Room"] = 22.0d,
                 ["Bed Room"] = 18.0d
@@ -100,10 +101,11 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
             Plugin = this,
             AvailableGranularity =
                 [TimeSpan.FromDays(1), TimeSpan.FromHours(4), TimeSpan.FromHours(1), TimeSpan.FromMinutes(10)],
-            ComboOptions = ["Kitchen", "Living Room", "Bed Room"],
+            ComboOptions = ["123412341234", "Kitchen", "Living Room", "Bed Room"],
             Permission = TemperatureClaims.ViewSensorData,
             QueryHandler = query => Task.FromResult<DataQueryResult?>(new ComboSeriesQueryResult(new Dictionary<string, object[]>
             {
+                ["123412341234"] = [20.0d, 21.0d, 22.0d, 23.0d],
                 ["Kitchen"] = [20.0d, 21.0d, 22.0d, 23.0d],
                 ["Living Room"] = [22.0d, 23.0d, 24.0d, 25.0d],
                 ["Bed Room"] = [18.0d, 19.0d, 20.0d, 21.0d]
