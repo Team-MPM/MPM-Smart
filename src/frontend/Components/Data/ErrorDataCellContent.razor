@@ -1,5 +1,7 @@
 @using ApiSchema
 
+<MudText Typo="Typo.h1">@Data.Message</MudText>
+
 @code {
     [Parameter] public required FailedDataQueryResultDto Data { get; set; }
     [Parameter] public required DataPointDto DataPoint { get; set; }

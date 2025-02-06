@@ -1,6 +1,23 @@
 @using ApiSchema
+@using Shared
 
-<MudText>@Data.Data["123412341234"]</MudText>
+@if (!Data.Data.Any())
+{
+    <ErrorDataCellContent
+        Data="@(new FailedDataQueryResultDto(DataQueryResultType.Failed, "No data found"))"
+        DataPoint="DataPoint"/>
+}
+else
+{
+    <MudGrid Spacing="2">
+        @foreach (var kvp in Data.Data)
+        {
+            <MudItem xs="6" sm="4" md="3">
+                <MudText><b>@kvp.Key:</b> @kvp.Value @DataPoint.Unit</MudText>
+            </MudItem>
+        }
+    </MudGrid>
+}
 
 @code {
     [Parameter] public required ComboDataQueryResultDto Data { get; set; }
