@@ -1,215 +1,144 @@
-using System.Reflection;
-using ApiSchema.Sensors.DemoTempSensor;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using LanguageExt.ClassInstances.Pred;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PluginBase;
+using PluginBase.Services.Data;
+using PluginBase.Services.Devices;
 using PluginBase.Services.Options;
 using PluginBase.Services.Permissions;
-using Shared.Plugins;
-using Shared.Plugins.DataInfo;
-using Shared.Plugins.DataRequest;
-using Shared.Plugins.DataResponse;
-using Shared.Services.Sensors.TempDemo;
+using Shared;
 using TemperatureDemoPlugin.Data;
-using TemperatureDemoPlugin.Endpoints;
 using TemperatureDemoPlugin.Permissions;
-using TemperatureDemoPlugin.Services;
-using ILogger = Serilog.ILogger;
 
 namespace TemperatureDemoPlugin;
 
 public class TemperatureDemo : PluginBase<TemperatureDemo>
 {
-    protected override void Initialize()
+    protected override Task Initialize()
     {
+        return Task.CompletedTask;
     }
 
-    protected override void BuildEndpoints(IEndpointRouteBuilder routeBuilder)
+    protected override Task BuildEndpoints(IEndpointRouteBuilder routeBuilder)
     {
-        var group = routeBuilder.MapGroup("/api/temperature");
-
-        group.MapGet("/sensors", async () =>
-        {
-            var controller = Services!.GetRequiredService<TemperatureSensorController>();
-            return await controller.GetSensors();
-        });
-
-        group.MapGet("/sensors/{id}", async (
-        [FromRoute] int id) =>
-        {
-            var controller = Services!.GetRequiredService<TemperatureSensorController>();
-            return await controller.GetSensor(id);
-        });
-
-
-        group.MapPost("/sensors", async (
-            HttpContext context) =>
-        {
-            var controller = Services!.GetRequiredService<TemperatureSensorController>();
-            return await controller.AddSensor(context);
-        });
-
-        group.MapDelete("/sensors/{id}", async (
-            [FromRoute] int id) =>
-        {
-            var controller = Services!.GetRequiredService<TemperatureSensorController>();
-            return await controller.DeleteSensor(id);
-        }).RequirePermission(TemperatureClaims.DeleteSensors);
-
-
-        group.MapPost("/update", async (
-            HttpContext context,
-            UpdateSensorData model) =>
-        {
-            var controller = Services!.GetRequiredService<TemperatureSensorController>();
-            return await controller.UpdateSensorData(context, model);
-        });
-
-        group.MapPost("/regenerateToken", async (
-            HttpContext context,
-            RegenerateTokenModel model) =>
-        {
-            var controller = Services!.GetRequiredService<TemperatureSensorController>();
-            return await controller.GenerateNewToken(context, model);
-        });
-
-        group.MapGet("/sensorentry", async () =>
-        {
-            var controller = Services!.GetRequiredService<TemperatureSensorController>();
-            return await controller.GetSensorData();
-        }).RequirePermission(TemperatureClaims.ViewSensorData);
-
-        group.MapGet("/sensorentry/{id}", async (
-            [FromRoute] int id,
-            [FromQuery] int span = -1,
-            [FromQuery] string type = "any") =>
-        {
-            var controller = Services!.GetRequiredService<TemperatureSensorController>();
-            return await controller.GetSensorData(id, span, type);
-        }).RequirePermission(TemperatureClaims.ViewSensorData);
-
-        group.MapPost("/sensorentry", async (
-            HttpContext context,
-            [FromBody] AddDemoTempEntry model) =>
-        {
-            var controller = Services!.GetRequiredService<TemperatureSensorController>();
-            return await controller.AddSensorEntry(context, model);
-        });
-
-        group.MapGet("/sensorentries", async () =>
-        {
-            var dbContext = Services!.GetRequiredService<TemperatureDemoContext>();
-            var logger = Services!.GetRequiredService<ILogger<TemperatureDemo>>();
-            dbContext.DataEntries.Add(new()
-            {
-                Sensor = dbContext.Sensors.First(),
-                TemperatureC = 20,
-                HumidityPercent = 50,
-                CaptureTime = DateTime.Now
-            });
-            await dbContext.SaveChangesAsync();
-            logger.LogInformation("Added entry!");
-        });
+        return Task.CompletedTask;
     }
 
-    public override async Task<DataInfoPluginResponse> GetPluginDataInfo()
-    {
-        var result = new DataInfoPluginResponse()
-        {
-            IsSuccessful = true,
-            SensorEntries = new List<DataPointEntry>()
-        };
-        var dbContext = Services!.GetRequiredService<TemperatureDemoContext>();
-        var sensors = await dbContext.Sensors.ToListAsync();
-        foreach (var sensor in sensors)
-        {
-            result.SensorEntries.Add(new()
-            {
-                DataPoint = sensor.Name,
-                RequestableDataTypes = new List<string>() {"TemperatureC", "HumidityPercent"}
-            });
-        }
-        return result;
-    }
-
-    public override async Task<DataResponseInfo> GetDataFromPlugin(DataRequestEntry request)
-    {
-        var dbContext = Services!.GetRequiredService<TemperatureDemoContext>();
-        Type? dataType = Type.GetType("string");
-        var data = await dbContext.DataEntries
-            .Include(s => s.Sensor)
-            .Where(s => s.Sensor.Name == request.DataPoint)
-            .Where(s => s.CaptureTime > request.StartDate && s.CaptureTime < request.EndDate)
-            .ToListAsync();
-
-        var propertyValues = data
-            .Select(entry =>
-            {
-                var entryType = entry.GetType();
-
-                var propertyInfo = entryType.GetProperty(request.RequestedDataType);
-                if (propertyInfo == null)
-                {
-                    throw new InvalidOperationException($"Property '{request.RequestedDataType}' not found on type '{entryType.Name}'.");
-                }
-
-                dataType = propertyInfo.PropertyType;
-
-                var propertyValue = propertyInfo.GetValue(entry);
-
-                return new PropertyValue()
-                {
-                    Data = propertyValue,
-                    CaptureDate = entry.CaptureTime
-                };
-            })
-            .ToList();
-        return new DataResponseInfo
-        {
-            IsSuccessful = true,
-            PluginName = Name,
-            DataPoint = request.DataPoint,
-            DataName = request.RequestedDataType,
-            DataType = dataType!.ToString(),
-            Data = propertyValues.Select(s => new DataResponseEntry
-            {
-                Data = s.Data!,
-                TimeStampUtc = s.CaptureDate
-            }).ToList()
-        };
-    }
-
-    protected override void ConfigureServices(IServiceCollection services)
+    protected override Task ConfigureServices(IServiceCollection services)
     {
         services.AddDbContextPool<TemperatureDemoContext>(options =>
         {
             options.UseSqlite("Data Source=TemperatureDemo.db");
             options.EnableDetailedErrors();
         });
-        services.AddHostedService<TemperatureDataFiller>();
-        services.AddScoped<TemperatureSensorController>();
+        return Task.CompletedTask;
     }
 
-    protected override void SystemStart()
+    protected override Task SystemStart()
     {
+        var deviceTypeRegistry = ApplicationServices.GetRequiredService<DeviceTypeRegistry>();
+        deviceTypeRegistry.RegisterDeviceType(new DemoTempDeviceType { Plugin = this });
+        var deviceType = deviceTypeRegistry.GetDeviceType<DemoTempDeviceType>();
+        var logger = Services!.GetRequiredService<ILogger<TemperatureDemo>>();
+        var deviceRegistry = Services!.GetRequiredService<DeviceRegistry>();
+        logger.LogInformation("Starting Temp Demo Plugin");
+        _ = Task.Run(async () =>
+        {
+            await deviceRegistry.RegisterDeviceAsync(new Device()
+            {
+                Info = new DeviceInfo
+                {
+                    Name = "Temperature Sensor Demo 1",
+                    Description = "Temperature Sensor Demo 1",
+                    Serial = "123412341234",
+                    Type = deviceType!,
+                    Capabilities = new Dictionary<string, string>()
+                    {
+                        { "temperature-demo", "temperature-demo-plugin" }
+                    },
+                    Details = new Dictionary<string, string>()
+                },
+                State = DeviceState.Connected,
+                MetaData = new DeviceMeta()
+                {
+                    Location = "Living Room",
+                    ConnectionDetails = new Dictionary<string, string>()
+                }
+            });
+        });
+        
+
         var permissionProvider = ApplicationServices.GetRequiredService<AvailablePermissionProvider>();
         permissionProvider.AddRange("TemperatureDemo", TemperatureClaims.ExportPermissions());
 
+        var index = ApplicationServices.GetRequiredService<DataIndex>();
+        index.Add(new DataPoint
+        {
+            Name = "Temperature Singe",
+            Description = "Temperature",
+            QueryType = DataQueryType.ComboDouble,
+            Unit = "°C",
+            Plugin = this,
+            ComboOptions = ["123412341234", "Kitchen", "Living Room", "Bed Room"],
+            Permission = TemperatureClaims.ViewSensorData,
+            QueryHandler = query => Task.FromResult<DataQueryResult?>(new ComboQueryResult(new Dictionary<string, object>
+            {
+                ["123412341234"] = 20.0d,
+                ["Kitchen"] = 20.0d,
+                ["Living Room"] = 22.0d,
+                ["Bed Room"] = 18.0d
+            }))
+        });
+
+        index.Add(new DataPoint
+        {
+            Name = "Temperature",
+            Description = "Temperature",
+            QueryType = DataQueryType.ComboSeriesDouble,
+            Unit = "°C",
+            Plugin = this,
+            AvailableGranularity =
+                [TimeSpan.FromDays(1), TimeSpan.FromHours(4), TimeSpan.FromHours(1), TimeSpan.FromMinutes(10)],
+            ComboOptions = ["123412341234", "Kitchen", "Living Room", "Bed Room"],
+            Permission = TemperatureClaims.ViewSensorData,
+            QueryHandler = query => Task.FromResult<DataQueryResult?>(new ComboSeriesQueryResult(new Dictionary<string, object[]>
+            {
+                ["123412341234"] = [20.0d, 21.0d, 22.0d, 23.0d],
+                ["Kitchen"] = [20.0d, 21.0d, 22.0d, 23.0d],
+                ["Living Room"] = [22.0d, 23.0d, 24.0d, 25.0d],
+                ["Bed Room"] = [18.0d, 19.0d, 20.0d, 21.0d]
+            }))
+        });
+        return Task.CompletedTask;
     }
 
-    protected override void OnOptionBuilding(OptionsBuilder builder)
+    protected override Task OnOptionBuilding(OptionsBuilder builder)
     {
-
+        return Task.CompletedTask;
     }
 }
 
-public record PropertyValue
+public class DemoTempDeviceType : IDeviceType
 {
-    public object? Data { get; init; }
-    public DateTime CaptureDate { get; init; }
+    public required IPlugin Plugin { get; init; }
+    public IDictionary<string, string> Parameters => new Dictionary<string, string>();
+    public bool IsSensor => true;
+
+    public IAsyncEnumerable<DeviceInfo> ScanAsync()
+    {
+        return AsyncEnumerable.Empty<DeviceInfo>();
+    }
+
+    public Task<Device?> ConnectAsync(DeviceInfo deviceInfo, DeviceMeta metadata,
+        IDictionary<string, object> parameters)
+    {
+        return Task.FromResult<Device?>(null);
+    }
+
+    public Task PollAsync(Device device)
+    {
+        return Task.CompletedTask;
+    }
 }

@@ -1,10 +1,7 @@
 ﻿using System.Security.Claims;
-using ApiSchema.Identity;
-using ApiSchema.Permissions;
+using ApiSchema;
 using Backend.Services.Identity;
 using Data.System;
-using LanguageExt;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PluginBase.Services.Permissions;
@@ -38,11 +35,10 @@ public static class PermissionEndpoints
                 roleClaims.Add(role, claimList.Select(c => c.Value));
             }
 
-            return Results.Ok(new PermissionsModel()
-            {
-                UserPermissions = userPermissions.Select(s => s.Value),
-                RolePermissions = roleClaims
-            });
+            return Results.Ok(new PermissionsModel(
+                UserPermissions: userPermissions.Select(s => s.Value),
+                RolePermissions: roleClaims
+            ));
         }).RequirePermission(UserClaims.ProfileViewProfile);
 
         group.MapPost("/user/{user}", async (

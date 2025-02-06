@@ -1,0 +1,78 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <UsingTask TaskName="ReadPluginJsonFile"
+               AssemblyFile="../../../../build/tasks/ReadJsonFile/ReadJsonFileTask.dll"/>
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <PublishDependsOn>$(PublishDependsOn);BuildMpmPackage</PublishDependsOn>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    </PropertyGroup>
+
+    <Target Name="ReadPluginJsonFile" BeforeTargets="Initialize">
+        <ReadPluginJsonFile JsonFilePath="plugin.json">
+            <Output TaskParameter="Name" PropertyName="PluginName"/>
+            <Output TaskParameter="RegistryName" PropertyName="PluginRegistryName"/>
+            <Output TaskParameter="Description" PropertyName="PluginDescription"/>
+            <Output TaskParameter="Author" PropertyName="PluginAuthor"/>
+            <Output TaskParameter="Version" PropertyName="PluginVersion"/>
+        </ReadPluginJsonFile>
+        <PropertyGroup>
+            <PublishDir>../../../../build/plugin-packages/$(PluginRegistryName)</PublishDir>
+            <AssemblyTitle>$(PluginName)</AssemblyTitle>
+            <AssemblyDescription>$(PluginDescription)</AssemblyDescription>
+            <AssemblyCompany>$(PluginAuthor)</AssemblyCompany>
+            <AssemblyVersion>$(PluginVersion)</AssemblyVersion>
+            <AssemblyFileVersion>$(PluginVersion)</AssemblyFileVersion>
+        </PropertyGroup>
+    </Target>
+
+    <ItemGroup>
+        <BuildFiles Include="bin\Debug\**\*"/>
+    </ItemGroup>
+
+    <Target Name="CopyBuildToOutput" AfterTargets="Build" DependsOnTargets="ReadPluginJsonFile">
+        <Copy
+                SourceFiles="@(BuildFiles)"
+                DestinationFolder="../../../../build/plugins/$(PluginRegistryName)"
+                SkipUnchangedFiles="true"/>
+    </Target>
+
+    <Target Name="BuildMpmPackage" AfterTargets="Publish" DependsOnTargets="ReadPluginJsonFile">
+        <Exec Command="tar -czvf $(PublishDir)/../$(PluginRegistryName).$(PluginVersion).tar.gz -C $(PublishDir) ."/>
+    </Target>
+
+    <ItemGroup>
+        <ProjectReference Include="..\plugin_base\PluginBase.csproj" Private="False"/>
+        <ProjectReference Include="..\SmartDevicePlugin\SmartDevicePlugin.csproj" Private="False"/>
+        <ProjectReference Include="..\..\Shared\Shared.csproj" Private="False"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="plugin.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="plugin.json">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.1" PrivateAssets="All">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.1" PrivateAssets="All"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.1" PrivateAssets="All">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+</Project>

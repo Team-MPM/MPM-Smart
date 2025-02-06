@@ -1,4 +1,4 @@
-﻿@using ApiSchema.Devices
+﻿@using ApiSchema
 @using Frontend.Services
 @inject UserAccessor UserAccessor
 @inject ApiAccessor Api
@@ -25,7 +25,7 @@
             {
                 foreach (var sensor in m_Sensors)
                 {
-                    var link = $"/device?serial={Uri.EscapeDataString(sensor.Serial)}&plugin={Uri.EscapeDataString(sensor.Plugin)}&name={Uri.EscapeDataString(sensor.Name)}";
+                    var link = $"/device?serial={Uri.EscapeDataString(sensor.Serial)}&name={Uri.EscapeDataString(sensor.Name)}";
                     <MudNavLink Href=@link Match="NavLinkMatch.Prefix">
                         @sensor.Name
                     </MudNavLink>

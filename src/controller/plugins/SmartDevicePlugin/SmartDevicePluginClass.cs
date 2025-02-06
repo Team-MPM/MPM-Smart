@@ -9,27 +9,32 @@ namespace SmartDevicePlugin;
 
 public class SmartDevicePluginClass : PluginBase<SmartDevicePluginClass>
 {
-    protected override void Initialize()
+    protected override Task Initialize()
     {
+        return Task.CompletedTask;
     }
 
-    protected override void BuildEndpoints(IEndpointRouteBuilder routeBuilder)
+    protected override Task BuildEndpoints(IEndpointRouteBuilder routeBuilder)
     {
+        return Task.CompletedTask;
     }
 
-    protected override void ConfigureServices(IServiceCollection services)
+    protected override Task ConfigureServices(IServiceCollection services)
     {
+        return Task.CompletedTask;
     }
 
-    protected override void SystemStart()
+    protected override Task SystemStart()
     {
         var logger = Services!.GetRequiredService<ILogger<SmartDevicePluginClass>>();
         var deviceRegistry = Services!.GetRequiredService<DeviceTypeRegistry>();
         logger.LogInformation("Starting Smart Device Plugin");
         deviceRegistry.RegisterDeviceType(new SmartDeviceType { Plugin = this });
+        return Task.CompletedTask;
     }
 
-    protected override void OnOptionBuilding(OptionsBuilder builder)
+    protected override Task OnOptionBuilding(OptionsBuilder builder)
     {
+        return Task.CompletedTask;
     }
 }

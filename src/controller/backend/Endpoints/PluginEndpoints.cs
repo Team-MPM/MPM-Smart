@@ -1,5 +1,4 @@
-using ApiSchema.Plugins;
-using Backend.Services.Plugins;
+using ApiSchema;
 using Microsoft.AspNetCore.Mvc;
 using PluginBase;
 using PluginBase.Services.Options;

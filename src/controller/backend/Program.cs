@@ -1,9 +1,8 @@
 using System.IO.Abstractions;
 using Backend.Endpoints;
+using Backend.Hubs;
 using Backend.Services.Database;
 using Backend.Services.Identity;
-using Backend.Services.Permissions;
-using Backend.Services.PluginDataQuery;
 using Backend.Services.Plugins;
 using Backend.Utils;
 using Data.System;
@@ -18,6 +17,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using PluginBase;
 using PluginBase.Services;
+using PluginBase.Services.Data;
 using PluginBase.Services.Devices;
 using PluginBase.Services.Networking;
 using PluginBase.Services.Permissions;
@@ -87,7 +87,6 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionVerifier>();
 builder.Services.AddSingleton<AvailablePermissionProvider>();
-builder.Services.AddSingleton<PermissionHandler>();
 
 builder.Services.AddIdentity<SystemUser, IdentityRole>(options =>
     {
@@ -149,6 +148,10 @@ builder.Services.AddOpenTelemetry()
         options.AddInMemoryExporter(telemetryDataCollector.Traces);
     });
 
+// -------------------------- Data --------------------------------
+
+builder.Services.AddSingleton<DataIndex>();
+
 // ------------------------- Plugins ------------------------------
 
 builder.Services.AddSingleton<IPluginManager, PluginManager>();
@@ -159,8 +162,6 @@ builder.Services.AddSingleton<DeviceTypeRegistry>();
 builder.Services.AddSingleton<DeviceRegistry>();
 builder.Services.AddSingleton<DeviceManager>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<DeviceManager>());
-builder.Services.AddSingleton<DataRequester>();
-
 
 // ------------------------ Cors ----------------------------------
 
@@ -209,8 +210,12 @@ app.MapSettingsEndpoints();
 app.MapPermissionEndpoints();
 app.MapRoleManagementEndpoint();
 app.MapPluginEndpoints();
-app.MapDataRequesterEndpoints();
 app.MapDeviceEndpoints();
+app.MapDataEndpoints();
+
+var hubs = app.MapGroup("/hubs");
+hubs.MapHub<DeviceHub>("/devices");
+hubs.MapHub<DataHub>("/data");
 
 app.MapGet("/", () => "Hello World!");
 app.MapGet("/info", () => new

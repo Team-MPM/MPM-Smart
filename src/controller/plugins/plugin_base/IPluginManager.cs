@@ -26,7 +26,7 @@ public interface IPluginManager : IDisposable
     /// <summary>
     /// Should be called after all plugins are registered.
     /// </summary>
-    public void ConfigureServices();
+    public Task ConfigureServices();
 
     /// <summary>
     /// Should be called after all plugins are registered and configured.

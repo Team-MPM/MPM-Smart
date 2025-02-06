@@ -1,18 +1,8 @@
-﻿using System.Net;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using ApiSchema.Devices;
+using ApiSchema;
 using ApiSchema.Enums;
-using ApiSchema.Identity;
-using ApiSchema.Plugins;
-using ApiSchema.Settings;
-using ApiSchema.Usermanagement;
-using Blazored.LocalStorage;
-using Frontend.Pages.General;
-using Shared.Plugins.DataInfo;
-using Shared.Plugins.DataRequest;
-using Shared.Plugins.DataResponse;
-using PermissionsModel = ApiSchema.Usermanagement.PermissionsModel;
 
 namespace Frontend.Services;
 
@@ -31,7 +21,7 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
             var response = await request(Client);
             if (!response.IsSuccessStatusCode)
             {
-                if(await RefreshAndCheck())
+                if (await RefreshAndCheck())
                     response = await request(Client);
             }
 
@@ -43,9 +33,14 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         {
             try
             {
-                if(await RefreshAndCheck())
+                if (await RefreshAndCheck())
                     return await GetResponseModel(request);
-            } catch(Exception) { /* I don't like this warning, it's useless */}
+            }
+            catch (Exception)
+            {
+                /* I don't like this warning, it's useless */
+            }
+
             return new ResponseModel().ExceptionError(e);
         }
     }
@@ -61,7 +56,7 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
             var response = await request(Client);
             if (!response.IsSuccessStatusCode)
             {
-                if(await RefreshAndCheck())
+                if (await RefreshAndCheck())
                     response = await request(Client);
             }
 
@@ -73,9 +68,14 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         {
             try
             {
-                if(await RefreshAndCheck())
+                if (await RefreshAndCheck())
                     return await GetResponseModel<T>(request);
-            } catch(Exception) { /* I don't like this warning, it's useless */}
+            }
+            catch (Exception)
+            {
+                /* I don't like this warning, it's useless */
+            }
+
             return new ResponseModel<T>().ExceptionError(e);
         }
     }
@@ -91,20 +91,22 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         if (duration.Duration() == TimeSpan.Zero)
             duration = TimeSpan.FromDays(2);
         var response = await GetResponseModel<LoginResponse>(client =>
-            client.PostAsJsonAsync("/api/identity/login", new LoginModel
-            {
-                UserName = username, Password = password,
-                Duration = duration
-            }));
+            client.PostAsJsonAsync("/api/identity/login", new LoginModel(
+                UserName: username, 
+                Password: password,
+                Duration: duration
+            )));
 
         if (response.Success)
         {
-            response.Response!.Token = response.Response!.Token.Replace("\"", "");
-            if(!string.IsNullOrEmpty(response.Response.RefreshToken))
-                response.Response!.RefreshToken = response.Response!.RefreshToken.Replace("\"", "");
+            response.Response = new LoginResponse(
+                response.Response!.Token.Replace("\"", ""),
+                response.Response!.RefreshToken?.Replace("\"", "") ?? "");
         }
+
         return response;
     }
+
     public async Task<ResponseModel<string>> TryRefreshToken(TimeSpan duration = new())
     {
         if (duration.Duration() == TimeSpan.Zero)
@@ -112,7 +114,7 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         using var scope = sp.CreateScope();
         var tokenService = scope.ServiceProvider.GetRequiredService<TokenHandler>();
 
-        if(Details is null || Client is null)
+        if (Details is null || Client is null)
             return new ResponseModel<string>().NoClientError();
         return await tokenService.RefreshTokenAsync(Client!, Details.Address, Details.Port.ToString(), duration);
     }
@@ -124,24 +126,18 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
 
     public async Task<ResponseModel> SetUsername(string newUsername) =>
         await GetResponseModel(client => client.PostAsJsonAsync("/api/profile/username",
-            new UsernameModel
-            {
-                Username = newUsername
-            }));
+            new UsernameModel(newUsername)));
 
     public async Task<ResponseModel> SetPassword(string currentPassword, string newPassword) =>
         await GetResponseModel(client => client.PostAsJsonAsync("/api/profile/password",
-            new PasswordModel
-            {
-                CurrentPassword = currentPassword, NewPassword = newPassword
-            }));
+            new PasswordModel(
+                CurrentPassword: currentPassword,
+                NewPassword: newPassword
+            )));
 
     public async Task<ResponseModel> SetLanguage(string language) =>
         await GetResponseModel(client => client.PostAsJsonAsync("/api/profile/language",
-            new LanguageModel
-            {
-                Language = language
-            }));
+            new LanguageModel(language)));
 
     public async Task<ResponseModel<PermissionsModel>> GetUserPermissions() =>
         await GetResponseModel<PermissionsModel>(client =>
@@ -154,34 +150,22 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
 
     public async Task<ResponseModel> SetSystemName(string newSystemName) =>
         await GetResponseModel(client => client.PostAsJsonAsync("/api/settings/systemname",
-            new SystemNameModel
-            {
-                SystemName = newSystemName
-            }));
+            new SystemNameModel(newSystemName)));
 
     public async Task<ResponseModel> SetSystemTime(string newSystemTime) =>
         await GetResponseModel(client => client.PostAsJsonAsync("/api/settings/systemtime",
-            new SystemTimeModel
-            {
-                TimeZoneCode = newSystemTime
-            }));
+            new SystemTimeModel(newSystemTime)));
 
     public async Task<ResponseModel> SetTimeBetweenUpdates(int newTimeBetweenUpdates) =>
         await GetResponseModel(client => client.PostAsJsonAsync("/api/settings/timebetweenupdates",
-            new TimeBetweenUpdatesModel
-            {
-                TimeBetweenUpdatesSeconds = newTimeBetweenUpdates
-            }));
+            new TimeBetweenUpdatesModel(newTimeBetweenUpdates)));
 
     public async Task<ResponseModel<string>> GetTimeZone() =>
         await GetResponseModel<string>(client => client.GetAsync("/api/settings/timezone"));
 
     public async Task<ResponseModel> SetTimeZone(string timezoneCode) =>
         await GetResponseModel(client => client.PostAsJsonAsync("/api/settings/timezone",
-            new ChangeTimeZoneModel()
-            {
-                TimeZoneCode = timezoneCode
-            }));
+            new ChangeTimeZoneModel(timezoneCode)));
 
     public async Task<ResponseModel<Dictionary<string, double>>> GetTimeZones() =>
         await GetResponseModel<Dictionary<string, double>>(client => client.GetAsync("/api/settings/timeZones"));
@@ -217,40 +201,26 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
 
     public async Task<ResponseModel> SetUsernameForUser(string user, string newUsername) =>
         await GetResponseModel(client => client.PostAsJsonAsync($"/api/users/{user}/username",
-            new ChangeUsernameModel
-            {
-                Username = newUsername
-            }));
+            new ChangeUsernameModel(newUsername)));
+
     public async Task<ResponseModel> UpdateUser(string user, UsersModel model) =>
         await GetResponseModel(client => client.PostAsJsonAsync($"/api/users/{user}", model));
 
     public async Task<ResponseModel> SetPasswordForUser(string user, string? newPassword) =>
         await GetResponseModel(client => client.PostAsJsonAsync($"/api/users/{user}/password",
-            new ChangePasswordModel
-            {
-                NewPassword = newPassword
-            }));
+            new ChangePasswordModel(newPassword)));
 
     public async Task<ResponseModel> SetIsActiveForUser(string user, bool isActive) =>
         await GetResponseModel(client => client.PostAsJsonAsync($"/api/users/{user}/isactive",
-            new ChangeIsActiveModel
-            {
-                IsActive = isActive
-            }));
+            new ChangeIsActiveModel(isActive)));
 
     public async Task<ResponseModel> SetLanguageForUser(string user, int language) =>
         await GetResponseModel(client => client.PostAsJsonAsync($"/api/users/{user}/language",
-            new ChangeLanguageModel
-            {
-                Language = (Language)language
-            }));
+            new ChangeLanguageModel((Language)language)));
 
     public async Task<ResponseModel> SetIsDarkModeForUser(string user, bool useDarkMode) =>
         await GetResponseModel(client => client.PostAsJsonAsync($"/api/users/{user}/isdarkmode",
-            new UseDarkModeModel
-            {
-                UseDarkMode = useDarkMode
-            }));
+            new UseDarkModeModel(useDarkMode)));
 
     // ---------------------------- Plugins ----------------------------
 
@@ -259,14 +229,6 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
 
     public async Task<ResponseModel<List<OptionsDto>>> GetPluginOptions(string pluginGuid) =>
         await GetResponseModel<List<OptionsDto>>(client => client.GetAsync($"/api/plugins/{pluginGuid}/options"));
-
-    // ---------------------------- PluginData ----------------------------
-
-    public async Task<ResponseModel<DataInfoResponse>> GetPluginDataInfo() =>
-        await GetResponseModel<DataInfoResponse>(client => client.GetAsync("/api/data/info"));
-
-    public async Task<ResponseModel<DataResponse>> GetPluginData(DataRequest request) =>
-        await GetResponseModel<DataResponse>(client => client.PostAsJsonAsync("/api/data/requestData", request));
 
     // ---------------------------- Devices ----------------------------
 
@@ -282,6 +244,13 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
     public async Task<ResponseModel<DeviceDto>> GetDevice(string serial) =>
         await GetResponseModel<DeviceDto>(client => client.GetAsync($"/api/device/{serial}"));
 
+    // ------------------------------ Data ------------------------------------
+    
+    public async Task<ResponseModel<List<DataPointDto>>> GetDataPoints() =>
+        await GetResponseModel<List<DataPointDto>>(client => client.GetAsync($"/api/data"));
+    
+    // ------------------------------------------------------------------------
+    
     private async Task<bool> RefreshAndCheck()
     {
         try
@@ -289,7 +258,8 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
             var tokenResponse = await TryRefreshToken();
             if (!tokenResponse.Success)
                 return false;
-            Client!.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.Response);
+            Client!.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", tokenResponse.Response);
             var checkResult = await GetResponseModel(client => client.GetAsync("/api/identity/checkToken"));
             if (!checkResult.Success)
                 return false;

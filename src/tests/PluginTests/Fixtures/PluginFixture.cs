@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using PluginBase;
+using PluginBase.Services.Data;
 using PluginBase.Services.Devices;
 using PluginBase.Services.Networking;
 using PluginBase.Services.Telemetry;
@@ -97,6 +98,7 @@ public class PluginFixture
         services.AddSingleton(MockWebHostEnvironment.Object);
         services.AddSingleton(MockTelemetryDataCollector.Object);
         services.AddSingleton<NetworkScanner>();
+        services.AddSingleton<DataIndex>();
         services.AddSingleton<DeviceTypeRegistry>();
         services.AddSingleton<DeviceRegistry>();
         services.AddSingleton<DeviceManager>();

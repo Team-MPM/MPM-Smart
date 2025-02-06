@@ -8,25 +8,29 @@ namespace TestPlugin;
 
 public class TestPluginClass : PluginBase<TestPluginClass>
 {
-    protected override void Initialize()
+    protected override Task Initialize()
     {
+        return Task.CompletedTask;
     }
 
-    protected override void BuildEndpoints(IEndpointRouteBuilder routeBuilder)
+    protected override Task BuildEndpoints(IEndpointRouteBuilder routeBuilder)
     {
         routeBuilder.MapTestEndpoints();
+        return Task.CompletedTask;
     }
 
-    protected override void ConfigureServices(IServiceCollection services)
+    protected override Task ConfigureServices(IServiceCollection services)
     {
         //services.AddDbContextPool
+        return Task.CompletedTask;
     }
 
-    protected override void SystemStart()
+    protected override Task SystemStart()
     {
+        return Task.CompletedTask;
     }
 
-    protected override void OnOptionBuilding(OptionsBuilder builder)
+    protected override Task OnOptionBuilding(OptionsBuilder builder)
     {
         builder.Option<bool>("Toggle 1");
         builder.Option<bool>("Toggle 2");
@@ -62,5 +66,7 @@ public class TestPluginClass : PluginBase<TestPluginClass>
             option.AllowedValues = ["Option1", "Option2", "Option3"];
             option.DefaultValue = "Option1";
         });
+        
+        return Task.CompletedTask;
     }
 }

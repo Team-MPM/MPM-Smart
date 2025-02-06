@@ -112,12 +112,16 @@ public class SmartDeviceType : IDeviceType
 
         metadata.ConnectionDetails["key"] = key;
 
-        return new Device
+        var device = new Device
         {
             Info = deviceInfo,
             State = DeviceState.Connected,
             MetaData = metadata
         };
+
+        await m_DeviceRegistry.RegisterDeviceAsync(device);
+        
+        return device;
     }
 
     public async Task PollAsync(Device device)

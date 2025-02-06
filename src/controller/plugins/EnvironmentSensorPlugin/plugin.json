@@ -1,0 +1,7 @@
+﻿{
+  "Name": "Environment Sensor",
+  "RegistryName": "environment-sensor",
+  "Description": "Enables the use of Mpm-Smart Environment Sensor",
+  "Author": "Gabriel Martin",
+  "Version": "0.0.1"
+}

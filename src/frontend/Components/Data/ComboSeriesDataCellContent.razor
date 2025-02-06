@@ -1,0 +1,21 @@
+@using ApiSchema
+
+<MudChart ChartType="ChartType.Line" ChartSeries="m_Series" Width="100%" Height="350px" ChartOptions="@m_Options" />
+
+@code {
+    [Parameter] public required ComboSeriesDataQueryResultDto Data { get; set; }
+    [Parameter] public required DataPointDto DataPoint { get; set; }
+    
+    private ChartOptions m_Options = new();
+    private List<ChartSeries> m_Series = [];
+
+    protected override void OnInitialized()
+    {
+        m_Series.AddRange(Data.Data.Select(kv => new ChartSeries
+        {
+            Name = kv.Key,
+            Data = kv.Value.Select(e => double.Parse(e.ToString() ?? "0")).ToArray()
+        }));  
+    }
+
+}

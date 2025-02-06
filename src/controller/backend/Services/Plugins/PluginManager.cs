@@ -1,4 +1,5 @@
 using PluginBase;
+using PluginBase.Services.Data;
 using PluginBase.Services.Devices;
 using PluginBase.Services.Networking;
 using PluginBase.Services.Telemetry;
@@ -64,7 +65,7 @@ public class PluginManager(
         GC.SuppressFinalize(this);
     }
 
-    public void ConfigureServices()
+    public async Task ConfigureServices()
     {
         var services = new ServiceCollection();
         services.AddSingleton<IServiceCollection>(services);
@@ -74,6 +75,8 @@ public class PluginManager(
         services.AddSingleton(sp.GetRequiredService<DeviceTypeRegistry>());
         services.AddSingleton(sp.GetRequiredService<DeviceRegistry>());
         services.AddSingleton(sp.GetRequiredService<DeviceManager>());
+        services.AddSingleton(sp.GetRequiredService<DataIndex>());
+        services.AddSingleton(sp.GetRequiredService<IHttpClientFactory>());
 
         services.AddLogging(options =>
         {
@@ -96,7 +99,7 @@ public class PluginManager(
 
         foreach (var plugin in Plugins)
         {
-            plugin.OnConfiguring(services);
+            await plugin.OnConfiguring(services);
         }
 
         PluginServices = services.BuildServiceProvider();
@@ -108,7 +111,7 @@ public class PluginManager(
             throw new InvalidOperationException("Plugin Services not configured");
 
         foreach (var plugin in Plugins)
-            plugin.OnSystemStart(PluginServices);
+            await plugin.OnSystemStart(PluginServices);
 
         var hostedServices = PluginServices.GetServices<IHostedService>();
 

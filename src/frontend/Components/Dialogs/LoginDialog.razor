@@ -24,7 +24,7 @@
 </MudDialog>
 
 @code {
-    [CascadingParameter] public required MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] public required IMudDialogInstance MudDialog { get; set; }
     [Parameter] public required ControllerConnectionDetails ConnectionDetails { get; set; }
 
     private string ErrorMessage { get; set; } = "";

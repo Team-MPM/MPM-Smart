@@ -12,7 +12,7 @@ public static class PluginExtensions
     {
         var pluginManager = webApplication.Services.GetRequiredService<IPluginManager>();
         pluginManager.MapPlugins(webApplication);
-        pluginManager.ConfigureServices();
+        await pluginManager.ConfigureServices();
         await pluginManager.StartAsync();
     }
 

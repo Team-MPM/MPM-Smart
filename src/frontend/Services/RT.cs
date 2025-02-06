@@ -7,6 +7,7 @@ namespace Frontend.Services;
 public class RT(ControllerConnectionManager connectionManager, ISnackbar snackbar)
 {
     private readonly ConcurrentDictionary<string, HubConnection> m_OpenConnections = new();
+    private bool m_IsRefreshing = false;
 
     public HubConnection GetConnection(string connectionName)
     {
@@ -53,6 +54,34 @@ public class RT(ControllerConnectionManager connectionManager, ISnackbar snackba
                 snackbar.Add("Connection re-established: " + connectionId, Severity.Success);
                 return Task.CompletedTask;
             };
+            
+            connection.On("PushMessage", (string message) =>
+            {
+                snackbar.Add(message, Severity.Info);
+            });
+            
+            connection.On("PushWarning", (string message) =>
+            {
+                snackbar.Add(message, Severity.Warning);
+            });
+            
+            connection.On("PushError", (string message) =>
+            {
+                snackbar.Add(message, Severity.Error);
+            });
+            
+            connection.On("TokenExpired", async () =>
+            {
+                if (m_IsRefreshing)
+                    return;
+                
+                // TODO Check for how long we have been refreshing and timeout if it takes too long
+                snackbar.Add("Token expired, refreshing...", Severity.Info);
+                
+                m_IsRefreshing = true;
+                //await connectionManager.RefreshTokenAsync(); TODO
+                m_IsRefreshing = false;
+            });
 
             configureHandlers(connection);
             

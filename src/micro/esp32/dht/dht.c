@@ -12,6 +12,7 @@
 
 static bool dht11_read(gpio_num_t pin, int* dht11_data)
 {
+    portDISABLE_INTERRUPTS();
     int counter = 0;
 
     for (int i = 0; i < 5; i++)
@@ -19,9 +20,9 @@ static bool dht11_read(gpio_num_t pin, int* dht11_data)
 
     gpio_set_direction(pin, GPIO_MODE_OUTPUT);
     gpio_set_level(pin, 1);
-    vTaskDelay(pdMS_TO_TICKS(100));
+    ets_delay_us(100000);
     gpio_set_level(pin, 0);
-    vTaskDelay(pdMS_TO_TICKS(18));
+    ets_delay_us(18000);
     gpio_set_level(pin, 1);
     gpio_set_direction(pin, GPIO_MODE_INPUT);
     ets_delay_us(160);
@@ -54,6 +55,7 @@ static bool dht11_read(gpio_num_t pin, int* dht11_data)
 
     gpio_set_direction(pin, GPIO_MODE_OUTPUT);
     gpio_set_level(pin, 0);
+    portENABLE_INTERRUPTS();
 
     // check checksum
     if (dht11_data[4] == ((dht11_data[0] + dht11_data[1] + dht11_data[2] + dht11_data[3]) & 0xFF)) {

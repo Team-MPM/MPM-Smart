@@ -1,9 +1,8 @@
 ﻿using System.Security.Claims;
+using ApiSchema;
 using ApiSchema.Enums;
-using ApiSchema.Usermanagement;
 using Backend.Services.Identity;
 using Data.System;
-using LanguageExt.ClassInstances;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
