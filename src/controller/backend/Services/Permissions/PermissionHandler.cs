@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Backend.Services.Permissions;
 
-public class PermissionHandler(UserManager<SystemUser>? userManager)
+public class PermissionHandler()
 {
     public bool HasAccess(ClaimsPrincipal claimsPrincipal, string requiredPermission)
     {
@@ -13,14 +13,6 @@ public class PermissionHandler(UserManager<SystemUser>? userManager)
         if (!permissions.Any())
             return false;
         return HasAccess(permissions, requiredPermission);
-    }
-
-    public async Task<bool> HasAccess(SystemUser user, string requiredPermission)
-    {
-        var permissions = await userManager.GetClaimsAsync(user);
-        if (!permissions.Any())
-            return false;
-        return HasAccess(permissions.Select(c => c.Value).ToList(), requiredPermission);
     }
 
     public bool HasAccess(string permission, string requiredPermission) =>

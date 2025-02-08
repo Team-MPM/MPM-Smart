@@ -18,6 +18,7 @@ namespace Frontend.Services;
 
 public class ApiAccessor(ControllerConnectionManager controllerConnectionManager, IServiceProvider sp)
 {
+    private int refreshCount = 0;
     public ControllerConnectionDetails? Details { get; set; }
     private HttpClient? Client => controllerConnectionManager.GetCurrentClient();
 
@@ -31,8 +32,11 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
             var response = await request(Client);
             if (!response.IsSuccessStatusCode)
             {
-                if(await RefreshAndCheck())
-                    response = await request(Client);
+                if(response.StatusCode != HttpStatusCode.Forbidden)
+                {
+                    if(await RefreshAndCheck())
+                        response = await request(Client);
+                }
             }
 
             return !response.IsSuccessStatusCode
@@ -43,6 +47,14 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         {
             try
             {
+                if (refreshCount > 0)
+                {
+                    refreshCount = 0;
+                    var responseMessage = new ResponseModel().NoClientError();
+                    responseMessage.Message = "Insufficient permissions";
+                    return responseMessage;
+                }
+                refreshCount++;
                 if(await RefreshAndCheck())
                     return await GetResponseModel(request);
             } catch(Exception) { /* I don't like this warning, it's useless */}
@@ -61,8 +73,11 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
             var response = await request(Client);
             if (!response.IsSuccessStatusCode)
             {
-                if(await RefreshAndCheck())
-                    response = await request(Client);
+                if(response.StatusCode != HttpStatusCode.Forbidden)
+                {
+                    if(await RefreshAndCheck())
+                        response = await request(Client);
+                }
             }
 
             return !response.IsSuccessStatusCode
@@ -73,6 +88,14 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
         {
             try
             {
+                if (refreshCount > 0)
+                {
+                    refreshCount = 0;
+                    var responseMessage = new ResponseModel<T>().NoClientError();
+                    responseMessage.Message = "Insufficient permissions";
+                    return responseMessage;
+                }
+                refreshCount++;
                 if(await RefreshAndCheck())
                     return await GetResponseModel<T>(request);
             } catch(Exception) { /* I don't like this warning, it's useless */}

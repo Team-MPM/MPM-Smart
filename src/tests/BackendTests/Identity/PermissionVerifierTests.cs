@@ -53,7 +53,7 @@ public class PermissionVerifierTests
 
     public void CheckHasAccess(string permission, string requiredPermission, bool expectedResult)
     {
-        var handler = new PermissionHandler(null);
+        var handler = new PermissionHandler();
 
         var result = handler.HasAccess(permission, requiredPermission);
         Assert.Equal(expectedResult, result);
