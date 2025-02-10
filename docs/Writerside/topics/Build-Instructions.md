@@ -5,9 +5,7 @@ the command line using the `dotnet build` command. Node: Even when running only 
 performing a full dotnet build on the solution first is recommended so that all the plugins and 
 dependencies are built correctly the first time you run them locally.
 
-To build the device firmware, open the Platform IO workspace in Visual Studio Code and build the
-project using the Platform IO build command. Alternatively, you can, of course, use Platform IO
-on the command line as well.
+To build the device firmware, use the esp-idf commandline took to build and flash the image.
 
 To build the documentation as PDF, open the JetBrains Writerside workspace and build the documentation
 using the included run configuration.

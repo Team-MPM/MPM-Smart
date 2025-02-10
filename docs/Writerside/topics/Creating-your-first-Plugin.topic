@@ -9,7 +9,8 @@
     </title>
     <chapter title="Introduction" id="introduction">
         <p>
-            Create an empty C# dotnet 9.0 class library and adapt the
+            Use the provided template or
+            create an empty C# dotnet 9.0 class library and adapt the
             <path>Plugin.csproj</path> file to the following:
         </p>
 

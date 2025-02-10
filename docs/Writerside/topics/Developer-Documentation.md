@@ -1,6 +1,6 @@
 # Developer Documentation
 
-This document is intended for developers who want to contribute to the Writerside project. 
+This document is intended for developers who want to contribute to the project. 
 It provides an overview of the project's architecture, the technologies used, and the development process.
 
 ## Required Tools

@@ -4,7 +4,7 @@
 
 The solution is generally organized into the following parts:
 - Dotnet Solution **.sln**/**.slnx**
-- Visual Studio Code Workspace **.code-workspace** for Platform IO
+- Cmake Project based on the ESP-IDF
 
 ## Dotnet Solution Architecture
 
@@ -57,3 +57,11 @@ It also contains the documentation reference and a List of all Mpm-Smart devices
 Solution folder containing all the Unit tests separated into the different layers.
 There is also a **TestBase** class library that provides a unified testing experience. 
 We primarily use XUnit for testing, FluentAssertion for assertions, and Moq for mocking.
+
+## ESP-IDF Project Architecture
+
+The ESP-IDF project is organized into the following parts:
+- **main** - Application entrypoint
+- **shared** - Shared code between the different plugins
+- **application** - Contains the primary application layer and base logic handling connections and setup
+- **extensions** - Contains the different plugins, for example the dht and sound sensor drivers

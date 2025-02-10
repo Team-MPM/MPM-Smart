@@ -17,7 +17,7 @@
         <p>
             Put your plugin dll output in the plugin directory of the controller application.
             Hot reloads aren't supported, so you have to restart the backend every time you rebuild the
-            plugin.
+            plugin. This can be automated using build-hooks. The UI should handle the reconnection logic automatically.
         </p>
     </chapter>
 </topic>
