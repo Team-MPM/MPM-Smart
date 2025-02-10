@@ -18,8 +18,16 @@ public static class DataEndpoints
         
          group.MapPost("/query", ProcessQuery)
             .RequirePermission(UserClaims.SubmitDataQuery);
+
+         group.MapGet("/logs", GetLatestBackendLogs);
         
         return endpoints;
+    }
+
+    private static async Task<IResult> GetLatestBackendLogs()
+    {
+        var data = await File.ReadAllLinesAsync("logs/backend.log");
+        return Results.Json(data);
     }
 
     private static IResult GetDataPoints([FromServices] DataIndex index) => 

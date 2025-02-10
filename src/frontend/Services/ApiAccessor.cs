@@ -249,6 +249,9 @@ public class ApiAccessor(ControllerConnectionManager controllerConnectionManager
     public async Task<ResponseModel<List<DataPointDto>>> GetDataPoints() =>
         await GetResponseModel<List<DataPointDto>>(client => client.GetAsync($"/api/data"));
     
+    public async Task<ResponseModel<string[]>> GetBackendLogs() =>
+        await GetResponseModel<string[]>(client => client.GetAsync($"/api/data/logs"));
+    
     // ------------------------------------------------------------------------
     
     private async Task<bool> RefreshAndCheck()
