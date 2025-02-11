@@ -35,17 +35,44 @@ public class EnvironmentSensorPluginClass : PluginBase<EnvironmentSensorPluginCl
         var controller = Services!.GetRequiredService<EnvironmentSensorController>();
         var dataIndex = Services!.GetRequiredService<DataIndex>();
         var permissionProvider = ApplicationServices.GetRequiredService<AvailablePermissionProvider>();
+        var deviceTypeRegistry = ApplicationServices.GetRequiredService<DeviceTypeRegistry>();
+        var deviceType = deviceTypeRegistry.GetDeviceType<SmartDeviceType>();
         
         permissionProvider.AddRange("EnvironmentSensor", ["EnvironmentSensor.Read"]);
-        
+                
         deviceRegistry.DeviceRegistered += device =>
         {
             if (device.Info.Type is SmartDeviceType smartDeviceType)
             {
-                //if (device.Info.Capabilities.ContainsKey("environment_sensor"))
+                if (device.Info.Capabilities.ContainsKey("environment_sensor"))
                     controller.RegisterDevice(device);
             }
         };
+        
+        _ = Task.Run(async () =>
+        {
+            await deviceRegistry.RegisterDeviceAsync(new Device()
+            {
+                Info = new DeviceInfo
+                {
+                    Name = "Environment Sensor 1",
+                    Description = "Environment Sensor 1",
+                    Serial = "573412826234",
+                    Type = deviceType!,
+                    Capabilities = new Dictionary<string, string>()
+                    {
+                        { "environment_sensor", "environment_sensor" }
+                    },
+                    Details = new Dictionary<string, string>()
+                },
+                State = DeviceState.Connected,
+                MetaData = new DeviceMeta()
+                {
+                    Location = "Living Room",
+                    ConnectionDetails = new Dictionary<string, string>()
+                }
+            });
+        });
         
         dataIndex.Add(new DataPoint
         {
@@ -54,7 +81,7 @@ public class EnvironmentSensorPluginClass : PluginBase<EnvironmentSensorPluginCl
             QueryType = DataQueryType.ComboDouble,
             Unit = "°C",
             Plugin = this,
-            ComboOptions = ["Sensor 1"],
+            ComboOptions = ["573412826234"],
             Permission = "EnvironmentSensor.Temp.Read",
             QueryHandler = async query => await controller.ProcessTempQuery(query)
         });
@@ -64,9 +91,9 @@ public class EnvironmentSensorPluginClass : PluginBase<EnvironmentSensorPluginCl
             Name = "Humidity",
             Description = "Temperature",
             QueryType = DataQueryType.ComboDouble,
-            Unit = "°C",
+            Unit = "%",
             Plugin = this,
-            ComboOptions = ["Sensor 1"],
+            ComboOptions = ["573412826234"],
             Permission = "EnvironmentSensor.Hum.Read",
             QueryHandler = async query => await controller.ProcessHumidityQuery(query)
         });
@@ -75,6 +102,29 @@ public class EnvironmentSensorPluginClass : PluginBase<EnvironmentSensorPluginCl
     }
 
     protected override Task OnOptionBuilding(OptionsBuilder builder)
+    {
+        return Task.CompletedTask;
+    }
+}
+
+public class DemoTempDeviceType : IDeviceType
+{
+    public required IPlugin Plugin { get; init; }
+    public IDictionary<string, string> Parameters => new Dictionary<string, string>();
+    public bool IsSensor => true;
+
+    public IAsyncEnumerable<DeviceInfo> ScanAsync()
+    {
+        return AsyncEnumerable.Empty<DeviceInfo>();
+    }
+
+    public Task<Device?> ConnectAsync(DeviceInfo deviceInfo, DeviceMeta metadata,
+        IDictionary<string, object> parameters)
+    {
+        return Task.FromResult<Device?>(null);
+    }
+
+    public Task PollAsync(Device device)
     {
         return Task.CompletedTask;
     }

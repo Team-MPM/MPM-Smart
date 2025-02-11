@@ -1,32 +1,51 @@
 ﻿@page "/home"
+@using ApiSchema
 @using Frontend.Services
 @using Microsoft.AspNetCore.Authorization
+@using Frontend.Components.Data
+@using Shared
 @layout MainLayout
 @attribute [Authorize]
 @inject ApiAccessor Api
 
 <h1>Dashboard</h1>
 
-@if (m_Error is not null)
-{
-    <MudText Typo="Typo.body1" Color="Color.Error">@m_Error</MudText>
-}
-
-@if (m_ChartData is null)
+@if (m_DataPoints is null)
 {
     <MudText>Loading...</MudText>
 }
 else
 {
     <MudGrid Class="p-3">
-        @foreach (var chart in m_ChartData)
+        @foreach (var item in m_DataPoints)
         {
             <MudItem xs="12" sm="6" md="4">
-                <MudCard>
-                    <MudCardContent>
-                        <MudChart ChartType="ChartType.Line" ChartSeries="chart" Height="250px"/>
-                    </MudCardContent>
-                </MudCard>
+                @if (DataTypeHelper.IsSeries(item.QueryType))
+                {
+                    <DataCell
+                        T="ComboSeriesDataQueryResultDto"
+                        DataPoint="item"
+                        Query="new DataQueryDto(
+                    Id: item.Id, 
+                    Granularity: TimeSpan.FromMinutes(1), 
+                    From: DateTime.UtcNow.AddHours(-1),
+                    To: DateTime.UtcNow,
+                    ComboOptions: item.ComboOptions, 
+                    Filter: null)"/>
+                }
+                else
+                {
+                    <DataCell
+                        T="ComboDataQueryResultDto"
+                        DataPoint="item"
+                        Query="new DataQueryDto(
+                        Id: item.Id, 
+                        Granularity: null, 
+                        From: null,
+                        To: null,
+                        ComboOptions: item.ComboOptions, 
+                        Filter: null)"/>
+                }
             </MudItem>
         }
     </MudGrid>
@@ -34,23 +53,11 @@ else
 
 @code {
 
-    private List<List<ChartSeries>>? m_ChartData;
-    private string? m_Error;
+    private List<DataPointDto>? m_DataPoints;
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        m_ChartData =
-        [
-            new List<ChartSeries>
-            {
-                new()
-                {
-                    Name = "Test",
-                    Data = [1, 2, 3, 4, 5]
-                }
-            }
-        ];
-        return Task.CompletedTask;
+        m_DataPoints = (await Api.GetDataPoints()).Response;
     }
 
 }

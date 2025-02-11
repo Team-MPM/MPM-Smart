@@ -1,0 +1,401 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-bash.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-csharp.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-json.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-markup.min.js"></script><style>
+        .article {
+            position: relative;
+            padding-bottom: 24px;
+        }
+        
+
+        .bordered-element-rounded {
+            border: 1px solid #c4c4c4;
+            border-radius: 7px;
+            overflow: hidden;
+        }
+        
+
+        .center {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+
+        .center-text {
+            text-align: center;
+        }
+        
+
+        .code-block {
+            overflow: hidden;
+            position: relative;
+            padding: 0;
+            border-radius: 8px;
+            font-variant-ligatures: none;
+            background-color: rgba(25, 25, 28, .05);
+            word-break: break-all;
+        }
+        
+
+        .container {
+            max-width: 100%;
+            overflow: hidden;
+            page-break-inside: avoid;
+            display: block;
+        }
+        
+
+        .control {
+            color: #19191c;
+            font-size: 16px;
+            font-weight: 670;
+        }
+        
+
+        .detached {
+            margin-block-start: 0;
+            margin-block-end: 0;
+            margin-bottom: 8px;
+        }
+        
+
+        .filepath {
+            color: #19191c;
+            font-size: 15px;
+            font-weight: 700;
+            line-height: inherit;
+        }
+        
+
+        .flex {
+            display: flex;
+        }
+        
+
+        .image {
+            max-width: 100%;
+            max-height: 90vh;
+            height: auto;
+        }
+        
+
+        .image-container {
+            max-width: 100vw;
+        }
+        
+
+        .image-size {
+            height: auto;
+        }
+        
+
+        .inline-code {
+            border-radius: 4px;
+            display: inline;
+            padding: 2px 1px;
+            font-family: JetBrains Sans,monospace;
+            background: #e6e6e6;
+        }
+        
+
+        .list {
+            list-style-type: disc;
+            padding-left: 0;
+            margin-left: 15px;
+        }
+        
+
+        .list-item {
+            margin-top: 6px;
+            margin-bottom: 6px;
+            margin-left: 4px;
+        }
+        
+
+        .main-title {
+            padding-bottom: 24px;
+            margin-top: 0;
+            font-size: 40px;
+            margin-block-start: 0;
+            margin-block-end: 0;
+        }
+        
+
+        .prism {
+            page-break-inside: avoid;
+        }
+        
+        /* PrismJS 1.29.0
+https://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript+abap+abnf+actionscript+ada+agda+al+antlr4+apacheconf+apex+apl+applescript+aql+arduino+arff+armasm+arturo+asciidoc+aspnet+asm6502+asmatmel+autohotkey+autoit+avisynth+avro-idl+awk+bash+basic+batch+bbcode+bbj+bicep+birb+bison+bnf+bqn+brainfuck+brightscript+bro+bsl+c+csharp+cpp+cfscript+chaiscript+cil+cilkc+cilkcpp+clojure+cmake+cobol+coffeescript+concurnas+csp+cooklang+coq+crystal+css-extras+csv+cue+cypher+d+dart+dataweave+dax+dhall+diff+django+dns-zone-file+docker+dot+ebnf+editorconfig+eiffel+ejs+elixir+elm+etlua+erb+erlang+excel-formula+fsharp+factor+false+firestore-security-rules+flow+fortran+ftl+gml+gap+gcode+gdscript+gedcom+gettext+gherkin+git+glsl+gn+linker-script+go+go-module+gradle+graphql+groovy+haml+handlebars+haskell+haxe+hcl+hlsl+hoon+http+hpkp+hsts+ichigojam+icon+icu-message-format+idris+ignore+inform7+ini+io+j+java+javadoc+javadoclike+javastacktrace+jexl+jolie+jq+jsdoc+js-extras+json+json5+jsonp+jsstacktrace+js-templates+julia+keepalived+keyman+kotlin+kumir+kusto+latex+latte+less+lilypond+liquid+lisp+livescript+llvm+log+lolcode+lua+magma+makefile+markdown+markup-templating+mata+matlab+maxscript+mel+mermaid+metafont+mizar+mongodb+monkey+moonscript+n1ql+n4js+nand2tetris-hdl+naniscript+nasm+neon+nevod+nginx+nim+nix+nsis+objectivec+ocaml+odin+opencl+openqasm+oz+parigp+parser+pascal+pascaligo+psl+pcaxis+peoplecode+perl+php+phpdoc+php-extras+plant-uml+plsql+powerquery+powershell+processing+prolog+promql+properties+protobuf+pug+puppet+pure+purebasic+purescript+python+qsharp+q+qml+qore+r+racket+cshtml+jsx+tsx+reason+regex+rego+renpy+rescript+rest+rip+roboconf+robotframework+ruby+rust+sas+sass+scss+scala+scheme+shell-session+smali+smalltalk+smarty+sml+solidity+solution-file+soy+sparql+splunk-spl+sqf+sql+squirrel+stan+stata+iecst+stylus+supercollider+swift+systemd+t4-templating+t4-cs+t4-vb+tap+tcl+tt2+textile+toml+tremor+turtle+twig+typescript+typoscript+unrealscript+uorazor+uri+v+vala+vbnet+velocity+verilog+vhdl+vim+visual-basic+warpscript+wasm+web-idl+wgsl+wiki+wolfram+wren+xeora+xml-doc+xojo+xquery+yaml+yang+zig&plugins=highlight-keywords */
+code[class*=language-],pre[class*=language-]{color:#000;background:0 0;text-shadow:0 1px #fff;font-family:Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;font-size:1em;text-align:left;white-space:pre-wrap;word-spacing:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}code[class*=language-] ::-moz-selection,code[class*=language-]::-moz-selection,pre[class*=language-] ::-moz-selection,pre[class*=language-]::-moz-selection{text-shadow:none;background:#b3d4fc}code[class*=language-] ::selection,code[class*=language-]::selection,pre[class*=language-] ::selection,pre[class*=language-]::selection{text-shadow:none;background:#b3d4fc}@media print{code[class*=language-],pre[class*=language-]{text-shadow:none}}pre[class*=language-]{padding:16px;margin:0;overflow:auto}:not(pre)>code[class*=language-],pre[class*=language-]{background:#f5f2f0}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal}.token.cdata,.token.comment,.token.doctype,.token.prolog{color:#708090}.token.punctuation{color:#999}.token.namespace{opacity:.7}.token.boolean,.token.constant,.token.deleted,.token.number,.token.property,.token.symbol,.token.tag{color:#905}.token.attr-name,.token.builtin,.token.char,.token.inserted,.token.selector,.token.string{color:#690}.language-css .token.string,.style .token.string,.token.entity,.token.operator,.token.url{color:#9a6e3a;background:hsla(0,0%,100%,.5)}.token.atrule,.token.attr-value,.token.keyword{color:#07a}.token.class-name,.token.function{color:#dd4a68}.token.important,.token.regex,.token.variable{color:#e90}.token.bold,.token.important{font-weight:700}.token.italic{font-style:italic}.token.entity{cursor:help}
+
+        
+
+        .prompt {
+            flex-direction: row;
+            letter-spacing: .0015em;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 24px;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        
+
+        .prompt-content {
+            padding: 15px;
+            overflow: hidden;
+            flex: 1 1 auto;
+        }
+        
+
+        .prompt-content-p p {
+            margin-block-start: 0;
+            margin-block-end: 0;
+        }
+        
+
+        .prompt-icon {
+            flex: 0 0 auto;
+            margin-left: 15px;
+            margin-top: 15px;
+            fill: currentcolor;
+            width: 24px;
+            height: 24px;
+        }
+        
+
+        .prompt-title {
+            font-size: 17px;
+            font-weight: 600;
+            line-height: 24px;
+            margin-bottom: 5px;
+            color: inherit;
+        }
+        
+
+        :root {
+            width: 95%;
+            max-width: 95vw;
+            padding: 0 0 0 30px;
+        }
+        
+        body {
+            font-family: JetBrains Sans,serif;
+        }
+        
+        a {
+            overflow-wrap: anywhere;
+            width: 100vw;
+        }
+        
+        
+        @font-face {
+            font-family: JetBrains Sans;
+            src: url(https://resources.jetbrains.com/storage/jetbrains-sans/JetBrainsSans-Light.woff2) format("woff2"), url(https://resources.jetbrains.com/storage/jetbrains-sans/JetBrainsSans-Light.woff) format("woff");
+            font-weight: 300;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: JetBrains Sans;
+            src: url(https://resources.jetbrains.com/storage/jetbrains-sans/JetBrainsSans-Regular.woff2) format("woff2"), url(https://resources.jetbrains.com/storage/jetbrains-sans/JetBrainsSans-Regular.woff) format("woff");
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: JetBrains Sans;
+            src: url(https://resources.jetbrains.com/storage/jetbrains-sans/JetBrainsSans-SemiBold.woff2) format("woff2"), url(https://resources.jetbrains.com/storage/jetbrains-sans/JetBrainsSans-SemiBold.woff) format("woff");
+            font-weight: 600;
+            font-style: normal;
+        }
+        
+        
+        code {
+            display: inline;
+            word-break: break-word;
+            font-size: 15px;
+            line-height: inherit;
+            font-variant-ligatures: none;
+            font-family: JetBrains Sans,monospace;
+            white-space: pre-line;
+            overflow-wrap: break-word;
+        }
+        
+        figcaption {
+            margin-top: 5px;
+        }
+        
+        h2 {
+            padding-top: 16px;
+            padding-bottom: 8px;
+            margin-block-start: 0;
+            margin-block-end: 0;
+        }
+        
+        h3 {
+            padding-top: 8px;
+            padding-bottom: 8px;
+            margin-block-start: 0;
+            margin-block-end: 0;
+        }
+        
+        h4 {
+            padding-top: 4px;
+            padding-bottom: 8px;
+            margin-block-start: 0;
+            margin-block-end: 0;
+        }
+        
+        p {
+            padding: 0;
+            border: 0;
+            line-height: 25px;
+            margin-block-start: 0;
+            margin-block-end: 0;
+            padding-bottom: 8px;
+        }
+        
+        div {
+            display: block;
+        }
+        
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            page-break-inside: avoid;
+        }
+        
+        th, td {
+            border: 1px solid #c4c4c4;
+            padding: 10px;
+            text-align: left;
+            word-break: break-all;
+        }
+        
+        .no-bold {
+            font-weight: normal; 
+        }
+        
+        .entry {
+            display: grid;
+            grid-template-columns: auto max-content;
+            grid-template-areas: "chapter page";
+            align-items: end;
+            gap: 0 .25rem;
+            line-height: 25px;
+        }
+        
+        .toc-link-container{
+            grid-area: chapter;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .toc-link{
+            text-decoration: none;
+            color: black;
+        }
+        
+        .toc-link-container::after {
+            position: absolute;
+            padding-left: .25ch;
+            content: " . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "
+            ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "
+            ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ";
+            text-align: right;
+        }
+        
+        .page {
+            grid-area: page;
+            width: 30px;
+            text-align: right;
+        }
+        
+
+        .tip {
+            background-color: rgba(25, 25, 28, .05);
+        }
+        
+
+        .topic {
+            page-break-before: always;
+        }
+        </style><title>pdfSourceIN</title></head><body><div><section class="topic"><div><article class="article"><h1 class="main-title">Table of Contents</h1><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#2255103">Home</a></div><div class="page">2</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-1838751110">User Guide</a></div><div class="page">3</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-472489356">Initial Setup</a></div><div class="page">4</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-440975196">Devices Integration</a></div><div class="page">5</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-1443814627">Plugin Management</a></div><div class="page">6</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-2026317385">Developer Documentation</a></div><div class="page">7</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#1003994483">Architecture</a></div><div class="page">9</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#1463711460">Build Instructions</a></div><div class="page">12</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-361982235">Deployment</a></div><div class="page">13</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#1189023616">Plugins</a></div><div class="page">15</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-877782410">Creating your first Plugin</a></div><div class="page">16</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#1005571011">Developing plugins locally</a></div><div class="page">19</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-2092318995">Managing Plugin Services</a></div><div class="page">20</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#-1325909946">Publishing Plugins</a></div><div class="page">22</div></div><div class="entry"><div class="toc-link-container"><a class="toc-link" href="#861295418">Presentation</a></div><div class="page">23</div></div></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="2255103">Home</h1><section class="detached"><h2 id="2255103#the-team" data-toc="the-team#Home.topic-the-team">The Team</h2><ul class="list" id="2255103#aibljw_5" start="1"><li class="list-item" id="2255103#aibljw_6"><p>Plazinski Olaf (Team Lead)</p></li><li class="list-item" id="2255103#aibljw_7"><p>Martin Gabriel (Tech)</p></li><li class="list-item" id="2255103#aibljw_8"><p>Mayer Julian (UI)</p></li><li class="list-item" id="2255103#aibljw_9"><p>Toifl Jacob (UI)</p></li></ul></section><section class="detached"><h2 id="2255103#the-idea" data-toc="the-idea#Home.topic-the-idea">The idea</h2><p id="2255103#aibljw_10">Creating a fully wireless smart-home/<span id="2255103#aibljw_11">IOT</span> automation system with a central management controller. We implement an open standard built on plugins and an extensible architecture. The entire Project is fully open source, and contributions from the community are highly welcome. We collect metrics and telemetry from multiple sources and display them in custom configurable dashboards. We also plan to support actor devices that can be controlled via the dashboard in real time or automatically controlled via dynamic workflows.</p></section></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-1838751110">User Guide</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-472489356">Initial Setup</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-440975196">Devices Integration</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-1443814627">Plugin Management</h1></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-2026317385">Developer Documentation</h1><p id="-2026317385#-cnjdkm_3">This document is intended for developers who want to contribute to the project. It provides an overview of the project's architecture, the technologies used, and the development process.</p><section class="detached"><h2 id="-2026317385#required-tools" data-toc="required-tools#Developer-Documentation.md-required-tools">Required Tools</h2><ul class="list" id="-2026317385#-cnjdkm_8" start="1"><li class="list-item" id="-2026317385#-cnjdkm_9"><p>.NET 9 SDK</p></li><li class="list-item" id="-2026317385#-cnjdkm_10"><p>Dotnet ef tools (For Entity Framework Core)</p></li><li class="list-item" id="-2026317385#-cnjdkm_11"><p>Platform IO (For ESP32 development)</p></li><li class="list-item" id="-2026317385#-cnjdkm_12"><p>JetBrains Writerside (Documentation)</p></li><li class="list-item" id="-2026317385#-cnjdkm_13"><p>Docker</p></li><li class="list-item" id="-2026317385#-cnjdkm_14"><p>A modern web browser</p></li><li class="list-item" id="-2026317385#-cnjdkm_15"><p>Git</p></li><li class="list-item" id="-2026317385#-cnjdkm_16"><p>Make</p></li></ul></section><section class="detached"><h2 id="-2026317385#optional-tools" data-toc="optional-tools#Developer-Documentation.md-optional-tools">Optional Tools</h2><ul class="list" id="-2026317385#-cnjdkm_17" start="1"><li class="list-item" id="-2026317385#-cnjdkm_18"><p>Azd</p></li><li class="list-item" id="-2026317385#-cnjdkm_19"><p>Rider</p></li><li class="list-item" id="-2026317385#-cnjdkm_20"><p>Visual Studio Code</p></li><li class="list-item" id="-2026317385#-cnjdkm_21"><p>cppcheck</p></li></ul></section><section class="detached"><h2 id="-2026317385#github-actions" data-toc="github-actions#Developer-Documentation.md-github-actions">GitHub Actions</h2><section class="detached"><h3 id="-2026317385#automatic-testing" data-toc="automatic-testing#Developer-Documentation.md-automatic-testing">Automatic Testing</h3><p id="-2026317385#-cnjdkm_25">The project uses GitHub Actions to run tests on every push/pr to the master branch. These tests are mandatory and must pass before a PR can be merged. When contributing new code, also try to achieve full test coverage where possible.</p></section><section class="detached"><h3 id="-2026317385#continuous-integration" data-toc="continuous-integration#Developer-Documentation.md-continuous-integration">Continuous Integration</h3><p id="-2026317385#-cnjdkm_26">The server image will be automatically built and published on push to the master branch. The documentation will be published on GitHub pages.</p><p id="-2026317385#-cnjdkm_27">In the future, there will be also plans to automatically publish all the base packages on nuget and build debian packages, including a full raspberry pi image.</p></section><section class="detached"><h3 id="-2026317385#code-quality" data-toc="code-quality#Developer-Documentation.md-code-quality">Code Quality</h3><p id="-2026317385#-cnjdkm_28">The project uses GitHub Actions to run code quality checks on every push/pr to the master branch. These checks are mandatory and must pass before a PR can be merged.</p></section></section><section class="detached"><h2 id="-2026317385#getting-the-code" data-toc="getting-the-code#Developer-Documentation.md-getting-the-code">Getting the Code</h2><p id="-2026317385#-cnjdkm_29">To get the code, clone the repository:</p><div class="detached code-block" id="-2026317385#-cnjdkm_30"><pre><code class="language-bash">git clone --recursive https://github.com/Team-MPM/MPM-Smart</code></pre></div></section></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="1003994483">Architecture</h1><section class="detached"><h2 id="1003994483#introduction" data-toc="introduction#Architecture.md-introduction">Introduction</h2><p id="1003994483#z694fme_6">The solution is generally organized into the following parts:</p><ul class="list" id="1003994483#z694fme_7" start="1"><li class="list-item" id="1003994483#z694fme_8"><p>Dotnet Solution <span class="control" id="1003994483#z694fme_10">.sln</span>/<span class="control" id="1003994483#z694fme_11">.slnx</span></p></li><li class="list-item" id="1003994483#z694fme_9"><p>Cmake Project based on the ESP-IDF</p></li></ul></section><section class="detached"><h2 id="1003994483#dotnet-solution-architecture" data-toc="dotnet-solution-architecture#Architecture.md-dotnet-solution-architecture">Dotnet Solution Architecture</h2><div class="container"><figure class="image-container"><img class="center image image-size" id="1003994483#z694fme_12" alt="solution_architecture" title="solution_architecture" src="/home/gabriel/Repos/Mpm-Smart/docs/Writerside/images/solution_architecture.png" width="356" height="507"><figcaption class="center-text">solution_architecture</figcaption></figure></div><section class="detached"><h3 id="1003994483#frontend" data-toc="frontend#Architecture.md-frontend">Frontend</h3><p id="1003994483#z694fme_22">The frontend is responsible for rendering the user interface and handling user input.</p><p id="1003994483#z694fme_23">The frontend is a Blazor WebAssembly application. It is written in C# and runs in the browser. It makes use of the PWA (Progressive Web App) features to provide an offline-first experience.</p><p id="1003994483#z694fme_24">We primarily make use of the following libraries:</p><ul class="list" id="1003994483#z694fme_25" start="1"><li class="list-item" id="1003994483#z694fme_26"><p>MudBlazor</p></li><li class="list-item" id="1003994483#z694fme_27"><p>FluentValidation</p></li></ul></section><section class="detached"><h3 id="1003994483#backend" data-toc="backend#Architecture.md-backend">Backend</h3><p id="1003994483#z694fme_28">The backend is the primary application component running on the controller unit. It is responsible for loading all the plugins and managing the communication between them. It handles the communication between devices and acts as a bridge between the frontend and the plugins.</p></section><section class="detached"><h3 id="1003994483#control-process" data-toc="control-process#Architecture.md-control-process">Control Process</h3><p id="1003994483#z694fme_29">Manages the lifetime of the backend process and handles plugin updates and automatic restarts.</p></section><section class="detached"><h3 id="1003994483#api-schema" data-toc="api-schema#Architecture.md-api-schema">Api Schema</h3><p id="1003994483#z694fme_30">Shared class library that contains the data transfer objects (DTOs) used by the frontend and the backend.</p></section><section class="detached"><h3 id="1003994483#shared" data-toc="shared#Architecture.md-shared">Shared</h3><p id="1003994483#z694fme_31">Shared class library that contains the shared code between the backend and the plugin layer.</p></section><section class="detached"><h3 id="1003994483#plugin-base" data-toc="plugin-base#Architecture.md-plugin-base">Plugin Base</h3><p id="1003994483#z694fme_32">Base code and Interfaces for Plugins to reference.</p></section><section class="detached"><h3 id="1003994483#data" data-toc="data#Architecture.md-data">Data</h3><p id="1003994483#z694fme_33">Data Layer of the core Backend Application containing all EF Core Entities and the Database Context configurations.</p></section><section class="detached"><h3 id="1003994483#server-serverhost" data-toc="server-serverhost#Architecture.md-server-serverhost">Server/ServerHost</h3><p id="1003994483#z694fme_34">THe Plugin Server providing Plugins for download via Azure Cloud Storage. It also contains the documentation reference and a List of all Mpm-Smart devices.</p></section><section class="detached"><h3 id="1003994483#tests" data-toc="tests#Architecture.md-tests">Tests</h3><p id="1003994483#z694fme_35">Solution folder containing all the Unit tests separated into the different layers. There is also a <span class="control" id="1003994483#z694fme_36">TestBase</span> class library that provides a unified testing experience. We primarily use XUnit for testing, FluentAssertion for assertions, and Moq for mocking.</p></section></section><section class="detached"><h2 id="1003994483#esp-idf-project-architecture" data-toc="esp-idf-project-architecture#Architecture.md-esp-idf-project-architecture">ESP-IDF Project Architecture</h2><p id="1003994483#z694fme_37">The ESP-IDF project is organized into the following parts:</p><ul class="list" id="1003994483#z694fme_38" start="1"><li class="list-item" id="1003994483#z694fme_39"><p><span class="control" id="1003994483#z694fme_43">main</span> - Application entrypoint</p></li><li class="list-item" id="1003994483#z694fme_40"><p><span class="control" id="1003994483#z694fme_44">shared</span> - Shared code between the different plugins</p></li><li class="list-item" id="1003994483#z694fme_41"><p><span class="control" id="1003994483#z694fme_45">application</span> - Contains the primary application layer and base logic handling connections and setup</p></li><li class="list-item" id="1003994483#z694fme_42"><p><span class="control" id="1003994483#z694fme_46">extensions</span> - Contains the different plugins, for example the dht and sound sensor drivers</p></li></ul></section></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="1463711460">Build Instructions</h1><p id="1463711460#-9eo457_3">To build the dotnet solution, open the solution file in the IDE of your choice or build it from the command line using the <span class="inline-code" id="1463711460#-9eo457_9">dotnet build</span> command. Node: Even when running only a specific project, performing a full dotnet build on the solution first is recommended so that all the plugins and dependencies are built correctly the first time you run them locally.</p><p id="1463711460#-9eo457_4">To build the device firmware, use the esp-idf commandline took to build and flash the image.</p><p id="1463711460#-9eo457_5">To build the documentation as PDF, open the JetBrains Writerside workspace and build the documentation using the included run configuration.</p><p id="1463711460#-9eo457_6">The Makefile in the root of the repository provides shortcuts for mose these commands.</p><p id="1463711460#-9eo457_7">To build the debian packages and controller images from source, consult the <span class="inline-code" id="1463711460#-9eo457_10">make help</span> command. Note that this requires you to be on a linux system and have the specified dependencies installed.</p><p id="1463711460#-9eo457_8">To run the frontend in release mode locally, perform a <span class="inline-code" id="1463711460#-9eo457_11">dotnet publish -c Release</span> on the frontend, then navigate to the output directory based on <span class="inline-code" id="1463711460#-9eo457_12">bin/Release/net9.0/publish/wwwroot</span> and run a local webserver to serve the files in this directory (tested using apache2 and nginx). This can easily be achieved using docker: <span class="inline-code" id="1463711460#-9eo457_13">docker run -it --rm -p 8080:80 --name mpm-smart-app -v .:/usr/local/apache2/htdocs:ro httpd</span></p></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-361982235">Deployment</h1><section class="detached"><h2 id="-361982235#deploying-a-controller" data-toc="deploying-a-controller#Deployment.md-deploying-a-controller">Deploying a Controller</h2><p id="-361982235#z9k6ijo_6">To deploy a custom controller instance, make sure you have a linux based machine with supported hardware configuration (see Hardware Requirements (<a href="https://harware-requirement">https://harware-requirement</a>)).</p><p id="-361982235#z9k6ijo_7">You can use the included makefile to build the debian package and controller image. Alternatively you can also build the app from source manually using <span class="inline-code" id="-361982235#z9k6ijo_10">dotnet build</span> and copy over the files manually. To make sure the controller software starts automatically on boot, you can use the included systemd service file.</p><p id="-361982235#z9k6ijo_8">After following these steps you should be able to connect to your controller in the web ui and undergo the guided setup process.</p></section><section class="detached"><h2 id="-361982235#deploying-the-plugin-server" data-toc="deploying-the-plugin-server#Deployment.md-deploying-the-plugin-server">Deploying the plugin server</h2><p id="-361982235#z9k6ijo_11">The server host project, based on dotnet aspire allows easy deployment no matter what environment you are using. Use <span class="inline-code" id="-361982235#z9k6ijo_16">dotnet publish</span> on the server host to automatically generate the manifest. This manifest can be used for automatic incremental deployments.</p><p id="-361982235#z9k6ijo_12">For example, to deploy to azure, one can simply use the azd commandline tool with</p><ul class="list" id="-361982235#z9k6ijo_13" start="1"><li class="list-item" id="-361982235#z9k6ijo_17"><p><span class="inline-code" id="-361982235#z9k6ijo_20">azd init</span></p></li><li class="list-item" id="-361982235#z9k6ijo_18"><p><span class="inline-code" id="-361982235#z9k6ijo_21">azd up</span></p></li><li class="list-item" id="-361982235#z9k6ijo_19"><p><span class="inline-code" id="-361982235#z9k6ijo_22">azd publish</span></p></li></ul><p id="-361982235#z9k6ijo_14">Alternatively you can also use other tools like aspirate for custom kubernetes deployments.</p><p id="-361982235#z9k6ijo_15">Also make sure all the azure based cloud resources are set up accordingly and all connection strings are set via user storage or appsettings.json.</p></section><section class="detached"><h2 id="-361982235#deploying-the-frontend" data-toc="deploying-the-frontend#Deployment.md-deploying-the-frontend">Deploying the Frontend</h2><p id="-361982235#z9k6ijo_23">To deploy the frontend, use the <span class="inline-code" id="-361982235#z9k6ijo_24">dotnet publish</span> command inside <span class="inline-code" id="-361982235#z9k6ijo_25">src/frontend</span>. Then navigate to the build outputs <span class="inline-code" id="-361982235#z9k6ijo_26">wwwroot</span> directory and deploy this to a webserver of your choice. YOu can, for example, run a local docker container: <span class="inline-code" id="-361982235#z9k6ijo_27">docker run -it --rm -p 8080:80 --name mpm-smart-app -v .:/usr/local/apache2/htdocs:ro httpd</span></p></section></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="1189023616">Plugins</h1><section class="detached"><h2 id="1189023616#overview" data-toc="overview#Plugins.topic-overview">Overview</h2><p id="1189023616#-sk2kkb_5">Plugins are a way to extend the functionality of the Core Application Layer provided by the Mpm-Smart ecosystem. Plugins are usually provided by a Plugin Server or loaded from a local directory on the controller. Plugins are exclusive to the backend layer. In the UI, all plugins can implement a set of options and views providing user interactivity for plugin-specific settings and exposed data.</p></section><section class="detached"><h2 id="1189023616#how-plugins-get-loaded" data-toc="how-plugins-get-loaded#Plugins.topic-how-plugins-get-loaded">How plugins get loaded</h2><p id="1189023616#-sk2kkb_6">Plugins are loaded by the Plugin Manager. The Plugin Manager is responsible for loading, unloading, and managing the lifecycle of plugins. All Plugins are loaded at startup and are initialized in no specific order. Currently, there is no way of reloading plugins while the backend service is running. In deployment, this update workflow is automated by the control process shipping with the backend.</p></section></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-877782410">Creating your first Plugin</h1><section class="detached"><h2 id="-877782410#introduction" data-toc="introduction#Creating-your-first-Plugin.topic-introduction">Introduction</h2><p id="-877782410#m60y6r_6">Use the provided template or create an empty C# dotnet 9.0 class library and adapt the <span class="filepath" id="-877782410#m60y6r_11">Plugin.csproj</span> file to the following:</p><div class="detached code-block" id="-877782410#m60y6r_7"><pre><code class="language-markup">&lt;Project Sdk=&quot;Microsoft.NET.Sdk&quot;&gt;
+
+    &lt;PropertyGroup&gt;
+        &lt;TargetFramework&gt;net9.0&lt;/TargetFramework&gt;
+        &lt;ImplicitUsings&gt;enable&lt;/ImplicitUsings&gt;
+        &lt;Nullable&gt;enable&lt;/Nullable&gt;
+    &lt;/PropertyGroup&gt;
+
+    &lt;PropertyGroup&gt;
+        &lt;OutputPath&gt;your/plugin/output/path&lt;/OutputPath&gt;
+        &lt;AppendTargetFrameworkToOutputPath&gt;false&lt;/AppendTargetFrameworkToOutputPath&gt;
+    &lt;/PropertyGroup&gt;
+
+    &lt;ItemGroup&gt;
+        &lt;ProjectReference Include=&quot;..\plugin_base\PluginBase.csproj&quot; Private=&quot;False&quot;/&gt;
+        &lt;ProjectReference Include=&quot;..\..\Shared\Shared.csproj&quot; Private=&quot;False&quot;/&gt;
+    &lt;/ItemGroup&gt;
+
+    &lt;ItemGroup&gt;
+        &lt;FrameworkReference Include=&quot;Microsoft.AspNetCore.App&quot;/&gt;
+    &lt;/ItemGroup&gt;
+
+    &lt;ItemGroup&gt;
+        &lt;None Update=&quot;plugin.json&quot;&gt;
+            &lt;CopyToOutputDirectory&gt;Always&lt;/CopyToOutputDirectory&gt;
+        &lt;/None&gt;
+    &lt;/ItemGroup&gt;
+
+&lt;/Project&gt;</code></pre></div><p id="-877782410#m60y6r_8">Note: In the future, the PluginBase and Shared references will be replaced by NuGet packages.</p><p id="-877782410#m60y6r_9">The <span class="filepath" id="-877782410#m60y6r_12">plugin.json</span> metadata file is a simple JSON file that contains some general information about the plugin. It should look like this:</p><div class="detached code-block" id="-877782410#m60y6r_10"><pre><code class="language-json">{
+    &quot;name&quot;: &quot;Test Plugin&quot;,
+    &quot;version&quot;: &quot;1.0.0&quot;,
+    &quot;description&quot;: &quot;This is a test plugin&quot;,
+    &quot;author&quot;: &quot;Your Name&quot;,
+    &quot;dependencies&quot;: []
+}</code></pre></div></section><section class="detached"><h2 id="-877782410#plugin-class" data-toc="plugin-class#Creating-your-first-Plugin.topic-plugin-class">Plugin Class</h2><p id="-877782410#m60y6r_13">Create a new class that implements the <span class="inline-code" id="-877782410#m60y6r_15">IPlugin</span> interface. Alternatively, one can also make use of the <span class="inline-code" id="-877782410#m60y6r_16">PluginBase</span> class that provides some default implementations.</p><div class="detached code-block" id="-877782410#m60y6r_14"><pre><code class="language-csharp">public class TestPluginClass : PluginBase&lt;TestPluginClass&gt;
+{
+    protected override void Initialize()
+    {
+        
+    }
+
+    protected override void BuildEndpoints(IEndpointRouteBuilder routeBuilder)
+    {
+    
+    }
+
+    protected override void ConfigureServices(IServiceCollection services)
+    {
+    
+    }
+
+    protected override void SystemStart()
+    {
+        
+    }
+}</code></pre></div></section><section class="detached"><h2 id="-877782410#additional-considerations" data-toc="additional-considerations#Creating-your-first-Plugin.topic-additional-considerations">Additional Considerations</h2><ul class="list" id="-877782410#m60y6r_17" start="1"><li class="list-item" id="-877782410#m60y6r_18"><p>Make sure to include all static assets in the output folder of the plugin.</p></li><li class="list-item" id="-877782410#m60y6r_19"><p>Make sure there are no overlapping .dll file dependencies with the backend application for shared types.</p></li><li class="list-item" id="-877782410#m60y6r_20"><p>Make sure to include all necessary files in the .csproj file.</p></li><li class="list-item" id="-877782410#m60y6r_21"><p>Make sure to include all necessary dependencies in the <span class="inline-code" id="-877782410#m60y6r_22">plugin.json</span> file.</p></li></ul></section></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="1005571011">Developing plugins locally</h1><section class="detached"><h2 id="1005571011#building_the_plugin" data-toc="building_the_plugin#Developing-plugins-locally.topic-building_the_plugin">Building the plugin</h2><p id="1005571011#-7vj9eo_3">To build a plugin, you need to have the following prerequisites:</p><ul class="list" id="1005571011#-7vj9eo_4" start="1"><li class="list-item" id="1005571011#-7vj9eo_6"><p>.NET 9 SDK</p></li><li class="list-item" id="1005571011#-7vj9eo_7"><p>A source build of the Mpm-Smart Controller</p></li><li class="list-item" id="1005571011#-7vj9eo_8"><p>The current version of the <span class="inline-code" id="1005571011#-7vj9eo_9">PluginBase.dll</span> and <span class="inline-code" id="1005571011#-7vj9eo_10">Shared.dll</span> libraries</p></li></ul><p id="1005571011#-7vj9eo_5">Put your plugin dll output in the plugin directory of the controller application. Hot reloads aren't supported, so you have to restart the backend every time you rebuild the plugin. This can be automated using build-hooks. The UI should handle the reconnection logic automatically.</p></section></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-2092318995">Managing Plugin Services</h1><section class="detached"><h2 id="-2092318995#introduction" data-toc="introduction#Managing-Plugin-Services.topic-introduction">Introduction</h2><p id="-2092318995#r4l5xm_6">All Services are divided into two parts:</p><ul class="list" id="-2092318995#r4l5xm_7" start="1"><li class="list-item" id="-2092318995#r4l5xm_8"><p><span class="control" id="-2092318995#r4l5xm_10">Core Services</span>: These are provided by the backend out of the box and can't be modified from the plugin stage</p></li><li class="list-item" id="-2092318995#r4l5xm_9"><p><span class="control" id="-2092318995#r4l5xm_11">Plugin Services</span>: These are provided by the plugins and can be modified from the plugin. They also offer a way for plugin to communicate with each other.</p></li></ul></section><section class="detached"><h2 id="-2092318995#logging" data-toc="logging#Managing-Plugin-Services.topic-logging">Logging</h2><p id="-2092318995#r4l5xm_12">The core application and plugin modules use two separate loggers. For development purposes, all logs are uniformly output to the same console. On disk, you will find a log directory with the following files:</p><ul class="list" id="-2092318995#r4l5xm_13" start="1"><li class="list-item" id="-2092318995#r4l5xm_19"><p><span class="filepath" id="-2092318995#r4l5xm_23">backend.log</span>: Contains all logs from the core application layer</p></li><li class="list-item" id="-2092318995#r4l5xm_20"><p><span class="filepath" id="-2092318995#r4l5xm_24">error.log</span>: Contains all errors from the core application layer</p></li><li class="list-item" id="-2092318995#r4l5xm_21"><p><span class="filepath" id="-2092318995#r4l5xm_25">plugin.log</span>: Contains all logs from the plugin modules</p></li><li class="list-item" id="-2092318995#r4l5xm_22"><p><span class="filepath" id="-2092318995#r4l5xm_26">plugin-error.log</span>: Contains all errors from the plugin modules</p></li></ul><p id="-2092318995#r4l5xm_14">These log files use a plain text in UTF-8 format and use the following layout:  <span class="inline-code" id="-2092318995#r4l5xm_28">                 Date Time Timezone [LEVEL] Message             </span> For example:  <span class="inline-code" id="-2092318995#r4l5xm_31">                 2024-11-04 07:55:17.633 +01:00 [INF] Starting Mpm-Smart             </span></p><p id="-2092318995#r4l5xm_15">The logging system uses the default Microsoft.Extensions.Logging base library together with serilog for the backend and plugin modules. To use the logger, inject the <span class="inline-code" id="-2092318995#r4l5xm_32">ILogger&lt;T&gt;</span> interface into your service.</p><p id="-2092318995#r4l5xm_16">Since there logs can also be exported as structured logs, make use of the message templating instead of using string interpolation and pass down the full exception instance where applicable.</p></section><section class="detached"><h2 id="-2092318995#database-management" data-toc="database-management#Managing-Plugin-Services.topic-database-management">Database Management</h2><p id="-2092318995#r4l5xm_37">The core application layer uses Entity Framework Core to manage its databases. You can also use your own custom database models in your plugins, but using Entity Framework Core with SQLite is the only first party supported option. When registering a Database Context in your plugin service collection, its provided migrations will automatically be picked up by the <span class="inline-code" id="-2092318995#r4l5xm_41">DbInitializer</span> and applied to the database on startup. If the database is not present, it will be created.</p><blockquote class="prompt flex bordered-element-rounded tip detached">
+  <svg xmlns="http://www.w3.org/2000/svg" class="prompt-icon">
+    <path d="M12.946 3.552L21.52 18.4c.424.735.33 1.6-.519 1.6H3.855c-.85 0-1.817-.865-1.392-1.6l8.573-14.848a1.103 1.103 0 0 1 1.91 0zm.545 12.948a1.5 1.5 0 1 0-1.5 1.5 1.5 1.5 0 0 0 1.5-1.5zM13 8h-2v5h2z"></path>
+  </svg>
+  <div class="prompt-content prompt-content-p">
+    <div class="prompt-title">Migrations</div>
+<p id="-2092318995#r4l5xm_42">When using migrations, make sure to specify the correct migration assembly in a way that is independent of the hosting environment or the startup project.</p>  </div>
+</blockquote>
+<blockquote class="prompt flex bordered-element-rounded tip detached">
+  <svg xmlns="http://www.w3.org/2000/svg" class="prompt-icon">
+    <path d="M12.946 3.552L21.52 18.4c.424.735.33 1.6-.519 1.6H3.855c-.85 0-1.817-.865-1.392-1.6l8.573-14.848a1.103 1.103 0 0 1 1.91 0zm.545 12.948a1.5 1.5 0 1 0-1.5 1.5 1.5 1.5 0 0 0 1.5-1.5zM13 8h-2v5h2z"></path>
+  </svg>
+  <div class="prompt-content prompt-content-p">
+    <div class="prompt-title">Seeding</div>
+<p id="-2092318995#r4l5xm_43">A system to automatically seed plugin databases is not yet implemented. See Project plan for open issue.</p>  </div>
+</blockquote>
+<p id="-2092318995#r4l5xm_40">Plugins can also access the <span class="inline-code" id="-2092318995#r4l5xm_44">SystemDbContext</span> by using the application service provider provided on initialization of the plugin instance.</p></section></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="-1325909946">Publishing Plugins</h1><section class="detached"><h2 id="-1325909946#create-plugin-package" data-toc="create-plugin-package#Publishing-Plugins.md-create-plugin-package">Create plugin package</h2><p id="-1325909946#nrko6b_6">You can use the builtin <span class="inline-code" id="-1325909946#nrko6b_7">dotnet publish</span> command to create the plugin package file. Make sure the .csproj file is configured to include all additional assets and resources needed in order for the plugin to work.</p></section><section class="detached"><h2 id="-1325909946#register-plugin-package" data-toc="register-plugin-package#Publishing-Plugins.md-register-plugin-package">Register plugin package</h2><p id="-1325909946#nrko6b_8">Go to the MPM-Smart Plugin Server (<a href="https://mpm-smart.g-martin.work">https://mpm-smart.g-martin.work</a>) make sure you are signed in and register your plugin package.</p></section><section class="detached"><h2 id="-1325909946#upload-plugin-package" data-toc="upload-plugin-package#Publishing-Plugins.md-upload-plugin-package">Upload plugin package</h2><p id="-1325909946#nrko6b_10">Use the upload button to upload the built package file. It will be automatically validated to conform to the structure guidelines outlined in the plugin overview.</p></section></article></div></section><section class="topic"><div><article class="article"><h1 class="main-title" id="861295418">Presentation</h1><section class="detached"><h2 id="861295418#introduction" data-toc="introduction#Presentation.md-introduction">Introduction</h2><p id="861295418#kmysbz_11">Good afternoon, dear teachers, colleagues and classmates. Today, we are proud to present to you, Mpm-Smart. The Smart Home revolution is coming for all of us. I am certain, that we all own a lot of different technology that aims at making our lives easier. But often, we find ourselves in situations where all those different systems just don't work together. This is where Mpm-Smart comes in. Mpm-Smart is a Smart Home solution that aims to bring unify existing system together with new innovation in a single, easy to use, and open-source platform.</p></section><section class="detached"><h2 id="861295418#solution" data-toc="solution#Presentation.md-solution">Solution</h2><p id="861295418#kmysbz_12">To accomplish this, we have developed a multi-layered architecture that is designed to be modular and extensible. At the core of the system, we have a centralized Controller based on a solid plugin architecture. This controller is responsible for managing all the devices, aggregate their data, and provide a unified interface to the user.</p><p id="861295418#kmysbz_13">To make the world of extensible plugins more accessible to the every-day user we also ship a fully functional Plugin Registry. This registry allows users to easily discover, install, and manage plugins from a central location. Power-users can also use the registry to publish their own plugins and share them with the community.</p><p id="861295418#kmysbz_14">To maximize the user experience, we have also developed a modern and responsive web interface. Based on modern technologies we implemented a Progressive Web App (PWA) that can be installed on literally any device and provides an accessible and easy to use interface to the user.</p><p id="861295418#kmysbz_15">To also comply with modern security standards, we have implemented a full user management system with fine-grained access control. We use modern encryption standards to ensure that all data is secure and private at any time. All first party devices are also secured using mTLS to guarantee that only authorized devices can communicate with the controller.</p></section><section class="detached"><h2 id="861295418#technologies" data-toc="technologies#Presentation.md-technologies">Technologies</h2><p id="861295418#kmysbz_16">The Mpm-Smart solution is built on a variety of technologies. The core of the system is based on the .NET platform. We use the latest version of the .NET 9 SDK and the Entity Framework Core for our backend. The frontend is built using Blazor WebAssembly, a modern web framework that allows us to write C# code that runs natively in the browser.</p><p id="861295418#kmysbz_17">For the device firmware, we use the ESP-IDF, a powerful framework for developing IoT devices based on the ESP32 chip.</p><p id="861295418#kmysbz_18">To ensure the quality of our code, we use a variety of tools and services. We have integrated GitHub Actions into our workflow to automatically run unit and integration tests, build and publish the server image, and publish the documentation. We also use code quality tools like cppcheck to ensure that our code is clean and maintainable.</p><p id="861295418#kmysbz_19">We also leveraged many cloud servers including not ony Azure Redis Cache, Azure Blob Storage, and Azure SQL Database.</p></section><section class="detached"><h2 id="861295418#architecture" data-toc="architecture#Presentation.md-architecture">Architecture</h2><p id="861295418#kmysbz_20">Frontend: Blazor WebAssembly WPA using the MudBlazor UI Framework</p><p id="861295418#kmysbz_21">Controller: ASP.NET Core Web API using EF Core and Identity Framework</p><p id="861295418#kmysbz_22">Plugin System: Dynamic assembly loading via reflection and inter-process communication</p><p id="861295418#kmysbz_23">Plugin Registry: Azure Blob Storage and Azure Redis Cache and Azure SQL Database</p></section><section class="detached"><h2 id="861295418#what-is-a-plugin" data-toc="what-is-a-plugin#Presentation.md-what-is-a-plugin">What is a plugin?</h2><p id="861295418#kmysbz_24">Plugin allow us to extend the core functionality of the system. A plugin is a self-contained piece of code that can be dynamically loaded and executed by the controller. Plugins can be used to add new features, integrate with third-party services, or interact with all sorts of hardware devices.</p><p id="861295418#kmysbz_25">These plugins can both manage their own resources like static assets, docker and lxc containers or even their own subprocesses and also share/integrate those resources with the core system and other plugins.</p><p id="861295418#kmysbz_26">You want a plugin to collect data from your smart thermostat and display it in the web interface? No problem. You want a plugin to control your smart lights based on the weather forecast? Easy. You want a plugin to send you a notification when your laundry is done? Done.</p></section><section class="detached"><h2 id="861295418#our-original-goals-and-mockups" data-toc="our-original-goals-and-mockups#Presentation.md-our-original-goals-and-mockups">Our original Goals and Mockups</h2><p id="861295418#kmysbz_27">Olaf or Jake here you go!</p></section><section class="detached"><h2 id="861295418#little-demo" data-toc="little-demo#Presentation.md-little-demo">Little Demo</h2><p id="861295418#kmysbz_28">Quickly just show some of the nicer pages, probably no time for a full demo.</p></section><section class="detached"><h2 id="861295418#conclusion" data-toc="conclusion#Presentation.md-conclusion">Conclusion</h2><p id="861295418#kmysbz_29">You can check out our app right now under https://mpm-smart.g-martin.work or visit our GitHub repository at https://github.com/Team-MPM/MPM-Smart/ and don't forget to leave a star!</p></section></article></div></section></div></body></html>

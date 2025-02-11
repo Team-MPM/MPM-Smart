@@ -9,13 +9,15 @@
     private ChartOptions m_Options = new();
     private List<ChartSeries> m_Series = [];
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
+        m_Series.Clear();
         m_Series.AddRange(Data.Data.Select(kv => new ChartSeries
         {
             Name = kv.Key,
             Data = kv.Value.Select(e => double.Parse(e.ToString() ?? "0")).ToArray()
         }));  
+        base.OnParametersSet();
     }
 
 }

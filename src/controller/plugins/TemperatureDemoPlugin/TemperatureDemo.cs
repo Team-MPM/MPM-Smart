@@ -67,6 +67,28 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
                     ConnectionDetails = new Dictionary<string, string>()
                 }
             });
+            await deviceRegistry.RegisterDeviceAsync(new Device()
+            {
+                Info = new DeviceInfo
+                {
+                    Name = "Environment Sensor 1",
+                    Description = "Environment Sensor 1",
+                    Serial = "573412826234",
+                    Type = deviceType!,
+                    Capabilities = new Dictionary<string, string>()
+                    {
+                        { "environment_sensor", "environment_sensor" }
+                    },
+                    Details = new Dictionary<string, string>()
+                },
+                State = DeviceState.Connected,
+                MetaData = new DeviceMeta()
+                {
+                    Location = "Living Room",
+                    ConnectionDetails = new Dictionary<string, string>()
+                }
+            });
+            
         });
         
 
@@ -85,10 +107,10 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
             Permission = TemperatureClaims.ViewSensorData,
             QueryHandler = query => Task.FromResult<DataQueryResult?>(new ComboQueryResult(new Dictionary<string, object>
             {
-                ["123412341234"] = 20.0d,
-                ["Kitchen"] = 20.0d,
-                ["Living Room"] = 22.0d,
-                ["Bed Room"] = 18.0d
+                ["123412341234"] = Random.Shared.NextDouble() * 20,
+                ["Kitchen"] = Random.Shared.NextDouble() * 20,
+                ["Living Room"] = Random.Shared.NextDouble() * 20,
+                ["Bed Room"] = Random.Shared.NextDouble() * 20
             }))
         });
 
@@ -105,7 +127,7 @@ public class TemperatureDemo : PluginBase<TemperatureDemo>
             Permission = TemperatureClaims.ViewSensorData,
             QueryHandler = query => Task.FromResult<DataQueryResult?>(new ComboSeriesQueryResult(new Dictionary<string, object[]>
             {
-                ["123412341234"] = [20.0d, 21.0d, 22.0d, 23.0d],
+                ["123412341234"] = [Random.Shared.NextDouble() * 20, Random.Shared.NextDouble() * 20, Random.Shared.NextDouble() * 20, Random.Shared.NextDouble() * 20, Random.Shared.NextDouble() * 20, Random.Shared.NextDouble() * 20, Random.Shared.NextDouble() * 20, Random.Shared.NextDouble() * 20],
                 ["Kitchen"] = [20.0d, 21.0d, 22.0d, 23.0d],
                 ["Living Room"] = [22.0d, 23.0d, 24.0d, 25.0d],
                 ["Bed Room"] = [18.0d, 19.0d, 20.0d, 21.0d]

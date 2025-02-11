@@ -35,9 +35,9 @@
                                 <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Class="mb-3">
                                     <MudIcon Style="font-size: 1rem"
                                              Icon="@Icons.Material.Filled.Circle"
-                                             Color="@(GetStateColor(m_DeviceDto.State))"/>
+                                             Color="@(/*GetStateColor(m_DeviceDto.State)*/GetStateColor(DeviceState.Connected))"/>
                                     <MudText Typo="Typo.body1" Class="state-text">
-                                        <span class="bold">State:</span> @m_DeviceDto.State
+                                        <span class="bold">State:</span> @DeviceState.Connected
                                     </MudText>
                                 </MudStack>
                                 <MudChipSet T="string">
@@ -56,9 +56,9 @@
                                 <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Class="my-3">
                                     <MudIcon Style="font-size: 1rem"
                                              Icon="@Icons.Material.Filled.Circle"
-                                             Color="@(GetStateColor(m_DeviceDto.State))"/>
+                                             Color="@(/*GetStateColor(m_DeviceDto.State)*/GetStateColor(DeviceState.Connected))"/>
                                     <MudText Typo="Typo.body1" Class="state-text">
-                                        <span class="bold">State:</span> @m_DeviceDto.State
+                                        <span class="bold">State:</span> @DeviceState.Connected
                                     </MudText>
                                 </MudStack>
                                 <MudChipSet T="string">

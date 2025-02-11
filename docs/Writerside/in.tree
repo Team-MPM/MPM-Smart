@@ -25,4 +25,5 @@
             <toc-element topic="Publishing-Plugins.md"/>
         </toc-element>
     </toc-element>
+    <toc-element topic="Presentation.md"/>
 </instance-profile>

@@ -95,6 +95,10 @@ public class DataManager
         
         var currentIndex = m_Callbacks.Count;
         m_Callbacks.Add((suc, obj, err) => callback(suc, obj as T, err));
+
         await m_Connection.SendAsync("Query", query, currentIndex);
+        var timer = new System.Timers.Timer(1000);
+        timer.Elapsed += async (_, _) => await m_Connection.SendAsync("Query", query, currentIndex);
+        timer.Start();
     }
 }

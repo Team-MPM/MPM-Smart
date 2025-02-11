@@ -24,7 +24,7 @@ public class EnvironmentSensorController(IHttpClientFactory clientFactory)
     public async Task<DataQueryResult> ProcessTempQuery(DataQuery query)
     {
         var client = clientFactory.CreateClient();
-        client.BaseAddress = new Uri("http://192.168.1.100");
+        client.BaseAddress = new Uri("http://192.168.1.101");
         client.Timeout = TimeSpan.FromSeconds(10);
         var response = await client.GetAsync("/dht");
         response.EnsureSuccessStatusCode();
@@ -39,7 +39,7 @@ public class EnvironmentSensorController(IHttpClientFactory clientFactory)
     public async Task<DataQueryResult> ProcessHumidityQuery(DataQuery query)
     {
         var client = clientFactory.CreateClient();
-        client.BaseAddress = new Uri("http://192.168.1.100");
+        client.BaseAddress = new Uri("http://192.168.1.101");
         client.Timeout = TimeSpan.FromSeconds(10);
         var response = await client.GetAsync("/dht");
         response.EnsureSuccessStatusCode();

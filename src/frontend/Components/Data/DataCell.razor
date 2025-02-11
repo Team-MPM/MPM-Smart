@@ -61,7 +61,10 @@
                 m_Error = err;
             }
 
-            InvokeAsync(StateHasChanged);
+            Task.Run(async () =>
+            {
+                await InvokeAsync(StateHasChanged);
+            });
         });
     }
 

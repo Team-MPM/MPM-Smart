@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Shared;
 
 namespace PluginBase.Services.Devices;
 
@@ -55,6 +56,8 @@ public class DeviceManager(
                 catch (Exception e)
                 {
                     logger.LogError(e, "Failed to poll device {Serial}", device.Info.Serial);
+                    // TODO
+                    device.State = DeviceState.Connected;
                 }
 
             await deviceRegistry.PersistAllAsync();

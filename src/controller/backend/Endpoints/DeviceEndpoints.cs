@@ -37,8 +37,8 @@ public static class DeviceEndpoints
             Name: info.Name,
             Description: info.Description,
             Serial: info.Serial,
-            Type: info.Type.GetType().Name,
-            Parameters: info.Type.Parameters,
+            Type: info.Type?.GetType().Name!,
+            Parameters: info.Type?.Parameters!,
             Details: info.Details,
             Capabilities: info.Capabilities
         );
